@@ -9,6 +9,7 @@ let ventureData = []; // Store loaded Venture data
 let digitalResources = null; // Store loaded Digital/Sector resources
 let pathwayState = { goal: null, constraints: {} }; // Store Pathway Builder state
 let myPlan = { roles: new Set(), skills: new Set(), courses: new Set() }; // New My Plan State
+let favoriteVentures = new Set(); // Store favorite ventures
 
 // --- DATA MANAGER CLASS ---
 class DataManager {
@@ -1126,7 +1127,7 @@ function getOJAMetrics(roleTitle, country) {
                                 <button onclick="renderPathwayCourseGrid('quickest')" class="pathway-sort-btn px-2 py-1 text-[10px] font-bold rounded-md transition-colors text-slate-500 hover:text-slate-700" data-sort="quickest">Quickest</button>
                             </div>
                         </div>
-                        <div id="pathway-course-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div id="pathway-course-grid" class="grid grid-cols-1 gap-4">
                             <!-- Dynamic Content -->
                         </div>
                     </div>
@@ -1258,7 +1259,7 @@ function getOJAMetrics(roleTitle, country) {
                 }
 
                 return `
-                <${tag} ${href} class="flex flex-col justify-between p-2.5 bg-blue-50 border border-blue-100 rounded-lg hover:border-blue-300 ${cursor} transition-all group text-left h-full">
+                <${tag} ${href} class="flex flex-col justify-between p-4 bg-blue-50 border border-blue-100 rounded-lg hover:border-blue-300 ${cursor} transition-all group text-left h-full shadow-sm">
                     <div>
                         <div class="flex justify-between items-start mb-1">
                             <div class="text-xs font-bold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors line-clamp-2 pr-1">${t.name}</div>
@@ -2331,7 +2332,7 @@ function getOJAMetrics(roleTitle, country) {
             
             const finalCourses = courses.slice(0, 4); // Limit to 4 for cleaner UI
             const trainingHtml = finalCourses.map(c => `
-                <a href="${c.url}" target="_blank" class="flex flex-col p-3 bg-white border border-slate-200 rounded-lg hover:border-${theme}-300 transition-colors group h-full">
+                <a href="${c.url}" target="_blank" class="flex flex-col p-4 bg-white border border-slate-200 rounded-lg hover:border-${theme}-300 transition-colors group h-full shadow-sm">
                     <div class="flex justify-between items-start mb-1">
                         <span class="text-[9px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200">${c.level === 'short' ? 'Short' : 'Cert'}</span>
                         <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-${theme}-500"></i>
@@ -2448,7 +2449,7 @@ function getOJAMetrics(roleTitle, country) {
                                 </select>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div class="grid grid-cols-1 gap-4">
                             ${trainingHtml}
                         </div>
                         ${finalCourses.length === 0 ? '<div class="text-xs text-slate-500 italic mt-2">No specific courses found matching constraints.</div>' : ''}
@@ -2975,13 +2976,15 @@ function getOJAMetrics(roleTitle, country) {
                         <div class="flex flex-wrap gap-2 mb-8">
                             ${toolsHtml}
                         </div>
-                        
+                    </div>
+                    <div>
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-2">
                             <span class="w-6 h-6 rounded bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">${hasRelated ? 6 : 5}</span> Read More
                         </h3>
                         <div class="space-y-1">
                             ${resHtml}
-                     </div>
+                        </div>
+                    </div>
                 </div>
             `;
 
@@ -3193,7 +3196,7 @@ function getOJAMetrics(roleTitle, country) {
                     </div>
                 </div>
 
-                <div id="skills-hub-cards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div id="skills-hub-cards" class="grid grid-cols-1 gap-4">
                     <!-- Cards injected via renderSkillsHubCards -->
                 </div>
             `;
@@ -4265,7 +4268,6 @@ window.toggleCareerHub = function() {
                     mobilityLevel: baseData.outlook.mobilityLevel,
                     source: overrides.source || baseData.outlook.source
                 },
-                occupations: baseData.occupations,
                 // Use DataManager occupations if available, else fallback to baseData
                 occupations: dataManager.getOccupations(activeSectorId) || baseData.occupations,
                 // Use DataManager skills if available, else fallback to baseData
@@ -4495,9 +4497,6 @@ window.toggleCareerHub = function() {
             // Open Unified Hub -> Founder's Launchpad Tab
             openUnifiedHub('pp-launchpad', null, null);
             // Ensure specific venture is rendered after opening
-            setTimeout(() => {
-                if(typeof renderVentureLaunchpad === 'function') renderVentureLaunchpad(ventureTitle);
-            }, 100);
         }
 
         // --- NEW: Venture Modal Logic ---
@@ -4525,7 +4524,6 @@ window.toggleCareerHub = function() {
 
             const modalTitle = document.getElementById('venture-modal-title');
             modalTitle.innerHTML = `${venture.Venture_Title} ${venture.Rank <= 3 ? '<span title="High Demand" class="ml-2">🔥</span>' : ''}`;
-            modalTitle.innerHTML = `${venture.Venture_Title} <span title="High Demand" class="ml-2">🔥</span>`;
 
             // Determine Theme based on Sector
             const themeConfig = (typeof sectorThemes !== 'undefined') ? sectorThemes[activeSectorId] : { color: 'indigo' };
@@ -5823,7 +5821,7 @@ window.toggleCareerHub = function() {
             const filtered = courses.filter(c => {
                 const matchCountry = countryFilter === 'all' || c.country === 'all' || c.country === countryFilter;
                 const matchSector = secFilter === 'all' || c.sector === secFilter;
-                const matchMode = modeFilter === 'all' || c.mode === modeFilter || (modeFilter === 'Hybrid' && c.mode === 'Blended');
+                const matchMode = modeFilter === 'all' || (c.mode && c.mode.toLowerCase() === modeFilter.toLowerCase()) || (modeFilter.toLowerCase() === 'hybrid' && (c.mode === 'Blended' || c.mode === 'Hybrid'));
                 
                 let matchDuration = true;
                 if (durationFilter !== 'all') {
@@ -6152,7 +6150,7 @@ window.toggleCareerHub = function() {
                 const matchCountry = countryFilter === 'all' || c.country === 'all' || c.country === countryFilter;
                 const matchSector = secFilter === 'all' || c.sector === secFilter;
                 const matchLang = langFilter === 'all' || (c.language && c.language.includes(langFilter));
-                const matchMode = modeFilter === 'all' || (c.mode && c.mode.toLowerCase() === modeFilter.toLowerCase()) || (modeFilter.toLowerCase() === 'hybrid' && c.mode === 'Blended');
+                const matchMode = modeFilter === 'all' || (c.mode && c.mode.toLowerCase() === modeFilter.toLowerCase()) || (modeFilter.toLowerCase() === 'hybrid' && (c.mode === 'Blended' || c.mode === 'Hybrid'));
                 
                 let matchType = true;
                 if (typeFilter !== 'all') {

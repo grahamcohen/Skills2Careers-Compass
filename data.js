@@ -1568,17 +1568,6 @@ const fallbackVentures = [
     { "Country": "All", "Sector": "digital", "Rank": 2, "Venture_Title": "No-code app / automation micro-agency", "Venture_Description": "Low-code tool adoption rising.", "Key_Competencies": "No-code Dev, Client Ops", "Startup_Capital_Est": "Low (<$1k)" }
 ];
 
-// --- 28. Sector Roadmap IDs ---
-const sectorRoadmapIds = {
-    energy: ['p16', 'p17', 'p18', 'p19'],
-    digital: ['p13', 'p11', 'p14', 'p10', 'p4', 'p15'],
-    agri: ['p8', 'a2', 'a5', 'p11', 'p15'] // Added Agri specific IDs
-};
-
-// --- 29. Safety Variables ---
-// Ensures app doesn't crash if courses.json fails and this variable is checked
-const realCourses = [];
-
 // --- 30. Sector Map ---
 const sectorMap = {
     'agri': 'Agriculture',
@@ -1684,6 +1673,50 @@ const credentialRules = {
             { keywords: ['Cloud'], text: "Vendor Certifications (AWS/Azure)" }
         ]
     }
+};
+
+// --- 34. Sector Card Config ---
+const sectorCardConfig = [
+    { id: 'agri', name: 'Agritech', icon: 'leaf', color: 'green', growth: 'High Growth' },
+    { id: 'energy', name: 'Renewable Energy', icon: 'zap', color: 'orange', growth: 'High Demand' },
+    { id: 'digital', name: 'Digital Economy', icon: 'cpu', color: 'indigo', growth: 'Exponential' }
+];
+
+// --- 35. Sector Themes ---
+const sectorThemes = {
+    agri: { color: 'green', feedback: "Solid alignment with Agritech standards." },
+    energy: { color: 'orange', feedback: "Meets renewable energy competency baselines." },
+    digital: { color: 'indigo', feedback: "Strong digital literacy demonstrated." }
+};
+
+// --- 36. Pathway Constraints ---
+const pathwayConstraints = [
+    { id: 'time', label: 'Time Commitment', options: ['< 1 Month', '1-3 Months', '3-6 Months', '6+ Months'] },
+    { id: 'budget', label: 'Budget', options: ['Free', 'Low Cost', 'Paid'] },
+    { id: 'mode', label: 'Learning Mode', options: ['Online', 'In-Person', 'Hybrid'] }
+];
+
+// --- 37. Pathway Goals ---
+const pathwayGoals = [
+    { "title": "Entry Level Job", "desc": "I want to find my first job or internship.", "icon": "briefcase" },
+    { "title": "Apprenticeship", "desc": "I want to learn on the job with a mentor.", "icon": "users" },
+    { "title": "Upskill", "desc": "I want to strengthen my current skills.", "icon": "trending-up" },
+    { "title": "Venture", "desc": "I want to start my own business.", "icon": "rocket" },
+    { "title": "Change Careers", "desc": "I want to pivot to a new sector.", "icon": "refresh-cw" }
+];
+
+// --- 38. Interview Questions ---
+const interviewQuestions = {
+    agri: "Describe a time you used data to improve a crop yield or farm process.",
+    energy: "How do you ensure safety compliance when installing a new system?",
+    digital: "Tell me about a challenging bug you fixed and your process."
+};
+
+// --- 39. Sector Tooltips ---
+const sectorTooltips = {
+    agri: "Metrics: Job Growth (High), Tech Adoption (Rapid). Key focus on precision ag and value addition.",
+    energy: "Metrics: Investment (Very High), Skills Gap (Critical). Focus on solar, wind, and grid stability.",
+    digital: "Metrics: Remote Work (High), Salary (Competitive). Focus on software, data, and AI."
 };
 
 // --- 36. Venture Playbooks ---
