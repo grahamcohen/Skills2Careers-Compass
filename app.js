@@ -5720,7 +5720,10 @@ window.toggleCareerHub = function() {
                             <div class="flex justify-between items-start gap-3">
                                 <div class="flex-1">
                                     <div class="font-bold text-sm text-slate-800 leading-tight mb-1">${c.name}</div>
-                                    <div class="text-xs text-slate-500">${c.provider}</div>
+                                    <div class="text-xs text-slate-500 flex items-center gap-1">
+                                        ${c.provider}
+                                        ${trustIcons}
+                                    </div>
                                 </div>
                                 <div class="flex flex-col items-end gap-1">
                                     ${c.gsa_member ? '<span class="text-[9px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200 font-bold whitespace-nowrap">UNESCO GSA</span>' : ''}
@@ -5736,10 +5739,13 @@ window.toggleCareerHub = function() {
                             </div>
 
                             <div class="flex items-center justify-between pt-2 border-t border-slate-50">
-                                <div class="flex items-center gap-2">
-                                    <span class="${badgeClass} px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider inline-flex items-center gap-1">
+                                <div class="flex flex-col gap-1">
+                                    <span class="${badgeClass} px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider inline-flex items-center gap-1 w-fit">
                                         <span>${stars}</span> ${outcome.methodology || qualityText}
                                     </span>
+                                    <div class="font-mono font-bold text-xs ${metricDisplay === 'No Data' ? 'text-slate-300' : 'text-blue-600'}">
+                                        ${metricDisplay}
+                                    </div>
                                 </div>
                                 ${c.url ? `
                                 <a href="${c.url}" target="_blank" class="flex items-center gap-1 px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-xs font-bold transition-colors">
