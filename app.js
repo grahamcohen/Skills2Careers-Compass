@@ -3718,32 +3718,6 @@ function getOJAMetrics(roleTitle, country) {
             }, 10);
         }
 
-        window.showTrainingTab = function(tabId) {
-            // Hide all contents
-            document.querySelectorAll('.th-tab-content').forEach(el => el.classList.add('hidden'));
-            // Show target
-            const target = document.getElementById(tabId);
-            if(target) target.classList.remove('hidden');
-
-            // Update buttons
-            document.querySelectorAll('.th-tab-btn').forEach(btn => {
-                if(btn.dataset.tab === tabId) {
-                    btn.classList.remove('text-slate-500', 'border-transparent', 'hover:text-slate-700', 'hover:bg-slate-50');
-                    btn.classList.add('text-emerald-700', 'border-emerald-600', 'bg-emerald-50');
-                } else {
-                    btn.classList.add('text-slate-500', 'border-transparent', 'hover:text-slate-700', 'hover:bg-slate-50');
-                    btn.classList.remove('text-emerald-700', 'border-emerald-600', 'bg-emerald-50');
-                }
-            });
-
-            // Trigger specific renders
-            if(tabId === 'th-finance') {
-                renderFinancialAid();
-            } else if (tabId === 'th-impact') {
-                initImpactCharts();
-            }
-        }
-
 window.toggleTrainingHub = function() {
     // Close Unified Hub if open
     const unifiedDrawer = document.getElementById('unified-hub-modal');
@@ -3761,19 +3735,240 @@ window.toggleTrainingHub = function() {
     const drawer = document.getElementById('training-hub-drawer');
     drawer.classList.toggle('translate-x-full');
 
-    // 3. Run existing logic
-    updateTrainingProviders();
-    renderTrainingHubCourses();
+    if (!drawer.classList.contains('translate-x-full')) {
+        resetTrainingHub();
+    }
+    if(window.lucide) lucide.createIcons();
+}
 
-    // 4. Sync dropdowns (Safety check)
-    const hubCountrySelector = document.getElementById('hub-country');
-    if (hubCountrySelector) {
-        hubCountrySelector.value = activeCountry;
+window.resetTrainingHub = function() {
+    const container = document.getElementById('training-hub-content');
+    if(!container) return;
+
+    container.innerHTML = `
+        <div class="space-y-4">
+            <!-- Filters -->
+            <div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100 grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[10px] font-bold text-emerald-900 mb-1">Location</label>
+                    <select onchange="setGlobalCountry(this.value); resetTrainingHub();" class="w-full text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+                        <option value="all" ${activeCountry === 'all' ? 'selected' : ''}>Regional</option>
+                        <option value="Kenya" ${activeCountry === 'Kenya' ? 'selected' : ''}>Kenya</option>
+                        <option value="Uganda" ${activeCountry === 'Uganda' ? 'selected' : ''}>Uganda</option>
+                        <option value="Tanzania" ${activeCountry === 'Tanzania' ? 'selected' : ''}>Tanzania</option>
+                        <option value="Rwanda" ${activeCountry === 'Rwanda' ? 'selected' : ''}>Rwanda</option>
+                        <option value="Burundi" ${activeCountry === 'Burundi' ? 'selected' : ''}>Burundi</option>
+                        <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
+                        <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
+                        <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-emerald-900 mb-1">Sector</label>
+                    <select onchange="setGlobalSector(this.value); resetTrainingHub();" class="w-full text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+                        <option value="agri" ${activeSectorId === 'agri' ? 'selected' : ''}>Agritech</option>
+                        <option value="energy" ${activeSectorId === 'energy' ? 'selected' : ''}>Renewable Energy</option>
+                        <option value="digital" ${activeSectorId === 'digital' ? 'selected' : ''}>Digital Economy</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="showTrainingHubView('find')" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-emerald-300 hover:bg-white hover:shadow-sm text-left transition-all group">
+                    <div class="p-2 bg-emerald-100 text-emerald-600 rounded-lg w-fit mb-3 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-5 h-5"></i></div>
+                    <h4 class="font-bold text-slate-800 text-sm">Find Courses</h4>
+                    <p class="text-xs text-slate-500 mt-1">Search Database</p>
+                </button>
+
+                <button onclick="showTrainingHubView('featured')" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-sm text-left transition-all group">
+                    <div class="p-2 bg-blue-100 text-blue-600 rounded-lg w-fit mb-3 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="star" class="w-5 h-5"></i></div>
+                    <h4 class="font-bold text-slate-800 text-sm">Featured Providers</h4>
+                    <p class="text-xs text-slate-500 mt-1">Top Rated</p>
+                </button>
+
+                <button onclick="showTrainingHubView('impact')" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-orange-300 hover:bg-white hover:shadow-sm text-left transition-all group">
+                    <div class="p-2 bg-orange-100 text-orange-600 rounded-lg w-fit mb-3 group-hover:bg-orange-600 group-hover:text-white transition-colors"><i data-lucide="bar-chart-2" class="w-5 h-5"></i></div>
+                    <h4 class="font-bold text-slate-800 text-sm">Impact Evidence</h4>
+                    <p class="text-xs text-slate-500 mt-1">Outcomes Data</p>
+                </button>
+
+                <button onclick="showTrainingHubView('finance')" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-purple-300 hover:bg-white hover:shadow-sm text-left transition-all group">
+                    <div class="p-2 bg-purple-100 text-purple-600 rounded-lg w-fit mb-3 group-hover:bg-purple-600 group-hover:text-white transition-colors"><i data-lucide="banknote" class="w-5 h-5"></i></div>
+                    <h4 class="font-bold text-slate-800 text-sm">Financial Aid</h4>
+                    <p class="text-xs text-slate-500 mt-1">Scholarships</p>
+                </button>
+            </div>
+        </div>
+    `;
+    if(window.lucide) lucide.createIcons();
+}
+
+window.showTrainingHubView = function(view) {
+    const container = document.getElementById('training-hub-content');
+    let content = '';
+    
+    if (view === 'find') {
+        content = `
+            <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2 mb-3"><i data-lucide="filter" class="w-4 h-4 text-indigo-500"></i> Filter Training</h3>
+                <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="drawer-hub-country" class="block text-xs font-medium text-slate-600 mb-1">Country</label>
+                            <select id="drawer-hub-country" onchange="setGlobalCountry(this.value); renderTrainingHubCourses();" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="all" ${activeCountry === 'all' ? 'selected' : ''}>East Africa (All)</option>
+                                <option value="Kenya" ${activeCountry === 'Kenya' ? 'selected' : ''}>Kenya</option>
+                                <option value="Tanzania" ${activeCountry === 'Tanzania' ? 'selected' : ''}>Tanzania</option>
+                                <option value="Uganda" ${activeCountry === 'Uganda' ? 'selected' : ''}>Uganda</option>
+                                <option value="Rwanda" ${activeCountry === 'Rwanda' ? 'selected' : ''}>Rwanda</option>
+                                <option value="Burundi" ${activeCountry === 'Burundi' ? 'selected' : ''}>Burundi</option>
+                                <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
+                                <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DRC</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="drawer-hub-language" class="block text-xs font-medium text-slate-600 mb-1">Language</label>
+                            <select id="drawer-hub-language" onchange="renderTrainingHubCourses()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="all">Language (All)</option>
+                                <option value="Kiswahili">Kiswahili</option>
+                                <option value="English">English</option>
+                                <option value="French">French</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="drawer-hub-sector" class="block text-xs font-medium text-slate-600 mb-1">Sector</label>
+                            <select id="drawer-hub-sector" onchange="renderTrainingHubCourses()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="agri" ${activeSectorId === 'agri' ? 'selected' : ''}>Agritech</option>
+                                <option value="energy" ${activeSectorId === 'energy' ? 'selected' : ''}>Renewable Energies</option>
+                                <option value="digital" ${activeSectorId === 'digital' ? 'selected' : ''}>Digital Economies / AI</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="drawer-hub-mode-quick" class="block text-xs font-medium text-slate-600 mb-1">Learning Mode</label>
+                            <select id="drawer-hub-mode-quick" onchange="renderTrainingHubCourses()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="all">Any Mode</option>
+                                <option value="online">Online</option>
+                                <option value="in-person">In-Person</option>
+                                <option value="hybrid">Hybrid</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="pt-2">
+                    <button onclick="toggleMoreFilters()" id="more-filters-btn" class="text-xs font-bold text-indigo-600 hover:underline flex items-center gap-1">
+                        <i data-lucide="plus-circle" class="w-3 h-3"></i> More Filters
+                    </button>
+                </div>
+                <div id="advanced-filters" class="hidden pt-4 mt-4 border-t border-slate-200 space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="drawer-hub-course-type" class="block text-xs font-medium text-slate-600 mb-1">Course Type</label>
+                            <select id="drawer-hub-course-type" onchange="renderTrainingHubCourses()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="all">Any Type</option>
+                                <option value="certificate">Certificates</option>
+                                <option value="micro-credential">Micro-credentials</option>
+                                <option value="tvet">TVET courses</option>
+                                <option value="university">University courses</option>
+                                <option value="bootcamp">Bootcamps</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="drawer-hub-budget" class="block text-xs font-medium text-slate-600 mb-1">Budget Band</label>
+                            <select id="drawer-hub-budget" onchange="renderTrainingHubCourses()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="all">Any Cost</option>
+                                <option value="low">Low Cost / Free</option>
+                                <option value="medium">Medium Cost</option>
+                                <option value="high">High Cost</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="training-hub-results" class="space-y-4"></div>
+        `;
+    } else if (view === 'featured') {
+        content = `
+            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                <div class="p-4 border-b border-slate-200 bg-slate-50">
+                    <h3 class="font-bold text-slate-800 text-sm mb-2">Top Rated Providers</h3>
+                    <p class="text-xs text-slate-500">Providers with independently verified outcome data.</p>
+                </div>
+                <div id="training-hub-results" class="space-y-4 p-4"></div>
+            </div>
+        `;
+    } else if (view === 'impact') {
+        content = `
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                    <div class="text-slate-500 text-[10px] uppercase font-bold mb-1">Graduates Tracked</div>
+                    <div class="text-xl font-bold text-slate-800">23,700+</div>
+                    <div class="text-[10px] text-slate-400">Verified Outcomes</div>
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                    <div class="text-slate-500 text-[10px] uppercase font-bold mb-1">Max Salary Uplift</div>
+                    <div class="text-xl font-bold text-green-600">+140%</div>
+                    <div class="text-[10px] text-slate-400">Digital Sector</div>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-xs text-slate-700 mb-2">Salary Progression (Digital Sector)</h3>
+                    <div class="heavy-chart h-48 w-full relative">
+                        <canvas id="drawer-salaryChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-xs text-slate-700 mb-2">Time to Full-Time Employment</h3>
+                    <div class="heavy-chart h-48 w-full relative flex justify-center">
+                        <canvas id="drawer-timeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (view === 'finance') {
+        content = `
+            <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-100 flex items-start gap-3">
+                <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg shrink-0"><i data-lucide="banknote" class="w-5 h-5"></i></div>
+                <div>
+                    <h3 class="font-bold text-indigo-900 text-sm">Scholarships & Loans</h3>
+                    <p class="text-xs text-indigo-700 mt-1">Find financial support for your education across East Africa.</p>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <select id="finance-filter-country" onchange="renderFinancialAid()" class="flex-1 text-xs border border-slate-300 rounded-lg px-2 py-2 focus:ring-indigo-500">
+                    <option value="all">All Countries</option>
+                    <option value="Kenya">Kenya</option>
+                    <option value="Tanzania">Tanzania</option>
+                    <option value="Uganda">Uganda</option>
+                    <option value="Rwanda">Rwanda</option>
+                    <option value="Regional">Regional</option>
+                </select>
+                <select id="finance-filter-type" onchange="renderFinancialAid()" class="flex-1 text-xs border border-slate-300 rounded-lg px-2 py-2 focus:ring-indigo-500">
+                    <option value="all">All Types</option>
+                    <option value="Scholarship">Scholarship</option>
+                    <option value="Loan">Loan</option>
+                    <option value="Grant">Grant</option>
+                </select>
+            </div>
+            <div id="financial-aid-list" class="space-y-3"></div>
+        `;
     }
-    const hubSectorSelector = document.getElementById('hub-sector');
-    if (hubSectorSelector) {
-        hubSectorSelector.value = activeSectorId;
+
+    container.innerHTML = `
+        <div class="animate-fade-in space-y-4">
+            <button onclick="resetTrainingHub()" class="mb-2 flex items-center gap-2 text-sm text-slate-500 hover:text-emerald-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
+            ${content}
+        </div>
+    `;
+    
+    if (view === 'find') renderTrainingHubCourses();
+    if (view === 'featured') {
+        // Reuse renderTrainingHubCourses but force high quality filter if possible, or just render all for now as per previous logic
+        renderTrainingHubCourses(); 
     }
+    if (view === 'impact') initImpactCharts();
+    if (view === 'finance') renderFinancialAid();
+    
     if(window.lucide) lucide.createIcons();
 }
 window.toggleCareerHub = function() {
