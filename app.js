@@ -1029,33 +1029,6 @@ function getOJAMetrics(roleTitle, country) {
                 </a>
             `}).join('');
 
-            // --- ROI SNAPSHOT ---
-            const roiHtml = `
-                <div class="bg-white border border-slate-200 rounded-xl p-4 mb-2 shadow-sm">
-                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2">
-                        <i data-lucide="clock" class="w-3 h-3"></i> Pathway ROI Snapshot: Time-to-Employability
-                    </h4>
-                    <div class="grid grid-cols-3 gap-2 text-center">
-                        <div class="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
-                            <div class="text-[10px] text-emerald-800 font-bold mb-1">Micro-Creds</div>
-                            <div class="text-lg font-bold text-emerald-600 leading-none">3-6</div>
-                            <div class="text-[9px] text-emerald-700">Months</div>
-                        </div>
-                        <div class="p-2 bg-blue-50 rounded-lg border border-blue-100">
-                            <div class="text-[10px] text-blue-800 font-bold mb-1">TVET / Diploma</div>
-                            <div class="text-lg font-bold text-blue-600 leading-none">1-2</div>
-                            <div class="text-[9px] text-blue-700">Years</div>
-                        </div>
-                        <div class="p-2 bg-slate-50 rounded-lg border border-slate-100">
-                            <div class="text-[10px] text-slate-800 font-bold mb-1">University</div>
-                            <div class="text-lg font-bold text-slate-600 leading-none">3-4</div>
-                            <div class="text-[9px] text-slate-700">Years</div>
-                        </div>
-                    </div>
-                    <p class="text-[10px] text-slate-400 mt-2 text-center italic">*Figures are indicative averages based on regional tracer studies (e.g. IUCEA). Actual timelines vary by program.</p>
-                </div>
-            `;
-
             // --- SECTOR SPECIFIC RESOURCES (New Request) ---
             let sectorResourcesHtml = '';
             let empSectionNum = 3; // Default Employability to 3
@@ -1140,8 +1113,6 @@ function getOJAMetrics(roleTitle, country) {
                             <p class="text-xs text-slate-500">${headerDesc}</p>
                         </div>
                     </div>
-
-                    ${roiHtml}
 
                     <!-- Step 1: Training & capacity strengthening opportunities -->
                     <div>
@@ -1403,14 +1374,6 @@ function getOJAMetrics(roleTitle, country) {
                         
                         <!-- 1. ROLE SELECTOR -->
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                            <div class="mb-4">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Target Sector</label>
-                                <select onchange="setGlobalSector(this.value); renderPATHWAYContent();" class="w-full text-sm font-bold text-slate-700 border-slate-300 rounded-lg shadow-sm focus:border-${themeColor}-500 focus:ring-${themeColor}-500 p-2.5">
-                                    <option value="agri" ${sector === 'agri' ? 'selected' : ''}>Agritech</option>
-                                    <option value="energy" ${sector === 'energy' ? 'selected' : ''}>Renewable Energy</option>
-                                    <option value="digital" ${sector === 'digital' ? 'selected' : ''}>Digital Economy</option>
-                                </select>
-                            </div>
                             <div class="mb-4">
                                 <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Target Role</label>
                                 <select id="pp-role-selector" onchange="renderPATHWAYContent(this.value)" class="w-full text-sm font-bold text-slate-700 border-slate-300 rounded-lg shadow-sm focus:border-${themeColor}-500 focus:ring-${themeColor}-500 p-2.5">
@@ -3086,8 +3049,28 @@ function getOJAMetrics(roleTitle, country) {
                 careerSelector.value = country;
             }
 
+            // Update Skills Hub Dropdown
+            const skillsHubSelector = document.getElementById('skills-hub-country');
+            if (skillsHubSelector && skillsHubSelector.value !== country) {
+                skillsHubSelector.value = country;
+            }
+
+            // Update Find Courses Filter (Sync)
+            const courseFilter = document.getElementById('filter-country');
+            if (courseFilter && courseFilter.value !== country) {
+                courseFilter.value = country;
+                if (!document.getElementById('pp-courses').classList.contains('hidden')) {
+                    renderProviderTable();
+                }
+            }
+
             updateTrainingProviders();
             renderOccupationsView();
+            
+            // Update Dashboard Cards Context
+            if (document.getElementById('skills-hub-home') && !document.getElementById('skills-hub-home').classList.contains('hidden')) {
+                 renderSkillsHubCards();
+            }
         }
 
         window.setGlobalSector = function(sector) {
@@ -3110,7 +3093,27 @@ function getOJAMetrics(roleTitle, country) {
                 if (sector === 'digital') activeCard.classList.add('border-blue-600', 'ring-blue-600');
             }
             
+            // Update Skills Hub Dropdown
+            const skillsHubSectorSelector = document.getElementById('skills-hub-sector');
+            if (skillsHubSectorSelector && skillsHubSectorSelector.value !== sector) {
+                skillsHubSectorSelector.value = sector;
+            }
+
+            // Update Find Courses Filter (Sync)
+            const courseSectorFilter = document.getElementById('filter-sector');
+            if (courseSectorFilter && courseSectorFilter.value !== sector) {
+                courseSectorFilter.value = sector;
+                if (!document.getElementById('pp-courses').classList.contains('hidden')) {
+                    renderProviderTable();
+                }
+            }
+            
             renderOccupationsView();
+            
+            // Update Dashboard Cards Context
+            if (document.getElementById('skills-hub-home') && !document.getElementById('skills-hub-home').classList.contains('hidden')) {
+                 renderSkillsHubCards();
+            }
         }
 
         window.openUnifiedHub = function(startTab = 'pp-diagnostic', roleName = null, pathwayGoal = null) {
@@ -3132,12 +3135,10 @@ function getOJAMetrics(roleTitle, country) {
 
             const drawer = document.getElementById('unified-hub-modal');
             
-            // Conditional Rendering: Only render pathway content if requested (role/goal) or if it's empty/first load
-            // This prevents resetting the Diagnostic/Pathway state when just opening "Find Courses" (Tab 4)
-            const diagContent = document.getElementById('pp-diagnostic-content');
-            const shouldRender = roleName || pathwayGoal || !diagContent || diagContent.innerHTML.trim() === '';
+            // Conditional Rendering: Only render pathway content if requested (role/goal)
+            const specificRequest = !!(roleName || pathwayGoal);
 
-            if(shouldRender && typeof window.renderPATHWAYContent === 'function') {
+            if(specificRequest && typeof window.renderPATHWAYContent === 'function') {
                 window.renderPATHWAYContent(roleName, pathwayGoal);
             }
 
@@ -3148,7 +3149,8 @@ function getOJAMetrics(roleTitle, country) {
                 renderSkillsHubDashboard();
             } else {
                 // Specific deep link (e.g. from "Am I a good fit?")
-                openSkillsView(startTab);
+                // If specific request was made, preserve state. Otherwise reset.
+                openSkillsView(startTab, specificRequest);
             }
         }
 
@@ -3166,36 +3168,80 @@ function getOJAMetrics(roleTitle, country) {
             container.classList.remove('hidden');
 
             container.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 grid grid-cols-2 gap-3 mb-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 mb-1">Location</label>
+                        <select id="skills-hub-country" onchange="setGlobalCountry(this.value)" class="w-full text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                            <option value="all" ${activeCountry === 'all' ? 'selected' : ''}>Regional</option>
+                            <option value="Kenya" ${activeCountry === 'Kenya' ? 'selected' : ''}>Kenya</option>
+                            <option value="Uganda" ${activeCountry === 'Uganda' ? 'selected' : ''}>Uganda</option>
+                            <option value="Tanzania" ${activeCountry === 'Tanzania' ? 'selected' : ''}>Tanzania</option>
+                            <option value="Rwanda" ${activeCountry === 'Rwanda' ? 'selected' : ''}>Rwanda</option>
+                            <option value="Burundi" ${activeCountry === 'Burundi' ? 'selected' : ''}>Burundi</option>
+                            <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
+                            <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
+                            <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 mb-1">Sector</label>
+                        <select id="skills-hub-sector" onchange="setGlobalSector(this.value)" class="w-full text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                            <option value="agri" ${activeSectorId === 'agri' ? 'selected' : ''}>Agritech</option>
+                            <option value="energy" ${activeSectorId === 'energy' ? 'selected' : ''}>Renewable Energy</option>
+                            <option value="digital" ${activeSectorId === 'digital' ? 'selected' : ''}>Digital Economy</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="skills-hub-cards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Cards injected via renderSkillsHubCards -->
+                </div>
+            `;
+            
+            renderSkillsHubCards();
+        }
+
+        window.renderSkillsHubCards = function() {
+            const container = document.getElementById('skills-hub-cards');
+            if(!container) return;
+
+            const sectorName = activeSectorId === 'agri' ? 'Agritech' : activeSectorId === 'energy' ? 'Renewable Energy' : 'Digital Economy';
+
+            container.innerHTML = `
                     <button onclick="openSkillsView('pp-diagnostic')" class="p-6 bg-emerald-50 border border-emerald-100 rounded-xl hover:border-emerald-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-emerald-100 text-emerald-600 rounded-lg w-fit mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><i data-lucide="clipboard-check" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">SkillsMatch</h3>
-                        <p class="text-sm text-slate-600">Assess your current skills, identify gaps, and get a readiness score for your target role.</p>
+                        <p class="text-sm text-slate-600">Assess your current <strong>${sectorName}</strong> skills, identify gaps, and get a readiness score.</p>
                     </button>
 
                     <button onclick="openSkillsView('pp-practice')" class="p-6 bg-indigo-50 border border-indigo-100 rounded-xl hover:border-indigo-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-indigo-100 text-indigo-600 rounded-lg w-fit mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><i data-lucide="map" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Pathway Builder</h3>
-                        <p class="text-sm text-slate-600">Create a personalized step-by-step learning roadmap tailored to your career goals.</p>
+                        <p class="text-sm text-slate-600">Create a personalized step-by-step learning roadmap for <strong>${sectorName}</strong> roles.</p>
                     </button>
 
                     <button onclick="openSkillsView('pp-courses')" class="p-6 bg-blue-50 border border-blue-100 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-blue-100 text-blue-600 rounded-lg w-fit mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
-                        <p class="text-sm text-slate-600">Search verified training providers, scholarships, and certifications across East Africa.</p>
+                        <p class="text-sm text-slate-600">Search verified <strong>${sectorName}</strong> training providers and certifications.</p>
                     </button>
 
                     <button onclick="openSkillsView('pp-launchpad')" class="p-6 bg-orange-50 border border-orange-100 rounded-xl hover:border-orange-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-orange-100 text-orange-600 rounded-lg w-fit mb-4 group-hover:bg-orange-600 group-hover:text-white transition-colors"><i data-lucide="rocket" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Founder's Launchpad</h3>
-                        <p class="text-sm text-slate-600">Access incubators, funding sources, and playbooks to start your own venture.</p>
+                        <p class="text-sm text-slate-600">Access incubators, funding sources, and playbooks to start your <strong>${sectorName}</strong> venture.</p>
                     </button>
-                </div>
+
+                    <button onclick="openSkillsView('pp-finance')" class="p-6 bg-purple-50 border border-purple-100 rounded-xl hover:border-purple-300 hover:bg-white hover:shadow-md text-left transition-all group">
+                        <div class="p-3 bg-purple-100 text-purple-600 rounded-lg w-fit mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors"><i data-lucide="banknote" class="w-6 h-6"></i></div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Financial Aid</h3>
+                        <p class="text-sm text-slate-600">Find scholarships, grants, and loans for your <strong>${sectorName}</strong> studies.</p>
+                    </button>
             `;
             if(window.lucide) lucide.createIcons();
         }
 
-        window.openSkillsView = function(viewId) {
+        window.openSkillsView = function(viewId, preserveState = false) {
             // Hide dashboard
             const dashboard = document.getElementById('skills-hub-home');
             if(dashboard) dashboard.classList.add('hidden');
@@ -3219,15 +3265,15 @@ function getOJAMetrics(roleTitle, country) {
                 
                 // Trigger specific render logic if needed
                 if(viewId === 'pp-diagnostic') {
-                    const content = document.getElementById('pp-diagnostic-content');
-                    if(!content.innerHTML.trim()) renderPATHWAYContent();
+                    if (!preserveState) renderPATHWAYContent();
                 } else if (viewId === 'pp-practice') {
-                     const content = document.getElementById('pp-practice-content');
-                     if(!content.innerHTML.trim()) initPathwayWizard();
+                     if (!preserveState) initPathwayWizard();
                 } else if (viewId === 'pp-courses') {
                     renderProviderTable();
                 } else if (viewId === 'pp-launchpad') {
                     renderLaunchpadTab();
+                } else if (viewId === 'pp-finance') {
+                    renderUnifiedFinancialAid();
                 }
                 
                 // Scroll to top
@@ -3670,6 +3716,32 @@ function getOJAMetrics(roleTitle, country) {
                     panel.classList.add('scale-100', 'opacity-100'); 
                 }
             }, 10);
+        }
+
+        window.showTrainingTab = function(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.th-tab-content').forEach(el => el.classList.add('hidden'));
+            // Show target
+            const target = document.getElementById(tabId);
+            if(target) target.classList.remove('hidden');
+
+            // Update buttons
+            document.querySelectorAll('.th-tab-btn').forEach(btn => {
+                if(btn.dataset.tab === tabId) {
+                    btn.classList.remove('text-slate-500', 'border-transparent', 'hover:text-slate-700', 'hover:bg-slate-50');
+                    btn.classList.add('text-emerald-700', 'border-emerald-600', 'bg-emerald-50');
+                } else {
+                    btn.classList.add('text-slate-500', 'border-transparent', 'hover:text-slate-700', 'hover:bg-slate-50');
+                    btn.classList.remove('text-emerald-700', 'border-emerald-600', 'bg-emerald-50');
+                }
+            });
+
+            // Trigger specific renders
+            if(tabId === 'th-finance') {
+                renderFinancialAid();
+            } else if (tabId === 'th-impact') {
+                initImpactCharts();
+            }
         }
 
 window.toggleTrainingHub = function() {
@@ -5229,16 +5301,7 @@ window.toggleCareerHub = function() {
                 entrepreneur: {
                     text: "Identify high-potential venture niches, access eco-system resources, and build your capability roadmap.",
                 },
-                counsellor: {
-                    text: "Access real-time labor market data to guide students towards high-growth careers and verify training quality.",
-                },
-                provider: {
-                    text: "Align curriculum with real-time market demand, benchmark outcomes and connect directly with motivated learners.",
-                },
-                policy: {
-                    text: "Visualize workforce trends, identify critical skills gaps, and monitor training capacity across the region.",
-                }
-            };
+                };
 
             const data = content[type] || content.learner;
             
@@ -5775,6 +5838,98 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
+        // --- NEW: Render Unified Financial Aid (Skills Hub) ---
+        window.renderUnifiedFinancialAid = function() {
+            const container = document.getElementById('pp-finance');
+            if(!container) return;
+
+            // Render Layout if empty
+            if(container.innerHTML.trim() === '') {
+                container.innerHTML = `
+                    <div class="bg-purple-50 rounded-xl p-4 border border-purple-100 flex items-start gap-3">
+                        <div class="p-2 bg-purple-100 text-purple-600 rounded-lg shrink-0"><i data-lucide="banknote" class="w-5 h-5"></i></div>
+                        <div>
+                            <h3 class="font-bold text-purple-900 text-sm">Scholarships & Loans</h3>
+                            <p class="text-xs text-purple-700 mt-1">Find financial support for your education across East Africa. Filter by country or aid type.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                        <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                            <div class="flex-1">
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Country</label>
+                                <select id="pp-finance-filter-country" onchange="updateUnifiedAidList()" class="w-full text-xs border border-slate-300 rounded-lg px-2 py-2 focus:ring-purple-500">
+                                    <option value="all">All Countries</option>
+                                    <option value="Kenya">Kenya</option>
+                                    <option value="Tanzania">Tanzania</option>
+                                    <option value="Uganda">Uganda</option>
+                                    <option value="Rwanda">Rwanda</option>
+                                    <option value="Regional">Regional</option>
+                                </select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-bold text-slate-500 mb-1">Type</label>
+                                <select id="pp-finance-filter-type" onchange="updateUnifiedAidList()" class="w-full text-xs border border-slate-300 rounded-lg px-2 py-2 focus:ring-purple-500">
+                                    <option value="all">All Types</option>
+                                    <option value="Scholarship">Scholarship</option>
+                                    <option value="Loan">Loan</option>
+                                    <option value="Grant">Grant</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="pp-finance-list" class="space-y-3"></div>
+                    </div>
+                `;
+            }
+            
+            updateUnifiedAidList();
+            if(window.lucide) lucide.createIcons();
+        }
+
+        window.updateUnifiedAidList = function() {
+            const container = document.getElementById('pp-finance-list');
+            if (!container) return;
+
+            const countryFilter = document.getElementById('pp-finance-filter-country').value;
+            const typeFilter = document.getElementById('pp-finance-filter-type').value;
+
+            let items = dataManager.scholarships || [];
+
+            // Filter
+            items = items.filter(item => {
+                const matchCountry = countryFilter === 'all' || item.country === 'Regional' || item.country === countryFilter;
+                const matchType = typeFilter === 'all' || item.type.includes(typeFilter);
+                return matchCountry && matchType;
+            });
+
+            if (items.length === 0) {
+                container.innerHTML = `<div class="text-xs text-slate-500 italic text-center py-4">No financial aid opportunities found for these filters.</div>`;
+                return;
+            }
+
+            container.innerHTML = items.map(item => `
+                <div class="p-4 bg-white border border-slate-100 rounded-lg hover:border-purple-300 transition-all shadow-sm group">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <div class="text-xs font-bold text-purple-600 uppercase tracking-wide mb-0.5">${item.provider}</div>
+                            <h4 class="font-bold text-sm text-slate-900 group-hover:text-purple-700">${item.name}</h4>
+                        </div>
+                        <span class="px-2 py-1 rounded text-[10px] font-bold shrink-0 ${item.type === 'Loan' ? 'bg-orange-50 text-orange-700' : 'bg-emerald-50 text-emerald-700'}">${item.type}</span>
+                    </div>
+                    <p class="text-xs text-slate-600 mb-3 leading-relaxed">${item.desc}</p>
+                    <div class="flex flex-wrap items-center justify-between gap-y-2 pt-3 border-t border-slate-50">
+                        <div class="text-[10px] text-slate-500 font-medium flex flex-wrap gap-3">
+                            <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> ${item.country}</span>
+                            <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ${item.deadline}</span>
+                        </div>
+                        <a href="${item.link}" target="_blank" class="text-xs font-bold text-purple-600 hover:underline flex items-center gap-1">Apply <i data-lucide="external-link" class="w-3 h-3"></i></a>
+                    </div>
+                </div>
+            `).join('');
+            
+            if(window.lucide) lucide.createIcons();
+        }
+
         // --- NEW: Render Training Hub Drawer Courses ---
         window.renderTrainingHubCourses = function() {
             const countryFilter = document.getElementById('drawer-hub-country') ? document.getElementById('drawer-hub-country').value : 'all';
@@ -5904,6 +6059,9 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in space-y-8">
+                    <button onclick="renderSkillsHubDashboard()" class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 font-medium"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
+
+
                     <!-- Header -->
                     <div class="bg-${tc}-50 rounded-xl p-6 border border-${tc}-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
@@ -5915,9 +6073,27 @@ window.toggleCareerHub = function() {
                             </h3>
                             <p class="text-sm text-${tc}-800 mt-1 max-w-xl">From idea to investment: Your sector-specific venture building toolkit.</p>
                         </div>
-                        <div class="flex gap-2">
-                             <a href="https://accounts.ecitizen.go.ke" target="_blank" class="px-4 py-2 bg-white text-slate-700 font-bold rounded-lg text-xs border border-slate-200 hover:bg-slate-50 shadow-sm flex items-center gap-2">
-                                <i data-lucide="file-text" class="w-4 h-4"></i> Register Business
+                    </div>
+
+                    <!-- Tools Section (Moved Up) -->
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide mb-4">Essential Founder Tools</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <a href="https://www.canva.com/" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:shadow-sm transition-all group bg-white">
+                                <div class="font-bold text-xs text-slate-700 group-hover:text-indigo-700 mb-1">Canva</div>
+                                <div class="text-[10px] text-slate-500">Pitch Decks & Design</div>
+                            </a>
+                            <a href="https://www.ycombinator.com/library" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-orange-300 hover:shadow-sm transition-all group bg-white">
+                                <div class="font-bold text-xs text-slate-700 group-hover:text-orange-700 mb-1">YC Library</div>
+                                <div class="text-[10px] text-slate-500">Startup Advice</div>
+                            </a>
+                            <a href="https://stripe.com/atlas" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all group bg-white">
+                                <div class="font-bold text-xs text-slate-700 group-hover:text-blue-700 mb-1">Stripe Atlas</div>
+                                <div class="text-[10px] text-slate-500">Incorporation</div>
+                            </a>
+                            <a href="https://www.notion.so/" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-slate-400 hover:shadow-sm transition-all group bg-white">
+                                <div class="font-bold text-xs text-slate-700 group-hover:text-slate-900 mb-1">Notion</div>
+                                <div class="text-[10px] text-slate-500">Workspace & Wiki</div>
                             </a>
                         </div>
                     </div>
@@ -5964,29 +6140,6 @@ window.toggleCareerHub = function() {
                         </div>
                         <div class="space-y-3">
                             ${oppsHtml}
-                        </div>
-                    </div>
-
-                    <!-- Tools Section -->
-                    <div class="pt-6 border-t border-slate-100">
-                        <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide mb-4">Essential Founder Tools</h4>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <a href="https://www.canva.com/" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:shadow-sm transition-all group bg-white">
-                                <div class="font-bold text-xs text-slate-700 group-hover:text-indigo-700 mb-1">Canva</div>
-                                <div class="text-[10px] text-slate-500">Pitch Decks & Design</div>
-                            </a>
-                            <a href="https://www.ycombinator.com/library" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-orange-300 hover:shadow-sm transition-all group bg-white">
-                                <div class="font-bold text-xs text-slate-700 group-hover:text-orange-700 mb-1">YC Library</div>
-                                <div class="text-[10px] text-slate-500">Startup Advice</div>
-                            </a>
-                            <a href="https://stripe.com/atlas" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all group bg-white">
-                                <div class="font-bold text-xs text-slate-700 group-hover:text-blue-700 mb-1">Stripe Atlas</div>
-                                <div class="text-[10px] text-slate-500">Incorporation</div>
-                            </a>
-                            <a href="https://www.notion.so/" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-slate-400 hover:shadow-sm transition-all group bg-white">
-                                <div class="font-bold text-xs text-slate-700 group-hover:text-slate-900 mb-1">Notion</div>
-                                <div class="text-[10px] text-slate-500">Workspace & Wiki</div>
-                            </a>
                         </div>
                     </div>
                 </div>
