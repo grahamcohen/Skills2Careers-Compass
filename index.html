@@ -97,15 +97,16 @@
             
             <!-- Dynamic Persona Value Prop -->
             <div class="max-w-4xl mx-auto mb-2 relative z-10">
-                <div class="flex flex-nowrap md:flex-wrap overflow-x-auto md:overflow-visible justify-start md:justify-center gap-3 mb-4 pb-2 md:pb-0 snap-x no-scrollbar px-1">
+                <div class="flex flex-nowrap md:flex-wrap overflow-x-auto md:overflow-visible justify-center gap-3 mb-4 pb-2 md:pb-0 snap-x no-scrollbar px-1">
                     <button onclick="updateHeroPersona('learner')" id="btn-p-learner" class="shrink-0 snap-center whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium border border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm transition-colors">Students / Graduates / Job-Seekers</button>
                     </div>
-                <p id="hero-desc" class="text-slate-600 text-sm font-normal mb-1 leading-relaxed px-2">In 5 minutes, you’ll have a shortlist of emerging occupations and venture opportunities, a better understanding of their skills requirements, and links to curated training and career guidance.</p>
+                <p id="hero-desc" class="text-slate-600 text-sm font-normal mb-1 leading-relaxed px-2">In 5 minutes, you’ll have a shortlist of emerging occupations and venture opportunities, a better understanding of their skills requirements, and links to curated training and dedicated career guidance.</p>
             </div>
         </div>
         
 
         <div class="text-center">
+            <h2 class="text-xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-900 to-purple-800">Start Navigating</h2>
             <p class="text-sm text-slate-500 mt-1">Toggle between countries & sectors to view labour market insights, occupations & skills in demand, and venture opportunities.</p>
         </div>
 
@@ -534,241 +535,7 @@
                 <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2"><i data-lucide="graduation-cap" class="w-5 h-5 text-emerald-600"></i> Training Hub</h2>
                 <button onclick="toggleTrainingHub()" class="p-2 bg-white rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors" aria-label="Close Training Hub"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div class="flex border-b border-slate-200 bg-white w-full">
-                <button onclick="showTrainingTab('th-find')" class="th-tab-btn flex-1 py-3 text-xs font-bold border-b-2 transition-all text-emerald-700 border-emerald-600 bg-emerald-50" data-tab="th-find">Find Courses</button>
-                <button onclick="showTrainingTab('th-featured')" class="th-tab-btn flex-1 py-3 text-xs font-bold border-b-2 transition-all text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-50" data-tab="th-featured">Featured Providers</button>
-                <button onclick="showTrainingTab('th-impact')" class="th-tab-btn flex-1 py-3 text-xs font-bold border-b-2 transition-all text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-50" data-tab="th-impact">Impact Evidence</button>
-                <button onclick="showTrainingTab('th-finance')" class="th-tab-btn flex-1 py-3 text-xs font-bold border-b-2 transition-all text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-50" data-tab="th-finance">Financial Aid</button>
-            </div>
-            <div class="flex-1 overflow-y-auto p-5 space-y-6 custom-scroll">
-                <div id="th-find" class="th-tab-content space-y-6">
-                    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-                        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2 mb-3"><i data-lucide="filter" class="w-4 h-4 text-indigo-500"></i> Filter Training</h3>
-                        
-                        <!-- Quick Filters -->
-                        <div class="space-y-3">
-                             <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label for="drawer-hub-country" class="block text-xs font-medium text-slate-600 mb-1">Country</label>
-                                    <select id="drawer-hub-country" onchange="setGlobalCountry(this.value); renderTrainingHubCourses();" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                                        <option value="all">East Africa (All)</option>
-                                        <option value="Kenya">Kenya</option>
-                                        <option value="Tanzania">Tanzania</option>
-                                        <option value="Uganda">Uganda</option>
-                                        <option value="Rwanda">Rwanda</option>
-                                        <option value="Burundi">Burundi</option>
-                                        <option value="South Sudan">South Sudan</option>
-                                        <option value="DRC">DRC</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="drawer-hub-language" class="block text-xs font-medium text-slate-600 mb-1">Language</label>
-                                    <select id="drawer-hub-language" onchange="renderTrainingHubCourses()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                                        <option value="all">Language (All)</option>
-                                        <option value="Kiswahili">Kiswahili</option>
-                                        <option value="English">English</option>
-                                        <option value="French">French</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="drawer-hub-sector" class="block text-xs font-medium text-slate-600 mb-1">Sector</label>
-                                    <select id="drawer-hub-sector" onchange="renderTrainingHubCourses()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                                        <option value="agri">Agritech</option>
-                                        <option value="energy">Renewable Energies</option>
-                                        <option value="digital">Digital Economies / AI</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="drawer-hub-mode-quick" class="block text-xs font-medium text-slate-600 mb-1">Learning Mode</label>
-                                    <select id="drawer-hub-mode-quick" onchange="renderTrainingHubCourses()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                                        <option value="all">Any Mode</option>
-                                        <option value="online">Online</option>
-                                        <option value="in-person">In-Person</option>
-                                        <option value="hybrid">Hybrid</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="pt-2">
-                            <button onclick="toggleMoreFilters()" id="more-filters-btn" class="text-xs font-bold text-indigo-600 hover:underline flex items-center gap-1">
-                                <i data-lucide="plus-circle" class="w-3 h-3"></i> More Filters
-                            </button>
-                        </div>
-
-                        <div id="advanced-filters" class="hidden pt-4 mt-4 border-t border-slate-200 space-y-3">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label for="drawer-hub-course-type" class="block text-xs font-medium text-slate-600 mb-1">Course Type</label>
-                                    <select id="drawer-hub-course-type" onchange="renderTrainingHubCourses()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                                        <option value="all">Any Type</option>
-                                        <option value="certificate">Certificates</option>
-                                        <option value="micro-credential">Micro-credentials</option>
-                                        <option value="tvet">TVET courses</option>
-                                        <option value="university">University courses</option>
-                                        <option value="bootcamp">Bootcamps</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="drawer-hub-budget" class="block text-xs font-medium text-slate-600 mb-1">Budget Band</label>
-                                    <select id="drawer-hub-budget" onchange="renderTrainingHubCourses()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                                        <option value="all">Any Cost</option>
-                                        <option value="low">Low Cost / Free</option>
-                                        <option value="medium">Medium Cost</option>
-                                        <option value="high">High Cost</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="drawer-hub-time" class="block text-xs font-medium text-slate-600 mb-1">Time Commitment (Per Week)</label>
-                                    <select id="drawer-hub-time" onchange="renderTrainingHubCourses()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                                        <option value="all">No Constraints</option>
-                                        <option value="0-10 hours">0-10 hours</option>
-                                        <option value="10-20 hours">10-20 hours</option>
-                                        <option value="20+ hours">20+ hours</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    <!-- Results Container -->
-                    <div id="training-hub-results" class="space-y-4"></div>
-                </div>
-                <div id="th-featured" class="th-tab-content hidden space-y-4">
-                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                        <div class="p-4 border-b border-slate-200 bg-slate-50 grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="text-[10px] font-bold text-slate-500 uppercase">Sector</label>
-                                <select id="drawer-filter-sector" onchange="renderProviderTable()" class="w-full mt-1 text-xs border-slate-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500">
-                                    <option value="all">All Sectors</option>
-                                    <option value="Digital">Digital Economy</option>
-                                    <option value="Agriculture">Agriculture</option>
-                                    <option value="Energy">Renewable Energy</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-slate-500 uppercase">Data Reliability</label>
-                                <select id="drawer-filter-quality" onchange="renderProviderTable()" class="w-full mt-1 text-xs border-slate-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500">
-                                    <option value="all">All Quality Levels</option>
-                                    <option value="5"> ⭐⭐⭐⭐⭐  Independent Audit</option>
-                                    <option value="3"> ⭐⭐⭐  Self-Reported</option>
-                                    <option value="1"> ⭐  No Data (High Risk)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <thead class="bg-white text-slate-500 font-bold border-b border-slate-200 text-[10px] uppercase">
-                                    <tr>
-                                        <th class="px-3 py-2">Provider / Course</th>
-                                        <th class="px-3 py-2">Context</th>
-                                        <th class="px-3 py-2">
-                                            <div class="flex items-center gap-1">
-                                                Outcomes Rating <i data-lucide="info" class="w-3 h-3 text-slate-400 cursor-help" title="Data Reliability Rating:&#10;5★: Independently Audited&#10;3★: Self-Reported Data&#10;1★: No Public Data"></i>
-                                            </div>
-                                        </th>
-                                        <th class="px-3 py-2">
-                                            <div class="flex items-center gap-1">
-                                                Metric <i data-lucide="info" class="w-3 h-3 text-slate-400 cursor-help" title="Key Outcome Indicator:&#10;e.g. Salary Uplift, Placement Rate, or Reach."></i>
-                                            </div>
-                                        </th>
-                                        <th class="px-3 py-2 text-right">Link</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="drawer-db-body" class="bg-white"></tbody>
-                            </table>
-                        </div>
-                        <div class="p-3 bg-slate-50 border-t border-slate-200 text-[10px] text-slate-500 flex justify-between">
-                            <span id="drawer-provider-counter">Loading...</span>
-                        <p>Ratings are based on data transparency. 5 stars means the employment outcome data has been independently audited by a third party.</p>
-                    </div>
-                </div>
-                <div id="th-impact" class="th-tab-content hidden space-y-6">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
-                            <div class="text-slate-500 text-[10px] uppercase font-bold mb-1">Graduates Tracked</div>
-                            <div class="text-xl font-bold text-slate-800">23,700+</div>
-                            <div class="text-[10px] text-slate-400">Verified Outcomes</div>
-                        </div>
-                        <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
-                            <div class="text-slate-500 text-[10px] uppercase font-bold mb-1">Max Salary Uplift</div>
-                            <div class="text-xl font-bold text-green-600">+140%</div>
-                            <div class="text-[10px] text-slate-400">Digital Sector</div>
-                        </div>
-                        <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
-                            <div class="text-slate-500 text-[10px] uppercase font-bold mb-1">Time to Job</div>
-                            <div class="text-xl font-bold text-blue-600">3 Months</div>
-                            <div class="text-[10px] text-slate-400">Bootcamp Avg</div>
-                        </div>
-                        <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
-                            <div class="text-slate-500 text-[10px] uppercase font-bold mb-1">Data Gaps</div>
-                            <div class="text-xl font-bold text-red-500">87.5%</div>
-                            <div class="text-[10px] text-slate-400">Providers w/o Data</div>
-                        </div>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end">
-                            <h2 class="text-sm font-bold text-slate-900">Career Impact Dashboard</h2>
-                            <span class="text-[10px] text-slate-400 bg-slate-100 px-2 py-1 rounded">Src: Tracer Studies '24</span>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                            <h3 class="font-bold text-xs text-slate-700 mb-2">Salary Progression (Digital Sector)</h3>
-                            <div class="heavy-chart h-48 w-full relative">
-                                <canvas id="drawer-salaryChart"></canvas>
-                            </div>
-                            <div class="simple-stat space-y-2 mt-2">
-                                <div class="text-xs text-slate-600">Pre-Training: <strong>KES 15k</strong> -> Post-Grad: <strong>KES 36k</strong></div>
-                            </div>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                            <h3 class="font-bold text-xs text-slate-700 mb-2">Time to Full-Time Employment</h3>
-                            <div class="heavy-chart h-48 w-full relative flex justify-center">
-                                <canvas id="drawer-timeChart"></canvas>
-                            </div>
-                            <div class="simple-stat space-y-2 mt-2">
-                                <div class="text-xs text-slate-600">Employed < 3 Mo: <strong>66%</strong></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-orange-50 border border-orange-100 rounded-xl p-4">
-                        <div class="flex gap-3 items-start">
-                            <div class="bg-orange-100 p-2 rounded-full text-orange-600 shrink-0"><i data-lucide="alert-triangle" class="w-4 h-4"></i></div>
-                            <div>
-                                <h3 class="text-sm font-bold text-orange-900 mb-1">The "Data Desert"</h3>
-                                <p class="text-xs text-orange-800 leading-relaxed mb-3">While digital has strong data, <strong>93% of providers</strong> (mostly Agri/Energy) have no published outcome data.</p>
-                                <button class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 rounded text-xs font-bold transition shadow-sm w-full sm:w-auto">Submit Outcome Data</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="th-finance" class="th-tab-content hidden space-y-6">
-                    <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-100 flex items-start gap-3">
-                        <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg shrink-0"><i data-lucide="banknote" class="w-5 h-5"></i></div>
-                        <div>
-                            <h3 class="font-bold text-indigo-900 text-sm">Scholarships & Loans</h3>
-                            <p class="text-xs text-indigo-700 mt-1">Find financial support for your education across East Africa. Filter by country or aid type.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <select id="finance-filter-country" onchange="renderFinancialAid()" class="flex-1 text-xs border border-slate-300 rounded-lg px-2 py-2 focus:ring-indigo-500">
-                            <option value="all">All Countries</option>
-                            <option value="Kenya">Kenya</option>
-                            <option value="Tanzania">Tanzania</option>
-                            <option value="Uganda">Uganda</option>
-                            <option value="Rwanda">Rwanda</option>
-                            <option value="Regional">Regional</option>
-                        </select>
-                        <select id="finance-filter-type" onchange="renderFinancialAid()" class="flex-1 text-xs border border-slate-300 rounded-lg px-2 py-2 focus:ring-indigo-500">
-                            <option value="all">All Types</option>
-                            <option value="Scholarship">Scholarship</option>
-                            <option value="Loan">Loan</option>
-                            <option value="Grant">Grant</option>
-                        </select>
-                    </div>
-                    <div id="financial-aid-list" class="space-y-3"></div>
-                </div>
-            </div>
+            <div id="training-hub-content" class="flex-1 overflow-y-auto p-5 space-y-6 custom-scroll"></div>
         </div>
     </main>
 
@@ -825,4 +592,3 @@
 
     <script src="data.js"></script>
     <script src="app.js"></script>
-
