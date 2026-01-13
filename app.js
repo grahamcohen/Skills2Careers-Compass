@@ -6635,46 +6635,52 @@ window.toggleCareerHub = function() {
             container.innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
                     <!-- Block 1: High Growth Sectors -->
-                    <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-white border border-slate-200 rounded-2xl p-6 hover:border-indigo-400 hover:shadow-lg transition-all group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
-                            <i data-lucide="map" class="w-32 h-32"></i>
+                    <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-indigo-50 border border-indigo-200 rounded-2xl p-6 hover:border-indigo-400 hover:shadow-lg transition-all group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-15 transition-opacity">
+                            <i data-lucide="map" class="w-32 h-32 text-indigo-900/20"></i>
                         </div>
-                        <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                            <i data-lucide="bar-chart-2" class="w-7 h-7"></i>
+                        <div class="flex items-center gap-4 mb-5 relative z-10">
+                            <div class="w-12 h-12 bg-white text-indigo-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
+                                <i data-lucide="bar-chart-2" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900">High Growth Sectors</h3>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 mb-2">High Growth Sectors</h3>
-                        <p class="text-sm text-slate-500 mb-6 flex-1 leading-relaxed">Explore fast growing sectors and access real-time market intelligence. Identify occupations and skills in demand, as well as entrepreneurship opportunities.</p>
-                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-indigo-600 group-hover:gap-3 transition-all">
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Explore fast growing sectors and access real-time market intelligence. Identify occupations and skills in demand, as well as entrepreneurship opportunities.</p>
+                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-indigo-600 group-hover:gap-3 transition-all relative z-10">
                             Start Navigating <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
                     </button>
 
                     <!-- Block 2: Skills & Training Hub -->
-                    <button onclick="openUnifiedHub()" class="flex flex-col text-left h-full bg-white border border-slate-200 rounded-2xl p-6 hover:border-emerald-400 hover:shadow-lg transition-all group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
-                            <i data-lucide="book-open" class="w-32 h-32"></i>
+                    <button onclick="openUnifiedHub()" class="flex flex-col text-left h-full bg-emerald-50 border border-emerald-200 rounded-2xl p-6 hover:border-emerald-400 hover:shadow-lg transition-all group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-15 transition-opacity">
+                            <i data-lucide="book-open" class="w-32 h-32 text-emerald-900/20"></i>
                         </div>
-                        <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                            <i data-lucide="graduation-cap" class="w-7 h-7"></i>
+                        <div class="flex items-center gap-4 mb-5 relative z-10">
+                            <div class="w-12 h-12 bg-white text-emerald-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
+                                <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900">Skills & Training Hub</h3>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 mb-2">Skills & Training Hub</h3>
-                        <p class="text-sm text-slate-500 mb-6 flex-1 leading-relaxed">Use tools to assess your fit for different occupations and careers, build a personalized learning pathway, or support your entrepreneurship journey.</p>
-                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-emerald-600 group-hover:gap-3 transition-all">
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Use tools to assess your fit for different occupations and careers, build a personalized learning pathway, or support your entrepreneurship journey.</p>
+                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-emerald-600 group-hover:gap-3 transition-all relative z-10">
                             Find Training <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
                     </button>
 
                     <!-- Block 3: Career & Community Tools -->
-                    <button onclick="toggleCareerHub()" class="flex flex-col text-left h-full bg-white border border-slate-200 rounded-2xl p-6 hover:border-orange-400 hover:shadow-lg transition-all group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
-                            <i data-lucide="users" class="w-32 h-32"></i>
+                    <button onclick="toggleCareerHub()" class="flex flex-col text-left h-full bg-orange-50 border border-orange-200 rounded-2xl p-6 hover:border-orange-400 hover:shadow-lg transition-all group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-15 transition-opacity">
+                            <i data-lucide="users" class="w-32 h-32 text-orange-900/20"></i>
                         </div>
-                        <div class="w-14 h-14 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                            <i data-lucide="handshake" class="w-7 h-7"></i>
+                        <div class="flex items-center gap-4 mb-5 relative z-10">
+                            <div class="w-12 h-12 bg-white text-orange-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
+                                <i data-lucide="handshake" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900">Career & Community Tools</h3>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 mb-2">Career & Community Tools</h3>
-                        <p class="text-sm text-slate-500 mb-6 flex-1 leading-relaxed">Connect with guidance resources, mentors, and the wider Campus Africa community.</p>
-                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-orange-600 group-hover:gap-3 transition-all">
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Connect with guidance resources, mentors, and the wider Campus Africa community.</p>
+                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-orange-600 group-hover:gap-3 transition-all relative z-10">
                             Access Tools <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
                     </button>
