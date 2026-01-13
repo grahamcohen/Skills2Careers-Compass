@@ -100,7 +100,11 @@ class DataManager {
 
     async fetchData(url) {
         try {
-            const response = await fetch(url);
+            // Add 5s timeout to prevent hanging
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), 5000);
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(id);
             if (!response.ok) throw new Error(`HTTP error ${response.status}`);
             return await response.json();
         } catch (e) {
