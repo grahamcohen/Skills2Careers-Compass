@@ -3236,22 +3236,16 @@ function getOJAMetrics(roleTitle, country) {
                         <p class="text-sm text-slate-600">Create a personalized step-by-step learning roadmap for <strong>${sectorName}</strong> roles.</p>
                     </button>
 
-                    <button onclick="openSkillsView('pp-courses')" class="p-6 bg-blue-50 border border-blue-100 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-md text-left transition-all group">
-                        <div class="p-3 bg-blue-100 text-blue-600 rounded-lg w-fit mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
-                        <p class="text-sm text-slate-600">Search verified <strong>${sectorName}</strong> training providers and certifications.</p>
-                    </button>
-
                     <button onclick="openSkillsView('pp-launchpad')" class="p-6 bg-orange-50 border border-orange-100 rounded-xl hover:border-orange-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-orange-100 text-orange-600 rounded-lg w-fit mb-4 group-hover:bg-orange-600 group-hover:text-white transition-colors"><i data-lucide="rocket" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Founder's Launchpad</h3>
                         <p class="text-sm text-slate-600">Access incubators, funding sources, and playbooks to start your <strong>${sectorName}</strong> venture.</p>
                     </button>
 
-                    <button onclick="openSkillsView('pp-finance')" class="p-6 bg-purple-50 border border-purple-100 rounded-xl hover:border-purple-300 hover:bg-white hover:shadow-md text-left transition-all group">
-                        <div class="p-3 bg-purple-100 text-purple-600 rounded-lg w-fit mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors"><i data-lucide="banknote" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">Financial Aid</h3>
-                        <p class="text-sm text-slate-600">Find scholarships, grants, and loans for your <strong>${sectorName}</strong> studies.</p>
+                    <button onclick="openSkillsView('pp-courses')" class="p-6 bg-blue-50 border border-blue-100 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-md text-left transition-all group">
+                        <div class="p-3 bg-blue-100 text-blue-600 rounded-lg w-fit mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-6 h-6"></i></div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
+                        <p class="text-sm text-slate-600">Search verified <strong>${sectorName}</strong> training providers and certifications.</p>
                     </button>
             `;
             if(window.lucide) lucide.createIcons();
@@ -4333,17 +4327,12 @@ window.toggleCareerHub = function() {
             const moreVentures = ventures.slice(4, 10);
 
             const ventureHtml = ventures.length > 0 ? `
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                    <div class="border-b border-slate-200 bg-white flex flex-col sm:flex-row justify-between items-center">
-                        <div class="px-4 py-4 sm:px-6 w-full sm:w-auto border-b sm:border-b-0 border-slate-100">
-                            <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
-                                <i data-lucide="rocket" class="w-5 h-5 text-orange-600"></i>
-                                Top 10 Entrepreneurship Opportunities
-                            </h3>
-                            <p class="text-xs text-slate-500 mt-1">High-growth opportunities tailored to your region</p>
-                        </div>
+                <div class="bg-white rounded-xl p-4 sm:p-6 border border-slate-200 shadow-sm">
+                    <div class="mb-4">
+                        <h3 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="rocket" class="w-4 h-4 text-slate-500"></i> Top 10 Entrepreneurship Opportunities</h3>
+                        <p class="text-xs text-slate-500 mt-1">High-growth opportunities tailored to your region.</p>
                     </div>
-                    <div class="p-4 sm:p-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                         ${topVentures.map(v => `
                             <button onclick="openVentureModal('${v.Venture_Title.replace(/'/g, "\\'")}')" title="${v.Venture_Title}" class="px-3 py-2 bg-white border border-${themeColor}-200 rounded-lg text-left hover:bg-${themeColor}-100 hover:border-${themeColor}-300 transition-all group">
                                 <div class="font-bold text-xs text-${themeColor}-800 mb-0.5 flex items-center gap-1 min-w-0">
@@ -4353,7 +4342,7 @@ window.toggleCareerHub = function() {
                                 <div class="text-[10px] text-${themeColor}-700/80 leading-tight truncate">${v.Venture_Description}</div>
                             </button>
                         `).join('')}
-                        <div id="more-ventures" class="col-span-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0">
+                        <div id="more-ventures" class="col-span-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0">
                             ${moreVentures.map(v => `
                                 <button onclick="openVentureModal('${v.Venture_Title.replace(/'/g, "\\'")}')" title="${v.Venture_Title}" class="px-3 py-2 bg-white border border-${themeColor}-200 rounded-lg text-left hover:bg-${themeColor}-100 hover:border-${themeColor}-300 transition-all group">
                                     <div class="font-bold text-xs text-${themeColor}-800 mb-0.5 flex items-center gap-1 min-w-0">
@@ -6662,7 +6651,7 @@ window.toggleCareerHub = function() {
                             </div>
                             <h3 class="text-xl font-bold text-slate-900">Skills & Training Hub</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Use tools to assess your fit for different occupations and careers, build a personalized learning pathway, or support your entrepreneurship journey.</p>
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Use tools to assess your fit for different occupations and careers, build a personalized training and learning pathway, or support your entrepreneurship journey.</p>
                         <div class="mt-auto flex items-center gap-2 text-sm font-bold text-emerald-600 group-hover:gap-3 transition-all relative z-10">
                             Find Training <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
@@ -6711,7 +6700,7 @@ window.toggleCareerHub = function() {
                         <div>
                             <h3 class="text-base font-bold text-slate-800 mb-1">Navigate High Growth Sectors</h3>
                             <p class="text-xs text-slate-500 leading-relaxed">
-                                Select a sector and region below to access real-time labor market data and investment trends. Open tabs for details on occupations and skills in demand, as well as rising entrepreneurship areas.
+                                Select a sector and region to access real-time labor market data and investment trends. Open tabs for details on occupations and skills in demand, as well as emerging entrepreneurship opportunities.
                              </p>
                         </div>
                         
