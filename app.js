@@ -50,7 +50,7 @@ class DataManager {
             this.fetchData('resources_digital.json'),
             this.fetchData('resources_agri.json'),
             this.fetchData('resources_energy.json'),
-            this.fetchData('scholarships.json')
+            this.fetchData('Scholarships.json')
         ]);
 
         // Extract data safely
@@ -59,7 +59,7 @@ class DataManager {
         this.topOccupations = (results[2].status === 'fulfilled' && results[2].value) ? results[2].value : [];
         this.topSkills = (results[3].status === 'fulfilled' && results[3].value) ? results[3].value : [];
         this.courses = (results[4].status === 'fulfilled' && results[4].value) ? results[4].value : [];
-        this.scholarships = (results[11].status === 'fulfilled' && results[11].value) ? results[11].value : [];
+        this.scholarships = (results[11].status === 'fulfilled' && results[11].value) ? results[11].value : this.getFallbackScholarships();
 
         // Load App Data (UI Config)
         const appData = (results[5].status === 'fulfilled' && results[5].value) ? results[5].value : {};
@@ -211,6 +211,191 @@ class DataManager {
         console.warn("Using fallback venture data.");
         // Use global fallback from data.js
         return (typeof fallbackVentures !== 'undefined') ? fallbackVentures : [];
+    }
+
+    getFallbackScholarships() {
+        return [
+            {
+                "id": "aid_001",
+                "name": "Mastercard Foundation Scholars Program",
+                "provider": "Mastercard Foundation",
+                "type": "Scholarship",
+                "coverage": "Full (Tuition + Stipend)",
+                "country": "Regional",
+                "target": "Undergraduate / Master's",
+                "deadline": "Varies by University",
+                "link": "https://mastercardfdn.org/all/scholars/",
+                "desc": "Comprehensive support for academically talented young leaders from economically disadvantaged backgrounds."
+            },
+            {
+                "id": "aid_002",
+                "name": "HELB Undergraduate Loan",
+                "provider": "Government of Kenya",
+                "type": "Loan",
+                "coverage": "Partial (Tuition + Upkeep)",
+                "country": "Kenya",
+                "target": "Undergraduate (Public/Private)",
+                "deadline": "Annual (August)",
+                "link": "https://www.helb.co.ke/",
+                "desc": "Low-interest government loans for Kenyan students in recognized universities and TVETs."
+            },
+            {
+                "id": "aid_003",
+                "name": "HESLB Loan",
+                "provider": "Higher Education Students' Loans Board",
+                "type": "Loan",
+                "coverage": "Partial (Tuition + Meals)",
+                "country": "Tanzania",
+                "target": "Undergraduate",
+                "deadline": "Annual (July-Sept)",
+                "link": "https://www.heslb.go.tz/",
+                "desc": "Loans for needy Tanzanian students admitted to accredited higher education institutions."
+            },
+            {
+                "id": "aid_004",
+                "name": "HESFB Loan Scheme",
+                "provider": "Higher Education Students Financing Board",
+                "type": "Loan",
+                "coverage": "Tuition Fees",
+                "country": "Uganda",
+                "target": "Undergraduate / Diploma",
+                "deadline": "Annual (July)",
+                "link": "https://www.hesfb.go.ug/",
+                "desc": "Loans for Ugandan students pursuing STEM programs and persons with disabilities."
+            },
+            {
+                "id": "aid_005",
+                "name": "Ashinaga Africa Initiative",
+                "provider": "Ashinaga",
+                "type": "Scholarship",
+                "coverage": "Full (International)",
+                "country": "Regional",
+                "target": "Undergraduate",
+                "deadline": "Annual (January)",
+                "link": "https://en.ashinaga.org/apply/aai/",
+                "desc": "Academic leadership program for orphaned students to study abroad and return to contribute to Sub-Saharan Africa."
+            },
+            {
+                "id": "aid_006",
+                "name": "Equity Wings to Fly / Elimu",
+                "provider": "Equity Group Foundation",
+                "type": "Scholarship",
+                "coverage": "Full (Secondary + Uni Support)",
+                "country": "Kenya",
+                "target": "Secondary / TVET / Uni",
+                "deadline": "Annual (December)",
+                "link": "https://equitygroupfoundation.com/wings-to-fly/",
+                "desc": "Comprehensive secondary school scholarship and leadership training for academically promising but financially challenged students."
+            },
+            {
+                "id": "aid_007",
+                "name": "BRD Student Loan (MinEduc)",
+                "provider": "Development Bank of Rwanda",
+                "type": "Loan",
+                "coverage": "Tuition + Living Allowance",
+                "country": "Rwanda",
+                "target": "Undergraduate",
+                "deadline": "Annual",
+                "link": "https://www.brd.rw/brd/education-financing/",
+                "desc": "Government-backed student loans for Rwandan students in public and private higher learning institutions."
+            },
+            {
+                "id": "aid_008",
+                "name": "IUCEA-Kyung Dong Scholarship",
+                "provider": "IUCEA",
+                "type": "Scholarship",
+                "coverage": "Partial (Tuition)",
+                "country": "Regional",
+                "target": "Undergraduate",
+                "deadline": "Annual (March)",
+                "link": "https://www.iucea.org/",
+                "desc": "Scholarships for students from EAC partner states to study at Kyung Dong University in South Korea."
+            },
+            {
+                "id": "aid_009",
+                "name": "Windle International Scholarship",
+                "provider": "Windle International",
+                "type": "Scholarship",
+                "coverage": "Full",
+                "country": "Regional (Refugee Focus)",
+                "target": "Undergraduate / Master's",
+                "deadline": "Varies",
+                "link": "https://windle.org/",
+                "desc": "Education opportunities for refugees and conflict-affected communities in East Africa."
+            },
+            {
+                "id": "aid_010",
+                "name": "KCB Foundation Tujiajiri",
+                "provider": "KCB Foundation",
+                "type": "Grant / Training",
+                "coverage": "Vocational Training",
+                "country": "Kenya",
+                "target": "TVET / Youth",
+                "deadline": "Rolling",
+                "link": "https://kcbgroup.com/foundation/tujiajiri/",
+                "desc": "Vocational skills training and mentorship for youth to establish their own businesses."
+            },
+            {
+                "id": "aid_011",
+                "name": "DAAD In-Country/In-Region",
+                "provider": "DAAD",
+                "type": "Scholarship",
+                "coverage": "Full (Tuition + Stipend)",
+                "country": "Regional",
+                "target": "Master's / PhD",
+                "deadline": "Varies",
+                "link": "https://www.daad.or.ke/en/",
+                "desc": "Support for postgraduate studies at selected partner universities within the East African region."
+            },
+            {
+                "id": "aid_012",
+                "name": "Madhvani Foundation Scholarship",
+                "provider": "Madhvani Foundation",
+                "type": "Scholarship",
+                "coverage": "Tuition Fees",
+                "country": "Uganda",
+                "target": "Undergraduate",
+                "deadline": "Annual (April)",
+                "link": "https://www.madhvanifoundation.com/",
+                "desc": "Scholarships for Ugandan university students demonstrating financial need and academic merit."
+            },
+            {
+                "id": "aid_013",
+                "name": "Excellentia Program",
+                "provider": "Denise Nyakeru Tshisekedi Foundation",
+                "type": "Scholarship",
+                "coverage": "Full",
+                "country": "DR Congo",
+                "target": "Undergraduate",
+                "deadline": "Annual",
+                "link": "https://fondationdnt.org/excellentia/",
+                "desc": "Promoting academic excellence by awarding scholarships to top-performing state exam graduates in DRC."
+            },
+            {
+                "id": "aid_014",
+                "name": "Iftin Foundation Education Fund",
+                "provider": "Iftin Foundation",
+                "type": "Grant",
+                "coverage": "Partial",
+                "country": "Somalia",
+                "target": "Youth / TVET",
+                "deadline": "Rolling",
+                "link": "https://iftinfoundation.org/",
+                "desc": "Support for skills development and education for youth in Somalia."
+            },
+            {
+                "id": "aid_015",
+                "name": "EAC Scholarship Programme",
+                "provider": "EAC / KfW",
+                "type": "Scholarship",
+                "coverage": "Full",
+                "country": "Regional",
+                "target": "Master's",
+                "deadline": "Bi-annual",
+                "link": "https://www.eac.int/",
+                "desc": "Scholarships for Master's students in Mathematics, Engineering, Informatics, Science, Technology and Business Science."
+            }
+        ];
     }
 }
 
@@ -3213,7 +3398,7 @@ function getOJAMetrics(roleTitle, country) {
                     </div>
                 </div>
 
-                <div id="skills-hub-cards" class="grid grid-cols-1 gap-4">
+                <div id="skills-hub-cards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Cards injected via renderSkillsHubCards -->
                 </div>
             `;
@@ -3246,7 +3431,13 @@ function getOJAMetrics(roleTitle, country) {
                         <p class="text-sm text-slate-600">Access incubators, funding sources, and playbooks to start your <strong>${sectorName}</strong> venture.</p>
                     </button>
 
-                    <button onclick="openSkillsView('pp-courses')" class="p-6 bg-blue-50 border border-blue-100 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-md text-left transition-all group">
+                    <button onclick="openSkillsView('pp-finance')" class="p-6 bg-purple-50 border border-purple-100 rounded-xl hover:border-purple-300 hover:bg-white hover:shadow-md text-left transition-all group">
+                        <div class="p-3 bg-purple-100 text-purple-600 rounded-lg w-fit mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors"><i data-lucide="banknote" class="w-6 h-6"></i></div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Financial Aid</h3>
+                        <p class="text-sm text-slate-600">Find scholarships, loans, and grants for your <strong>${sectorName}</strong> education.</p>
+                    </button>
+
+                    <button onclick="openSkillsView('pp-courses')" class="p-6 bg-blue-50 border border-blue-100 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-md text-left transition-all group md:col-span-2">
                         <div class="p-3 bg-blue-100 text-blue-600 rounded-lg w-fit mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
                         <p class="text-sm text-slate-600">Search verified <strong>${sectorName}</strong> training providers and certifications.</p>
@@ -4835,6 +5026,10 @@ window.toggleCareerHub = function() {
             const sectorData = getSectorCareerResources(activeSectorId);
             const container = document.getElementById('career-hub-content');
             
+            // Get Skills for Dropdown
+            const skills = dataManager.getSkills(activeSectorId) || [];
+            const skillOptions = skills.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+
             // Filter for mentorship platforms and relevant communities
             const mentorPlatforms = (sectorData.communities || []).filter(c => 
                 c.type === 'Mentorship' || 
@@ -4859,15 +5054,75 @@ window.toggleCareerHub = function() {
             container.innerHTML = `
                 <div class="animate-fade-in">
                     <button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
-                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="user-check" class="w-5 h-5 text-blue-500"></i> Mentorship Platforms</h3>
+                    
+                    <!-- Mentor Match Feature -->
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-5 text-white shadow-md mb-6">
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="p-2 bg-white/20 rounded-lg"><i data-lucide="sparkles" class="w-5 h-5 text-yellow-300"></i></div>
+                            <div>
+                                <h3 class="font-bold text-lg">Find Your Perfect Mentor</h3>
+                                <p class="text-xs text-blue-100">Get matched with verified networks based on your skills.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white/10 p-3 rounded-lg border border-white/20">
+                            <label class="block text-[10px] font-bold text-blue-100 uppercase mb-1">I want to improve in:</label>
+                            <div class="flex gap-2">
+                                <select id="mentor-skill-select" class="w-full text-xs text-slate-800 rounded-lg border-0 focus:ring-2 focus:ring-blue-300 py-2">
+                                    <option value="" disabled selected>Select a skill...</option>
+                                    ${skillOptions}
+                                </select>
+                                <button onclick="runMentorMatch()" class="bg-white text-blue-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-50 transition-colors shadow-sm">Match</button>
+                            </div>
+                        </div>
+                        
+                        <div id="mentor-match-result" class="hidden mt-4 pt-4 border-t border-white/20 animate-fade-in">
+                            <!-- Result injected here -->
+                        </div>
+                    </div>
+
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="list" class="w-5 h-5 text-blue-500"></i> All Mentorship Platforms</h3>
                     <div class="space-y-3">
                         ${mentorsHtml.length > 0 ? mentorsHtml : '<p class="text-sm text-slate-500 italic">No specific mentorship platforms found. Check general communities.</p>'}
-                        <div class="p-3 bg-slate-50 rounded-lg text-xs text-center text-slate-500 italic border border-slate-100">
-                            Connect with experienced professionals for career guidance.
-                        </div>
                     </div>
                 </div>
             `;
+            if(window.lucide) lucide.createIcons();
+        }
+
+        window.runMentorMatch = function() {
+            const skill = document.getElementById('mentor-skill-select').value;
+            const resultDiv = document.getElementById('mentor-match-result');
+            
+            if (!skill) return;
+
+            let recommended = { name: "ADPList", link: "https://adplist.org/", desc: "Global mentorship community." };
+            
+            if (activeSectorId === 'agri') {
+                recommended = { name: "AWAK (Women in Ag)", link: "https://awak.co.ke/", desc: "Mentorship for women in agribusiness." };
+                if (activeCountry === 'Uganda') recommended = { name: "Women in Technology Uganda", link: "https://witug.org/", desc: "Tech & Agri-tech mentorship." };
+            } else if (activeSectorId === 'energy') {
+                recommended = { name: "GWNET", link: "https://www.globalwomennet.org/", desc: "Global Women's Network for Energy Transition." };
+                if (activeCountry === 'Kenya') recommended = { name: "Women in Renewable Energy (WIRE)", link: "https://wire-africa.org/", desc: "Mentorship & apprenticeship links." };
+            } else {
+                if (skill.toLowerCase().includes('design')) recommended = { name: "ADPList", link: "https://adplist.org/", desc: "Find Design mentors." };
+                else if (skill.toLowerCase().includes('code') || skill.toLowerCase().includes('dev')) recommended = { name: "Andela Learning Community", link: "https://andela.com/learning-community/", desc: "Developer mentorship." };
+                else recommended = { name: "MicroMentor", link: "https://www.micromentor.org/", desc: "Free business mentorship." };
+            }
+
+            resultDiv.innerHTML = `
+                <div class="text-xs font-bold text-blue-100 mb-2">Top Recommendation for ${skill}:</div>
+                <a href="${recommended.link}" target="_blank" class="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-blue-50 transition-colors group">
+                    <div class="p-2 bg-blue-100 text-blue-600 rounded-full"><i data-lucide="check-circle" class="w-4 h-4"></i></div>
+                    <div class="flex-1">
+                        <div class="font-bold text-sm text-slate-800 group-hover:text-blue-700 flex items-center gap-1">
+                            ${recommended.name} <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i>
+                        </div>
+                        <div class="text-xs text-slate-500">${recommended.desc}</div>
+                    </div>
+                </a>
+            `;
+            resultDiv.classList.remove('hidden');
             if(window.lucide) lucide.createIcons();
         }
 
@@ -4997,6 +5252,12 @@ window.toggleCareerHub = function() {
                         <p class="text-xs text-indigo-100 mb-3 leading-relaxed">Create a standardized, ATS-friendly PDF resume directly in your browser. No sign-up required.</p>
                         <button onclick="renderCVGenerator()" class="w-full py-2 bg-white text-indigo-700 font-bold rounded-lg text-xs hover:bg-indigo-50 transition-colors shadow-sm">
                             Build My CV Now
+                        </button>
+                    </div>
+
+                    <div class="mb-4">
+                        <button onclick="renderFreelanceCalculator()" class="w-full p-3 bg-emerald-50 border border-emerald-100 rounded-lg flex items-center justify-between hover:bg-emerald-100 transition-colors group">
+                            <div class="flex items-center gap-3"><div class="p-2 bg-white text-emerald-600 rounded shadow-sm"><i data-lucide="calculator" class="w-4 h-4"></i></div><div class="text-left"><div class="font-bold text-sm text-emerald-900">Freelance Rate Calculator</div><div class="text-xs text-emerald-700">Set your pricing correctly</div></div></div><i data-lucide="chevron-right" class="w-4 h-4 text-emerald-400 group-hover:text-emerald-600"></i>
                         </button>
                     </div>
 
