@@ -3058,6 +3058,12 @@ function getOJAMetrics(roleTitle, country) {
                 skillsHubSelector.value = country;
             }
 
+            // Update Sector Hub Country Dropdown
+            const sectorHubCountry = document.getElementById('sector-hub-country');
+            if (sectorHubCountry && sectorHubCountry.value !== country) {
+                sectorHubCountry.value = country;
+            }
+
             // Update Find Courses Filter (Sync)
             const courseFilter = document.getElementById('filter-country');
             if (courseFilter && courseFilter.value !== country) {
@@ -3079,23 +3085,30 @@ function getOJAMetrics(roleTitle, country) {
         window.setGlobalSector = function(sector) {
             activeSectorId = sector;
             
-            // Reset all cards
-            document.querySelectorAll('.btn-sector-card').forEach(btn => {
-                btn.classList.remove('active', 'ring-1');
-                btn.classList.remove('border-green-600', 'ring-green-600', 'border-yellow-600', 'ring-yellow-600', 'border-blue-600', 'ring-blue-600');
-                btn.classList.add('border-slate-200');
+            // Update Tabs
+            ['agri', 'energy', 'digital'].forEach(s => {
+                const tab = document.getElementById(`tab-sector-${s}`);
+                if (tab) {
+                    if (s === sector) {
+                        // Active styles
+                        let color = 'indigo';
+                        if (s === 'agri') color = 'green';
+                        if (s === 'energy') color = 'orange';
+                        
+                        tab.className = `py-3 border-b-2 border-${color}-600 text-${color}-600 text-sm font-bold whitespace-nowrap transition-colors`;
+                    } else {
+                        // Inactive styles
+                        tab.className = `py-3 border-b-2 border-transparent text-sm font-bold text-slate-500 hover:text-slate-700 whitespace-nowrap transition-colors`;
+                    }
+                }
             });
-
-            const activeCard = document.getElementById(`sector-${sector}`);
-            if(activeCard) {
-                activeCard.classList.add('active', 'ring-1');
-                activeCard.classList.remove('border-slate-200');
-                
-                if (sector === 'agri') activeCard.classList.add('border-green-600', 'ring-green-600');
-                if (sector === 'energy') activeCard.classList.add('border-orange-600', 'ring-orange-600');
-                if (sector === 'digital') activeCard.classList.add('border-blue-600', 'ring-blue-600');
-            }
             
+            // Update Sector Hub Sector Dropdown
+            const sectorHubSelect = document.getElementById('sector-hub-sector-select');
+            if (sectorHubSelect && sectorHubSelect.value !== sector) {
+                sectorHubSelect.value = sector;
+            }
+
             // Update Skills Hub Dropdown
             const skillsHubSectorSelector = document.getElementById('skills-hub-sector');
             if (skillsHubSectorSelector && skillsHubSectorSelector.value !== sector) {
@@ -4274,7 +4287,8 @@ window.toggleCareerHub = function() {
                 skills: dataManager.getSkills(activeSectorId) || baseData.skills
             };
 
-            const container = document.getElementById('dashboard-content');
+            const container = document.getElementById('sector-hub-results');
+            if (!container) return;
 
             let demandColorClass = "text-slate-900";
             let demandBgClass = "bg-slate-50 text-slate-600";
@@ -4324,7 +4338,7 @@ window.toggleCareerHub = function() {
                         <div class="px-4 py-4 sm:px-6 w-full sm:w-auto border-b sm:border-b-0 border-slate-100">
                             <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
                                 <i data-lucide="rocket" class="w-5 h-5 text-orange-600"></i>
-                                Top 10 Ventures
+                                Top 10 Entrepreneurship Opportunities
                             </h3>
                             <p class="text-xs text-slate-500 mt-1">High-growth opportunities tailored to your region</p>
                         </div>
@@ -4350,7 +4364,6 @@ window.toggleCareerHub = function() {
                             `).join('')}
                         </div>
                         ${moreVentures.length > 0 ? `
-                        <button onclick="document.getElementById('more-ventures').classList.remove('hidden'); this.classList.add('hidden');" class="col-span-full text-left text-xs font-bold text-indigo-600 hover:text-indigo-700 mt-2 flex items-center gap-1">
                         <button onclick="toggleGrid('more-ventures', this, 'Ventures')" class="col-span-full text-left text-xs font-bold text-indigo-600 hover:text-indigo-700 mt-2 flex items-center gap-1">
                             View All Ventures <i data-lucide="chevron-down" class="w-3 h-3"></i>
                         </button>` : ''}
@@ -4442,7 +4455,6 @@ window.toggleCareerHub = function() {
                                 `).join('')}
                             </div>
                             ${moreOccs.length > 0 ? `
-                            <button onclick="document.getElementById('more-occs').classList.remove('hidden'); this.classList.add('hidden');" class="col-span-full text-left text-xs font-bold text-indigo-600 hover:text-indigo-700 mt-2 flex items-center gap-1">
                             <button onclick="toggleGrid('more-occs', this, 'Occupations')" class="col-span-full text-left text-xs font-bold text-indigo-600 hover:text-indigo-700 mt-2 flex items-center gap-1">
                                 View All Occupations <i data-lucide="chevron-down" class="w-3 h-3"></i>
                             </button>` : ''}
@@ -4474,7 +4486,6 @@ window.toggleCareerHub = function() {
                                 `).join('')}
                             </div>
                             ${moreSkills.length > 0 ? `
-                            <button onclick="document.getElementById('more-skills').classList.remove('hidden'); this.classList.add('hidden');" class="col-span-full text-left text-xs font-bold text-indigo-600 hover:text-indigo-700 mt-2 flex items-center gap-1">
                             <button onclick="toggleGrid('more-skills', this, 'Skills')" class="col-span-full text-left text-xs font-bold text-indigo-600 hover:text-indigo-700 mt-2 flex items-center gap-1">
                                 View All Skills <i data-lucide="chevron-down" class="w-3 h-3"></i>
                             </button>` : ''}
@@ -4497,6 +4508,9 @@ window.toggleCareerHub = function() {
             // Open Unified Hub -> Founder's Launchpad Tab
             openUnifiedHub('pp-launchpad', null, null);
             // Ensure specific venture is rendered after opening
+            setTimeout(() => {
+                if(typeof renderVentureLaunchpad === 'function') renderVentureLaunchpad(ventureTitle);
+            }, 100);
         }
 
         // --- NEW: Venture Modal Logic ---
@@ -5494,7 +5508,16 @@ window.toggleCareerHub = function() {
                 entrepreneur: {
                     text: "Identify high-potential venture niches, access eco-system resources, and build your capability roadmap.",
                 },
-                };
+                counsellor: {
+                    text: "Access labor market intelligence to guide students towards high-growth career paths.",
+                },
+                provider: {
+                    text: "Align your curriculum with real-time market demand and skills gaps.",
+                },
+                policy: {
+                    text: "View workforce data and trends to inform education and employment policy.",
+                }
+            };
 
             const data = content[type] || content.learner;
             
@@ -6404,31 +6427,13 @@ window.toggleCareerHub = function() {
             impactChartsInitialized = true;
         }
 
-        // --- NEW: Render Sector Cards ---
-        function renderSectorCards() {
-            const container = document.getElementById('sector-cards-container');
-            if (!container) return;
-            if (typeof sectorCardConfig === 'undefined') return;
-
-            container.innerHTML = sectorCardConfig.map(sector => `
-                <div onclick="setGlobalSector('${sector.id}')" id="sector-${sector.id}" class="btn-sector-card card-${sector.id} p-4 rounded-xl border-slate-200 bg-${sector.color}-50 shadow-sm text-left group cursor-pointer relative">
-                    <div class="flex flex-row items-center gap-3 mb-3">
-                        <div class="p-2 bg-${sector.color}-100 text-${sector.color}-700 rounded-lg shrink-0"><i data-lucide="${sector.icon}" class="w-5 h-5"></i></div>
-                        <h3 class="font-bold text-slate-800 group-hover:text-${sector.color}-800 text-sm">${sector.name}</h3>
-                        <button onclick="event.stopPropagation(); showSectorTooltip('${sector.id}')" class="p-1 hover:bg-${sector.color}-200 rounded-full text-${sector.color}-700 transition-colors" aria-label="Info"><i data-lucide="info" class="w-3 h-3"></i></button>
-                        <span class="ml-auto text-[9px] font-bold uppercase tracking-wider bg-${sector.color}-100 text-${sector.color}-800 px-1.5 py-0.5 rounded-full shrink-0">${sector.growth}</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-y-2 gap-x-1 text-[10px] sm:text-xs" id="${sector.id}-top-skills"></div>
-                </div>
-            `).join('');
-        }
-
         window.addEventListener('DOMContentLoaded', () => {
             if (typeof countryData === 'undefined' || typeof baseSectorDetailData === 'undefined') {
                 console.warn("Data dependencies (data.js) missing or not loaded.");
             }
 
-            renderSectorCards();
+            injectSectorDrawer(); // Inject the new Sector Drawer
+            renderMainLanding(); // Render the 3-Pillar Dashboard
             if(window.lucide) lucide.createIcons();
             setGlobalSector('agri');
             updateTrainingProviders(); 
@@ -6619,4 +6624,134 @@ window.toggleCareerHub = function() {
                 console.error('Failed to copy: ', err);
                 alert("Failed to copy plan. Please try again.");
             });
+        }
+
+        // --- NEW: 3-Pillar Dashboard Logic ---
+
+        window.renderMainLanding = function() {
+            const container = document.getElementById('dashboard-content');
+            if (!container) return;
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+                    <!-- Block 1: High Growth Sectors -->
+                    <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-white border border-slate-200 rounded-2xl p-6 hover:border-indigo-400 hover:shadow-lg transition-all group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                            <i data-lucide="map" class="w-32 h-32"></i>
+                        </div>
+                        <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                            <i data-lucide="bar-chart-2" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">High Growth Sectors</h3>
+                        <p class="text-sm text-slate-500 mb-6 flex-1 leading-relaxed">Explore fast growing sectors and access real-time market intelligence. Identify occupations and skills in demand, as well as entrepreneurship opportunities.</p>
+                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-indigo-600 group-hover:gap-3 transition-all">
+                            Start Navigating <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </div>
+                    </button>
+
+                    <!-- Block 2: Skills & Training Hub -->
+                    <button onclick="openUnifiedHub()" class="flex flex-col text-left h-full bg-white border border-slate-200 rounded-2xl p-6 hover:border-emerald-400 hover:shadow-lg transition-all group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                            <i data-lucide="book-open" class="w-32 h-32"></i>
+                        </div>
+                        <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                            <i data-lucide="graduation-cap" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">Skills & Training Hub</h3>
+                        <p class="text-sm text-slate-500 mb-6 flex-1 leading-relaxed">Use tools to assess your fit for different occupations and careers, build a personalized learning pathway, or support your entrepreneurship journey.</p>
+                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-emerald-600 group-hover:gap-3 transition-all">
+                            Find Training <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </div>
+                    </button>
+
+                    <!-- Block 3: Career & Community Tools -->
+                    <button onclick="toggleCareerHub()" class="flex flex-col text-left h-full bg-white border border-slate-200 rounded-2xl p-6 hover:border-orange-400 hover:shadow-lg transition-all group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                            <i data-lucide="users" class="w-32 h-32"></i>
+                        </div>
+                        <div class="w-14 h-14 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                            <i data-lucide="handshake" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">Career & Community Tools</h3>
+                        <p class="text-sm text-slate-500 mb-6 flex-1 leading-relaxed">Connect with guidance resources, mentors, and the wider Campus Africa community.</p>
+                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-orange-600 group-hover:gap-3 transition-all">
+                            Access Tools <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </div>
+                    </button>
+                </div>
+            `;
+            if(window.lucide) lucide.createIcons();
+        }
+
+        window.injectSectorDrawer = function() {
+            if (document.getElementById('sector-hub-drawer')) return;
+
+            const drawer = document.createElement('div');
+            drawer.id = 'sector-hub-drawer';
+            drawer.className = 'fixed inset-y-0 right-0 w-full md:w-[800px] bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-[60] overflow-y-auto flex flex-col';
+            
+            drawer.innerHTML = `
+                <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 z-10">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-600"></i> Market Intelligence
+                    </h2>
+                    <button onclick="toggleSectorHub()" class="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                        <i data-lucide="x" class="w-5 h-5 text-slate-500"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-6 flex-1 overflow-y-auto bg-slate-50/50">
+                    <!-- Navigation & Explanation -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 mb-1">Navigate High Growth Sectors</h3>
+                            <p class="text-xs text-slate-500 leading-relaxed">
+                                Select a sector and region below to access real-time labor market data and investment trends. Open tabs for details on occupations and skills in demand, as well as rising entrepreneurship areas.
+                             </p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">Sector</label>
+                                <select onchange="setGlobalSector(this.value)" id="sector-hub-sector-select" class="w-full text-sm font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="agri" ${activeSectorId === 'agri' ? 'selected' : ''}>Agritech</option>
+                                    <option value="energy" ${activeSectorId === 'energy' ? 'selected' : ''}>Renewable Energy</option>
+                                    <option value="digital" ${activeSectorId === 'digital' ? 'selected' : ''}>Digital Economy</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">Region</label>
+                                <select onchange="setGlobalCountry(this.value)" id="sector-hub-country" class="w-full text-sm font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="all" ${activeCountry === 'all' ? 'selected' : ''}>Regional (East Africa)</option>
+                                    <option value="Kenya" ${activeCountry === 'Kenya' ? 'selected' : ''}>Kenya</option>
+                                    <option value="Uganda" ${activeCountry === 'Uganda' ? 'selected' : ''}>Uganda</option>
+                                    <option value="Tanzania" ${activeCountry === 'Tanzania' ? 'selected' : ''}>Tanzania</option>
+                                    <option value="Rwanda" ${activeCountry === 'Rwanda' ? 'selected' : ''}>Rwanda</option>
+                                    <option value="Burundi" ${activeCountry === 'Burundi' ? 'selected' : ''}>Burundi</option>
+                                    <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
+                                    <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
+                                    <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results -->
+                    <div id="sector-hub-results">
+                        <!-- Dashboard Content Injected Here -->
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(drawer);
+        }
+
+        window.toggleSectorHub = function() {
+            const drawer = document.getElementById('sector-hub-drawer');
+            if (drawer) {
+                drawer.classList.toggle('translate-x-full');
+                if (!drawer.classList.contains('translate-x-full')) {
+                    // Ensure content is rendered when opening
+                    renderOccupationsView();
+                }
+            }
+            if(window.lucide) lucide.createIcons();
         }
