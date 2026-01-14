@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import sys
 import urllib.request
 import urllib.error
@@ -143,6 +144,17 @@ def validate():
                     "P75_Monthly_Wage": "0",
                     "OJA_Count": "N/A"
                 })
+        
+        # Check for O*NET or ESCO codes
+        onet = occ.get("onetCode")
+        esco = occ.get("escoCode")
+        role_name = occ.get('Occupation_Role') or occ.get('occupationRole') or 'Unknown'
+        if not onet and not esco:
+            print(f"  ⚠️ Occupations[{i}]: Missing O*NET or ESCO code for '{role_name}'")
+            errors += 1
+        elif onet and not re.match(r'^\d{2}-\d{4}\.\d{2}$', str(onet)):
+            print(f"  ⚠️ Occupations[{i}]: Invalid O*NET format '{onet}' for '{role_name}'")
+            errors += 1
 
     # --- 4. Validate Courses ---
     if courses:

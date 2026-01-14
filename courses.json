@@ -583,6 +583,7 @@
     "country": "all",
     "description": "World Bank funded flagship TVET institutes across East Africa specializing in energy, manufacturing, and transport. Focus on competency-based education and training (CBET).",
     "language": "English",
+    "unesco_unevoc": true,
     "prerequisites": "Varied (KCSE D+/C-)",
     "tracerAvailable": false,
     "lastUpdated": "2024",
@@ -1881,6 +1882,7 @@
     "country": "Uganda",
     "description": "Fellowship program for women in data science, focusing on using data for civic engagement.",
     "language": "English",
+    "women_focused": true,
     "prerequisites": "Selection",
     "lastUpdated": "2024"
   },

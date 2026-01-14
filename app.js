@@ -185,7 +185,9 @@ class DataManager {
                 desc: (o.skillsDescription || o.Skills_Description) ? (o.skillsDescription || o.Skills_Description).split('.')[0] + '.' : (o.description || o.Description || 'Key role in sector.'),
                 isHot: (o.rank || o.Rank) <= 4,
                 id: o.masterOccId || o.Master_Occ_ID, // Keep ID for linking
-                why: o.whyInDemand || o.Why_In_Demand // Capture Why in Demand
+                why: o.whyInDemand || o.Why_In_Demand, // Capture Why in Demand
+                onetCode: o.onetCode, // Pass through O*NET
+                escoCode: o.escoCode  // Pass through ESCO
             }));
         }
         return null; // Return null to fallback to baseSectorDetailData
@@ -703,6 +705,9 @@ function getOJAMetrics(roleTitle, country) {
                 }
                 if (t.outcomeData.stackable) {
                     tagsHtml += `<span class="text-[9px] font-bold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100 flex items-center gap-1" title="Counts towards larger qualification"><i data-lucide="layers" class="w-2.5 h-2.5"></i> Stackable</span>`;
+                }
+                if (t.gsa_member || t.women_focused || t.unesco_unevoc) {
+                    tagsHtml += `<span class="text-[9px] font-bold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded border border-purple-100 flex items-center gap-1" title="Featured Partner Program"><i data-lucide="award" class="w-2.5 h-2.5"></i> Featured</span>`;
                 }
 
                 if (t.outcomeData && t.outcomeData.available) {
@@ -1506,6 +1511,8 @@ function getOJAMetrics(roleTitle, country) {
                     starsHtml += `</div>`;
                 }
 
+                const isFeatured = t.gsa_member || t.women_focused;
+
                 let durColor = "text-slate-500";
                 if (sortType === 'quickest') {
                     const months = parseDuration(t.duration) || 99;
@@ -1518,7 +1525,10 @@ function getOJAMetrics(roleTitle, country) {
                     <div>
                         <div class="flex justify-between items-start mb-1">
                             <div class="text-xs font-bold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors line-clamp-2 pr-1">${t.name}</div>
-                            ${matchedGaps.length > 0 ? `<span class="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-1 py-0.5 rounded shrink-0">Match</span>` : ''}
+                            <div class="flex flex-col items-end gap-1 shrink-0">
+                                ${matchedGaps.length > 0 ? `<span class="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-1 py-0.5 rounded shrink-0">Match</span>` : ''}
+                                ${isFeatured ? `<span class="text-[9px] font-bold bg-purple-100 text-purple-700 px-1 py-0.5 rounded shrink-0" title="Featured Program">Featured</span>` : ''}
+                            </div>
                         </div>
                         <div class="text-[10px] text-slate-600 mb-1.5 line-clamp-1">${t.provider}</div>
                         ${starsHtml}
@@ -2952,7 +2962,24 @@ function getOJAMetrics(roleTitle, country) {
             document.body.classList.add('overflow-hidden');
             
             document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-alt-titles').innerText = `AKA: ${details.altTitles}`;
+            
+            // NEW: Fetch and display O*NET / ESCO Codes
+            // Priority: Check dynamic occData first, then fallback to baseSectorDetailData
+            const baseOccs = baseSectorDetailData[activeSectorId] ? baseSectorDetailData[activeSectorId].occupations : [];
+            const baseOcc = baseOccs.find(o => o.name === title);
+            
+            const onet = (occData && occData.onetCode) ? occData.onetCode : (baseOcc ? baseOcc.onetCode : null);
+            const esco = (occData && occData.escoCode) ? occData.escoCode : (baseOcc ? baseOcc.escoCode : null);
+
+            const codesHtml = (onet || esco) 
+                ? `<span class="block mt-1 text-[10px] text-slate-400 font-mono opacity-80">
+                    ${onet ? `O*NET: ${onet}` : ''} 
+                    ${onet && esco ? ' | ' : ''} 
+                    ${esco ? `ESCO: ${esco}` : ''}
+                   </span>` 
+                : '';
+
+            document.getElementById('modal-alt-titles').innerHTML = `AKA: ${details.altTitles} ${codesHtml}`;
             document.getElementById('modal-sector-badge').innerText = sectorName;
 
             // Update Footer with Save Button
@@ -5288,7 +5315,7 @@ window.toggleCareerHub = function() {
             
             // Pull relevant tools from global resources
             const portfolioTools = (dataManager.digitalResources && dataManager.digitalResources.global_resources ? dataManager.digitalResources.global_resources : []).filter(r => 
-                r.type === 'Community' && (r.title.includes('GitHub') || r.title.includes('Kaggle'))
+                r.type === 'Community' && (r.title.includes('Kaggle'))
             );
 
             const staticTools = (typeof staticCVTools !== 'undefined') ? staticCVTools : [];
@@ -5319,12 +5346,6 @@ window.toggleCareerHub = function() {
                         <p class="text-xs text-indigo-100 mb-3 leading-relaxed">Create a standardized, ATS-friendly PDF resume directly in your browser. No sign-up required.</p>
                         <button onclick="renderCVGenerator()" class="w-full py-2 bg-white text-indigo-700 font-bold rounded-lg text-xs hover:bg-indigo-50 transition-colors shadow-sm">
                             Build My CV Now
-                        </button>
-                    </div>
-
-                    <div class="mb-4">
-                        <button onclick="renderFreelanceCalculator()" class="w-full p-3 bg-emerald-50 border border-emerald-100 rounded-lg flex items-center justify-between hover:bg-emerald-100 transition-colors group">
-                            <div class="flex items-center gap-3"><div class="p-2 bg-white text-emerald-600 rounded shadow-sm"><i data-lucide="calculator" class="w-4 h-4"></i></div><div class="text-left"><div class="font-bold text-sm text-emerald-900">Freelance Rate Calculator</div><div class="text-xs text-emerald-700">Set your pricing correctly</div></div></div><i data-lucide="chevron-right" class="w-4 h-4 text-emerald-400 group-hover:text-emerald-600"></i>
                         </button>
                     </div>
 
@@ -6204,8 +6225,17 @@ window.toggleCareerHub = function() {
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500 italic">No courses found matching your filters.</td></tr>`;
-                if (mobileContainer) mobileContainer.innerHTML = `<div class="p-8 text-center text-slate-500 italic">No courses found matching your filters.</div>`;
+                const noResultsHtml = `
+                    <div class="flex flex-col items-center justify-center py-8 text-center w-full">
+                        <div class="bg-slate-50 p-3 rounded-full mb-3"><i data-lucide="search-x" class="w-6 h-6 text-slate-400"></i></div>
+                        <p class="text-sm text-slate-600 font-medium mb-2">No courses found matching your filters.</p>
+                        <button onclick="clearCourseFilters()" class="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors">
+                            <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Clear Filters
+                        </button>
+                    </div>
+                `;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-0">${noResultsHtml}</td></tr>`;
+                if (mobileContainer) mobileContainer.innerHTML = noResultsHtml;
             }
 
             // Sort: Specific Country > Global ('all')
