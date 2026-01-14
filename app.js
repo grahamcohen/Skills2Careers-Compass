@@ -3937,6 +3937,24 @@ function getOJAMetrics(roleTitle, country) {
                     </div>
 
                     <div>
+                        <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide border-b border-slate-200 pb-2 mb-3">Continental Frameworks</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <a href="https://edu-au.org/cesa" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
+                                <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">CESA 16-25 / 26-35 <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
+                                <div class="text-xs text-slate-500 mt-1">Continental Education Strategy for Africa.</div>
+                            </a>
+                            <a href="https://acqf.africa/" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
+                                <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">ACQF <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
+                                <div class="text-xs text-slate-500 mt-1">African Continental Qualifications Framework.</div>
+                            </a>
+                            <a href="https://au.int/en/education/tvet" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
+                                <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">Continental TVET Strategy <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
+                                <div class="text-xs text-slate-500 mt-1">Strategy to revitalize TVET in Africa (2025-34).</div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
                         <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide border-b border-slate-200 pb-2 mb-3">Sector Specific Sources</h3>
                         <div class="space-y-3">
                             <!-- Agri -->
@@ -5341,6 +5359,18 @@ window.toggleCareerHub = function() {
                         <a href="https://www.onetonline.org/" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
                             <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">O*NET OnLine <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
                             <div class="text-xs text-slate-500 mt-1">Occupational information and skills framework.</div>
+                        </a>
+                        <a href="https://acqf.africa/" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
+                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">ACQF (Qualifications) <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
+                            <div class="text-xs text-slate-500 mt-1">African Continental Qualifications Framework.</div>
+                        </a>
+                        <a href="https://edu-au.org/cesa" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
+                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">CESA Strategy <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
+                            <div class="text-xs text-slate-500 mt-1">Continental Education Strategy for Africa.</div>
+                        </a>
+                        <a href="https://au.int/en/education/tvet" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
+                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">AU TVET Strategy <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
+                            <div class="text-xs text-slate-500 mt-1">Continental Strategy for TVET (2025-34).</div>
                         </a>
                     </div>
                 </div>

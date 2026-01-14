@@ -1437,6 +1437,11 @@ const signalResources = {
         'Innovation Investments/Grants': [
             { title: "AgFunder News", desc: "AgriFoodTech investment news and reports.", link: "https://agfundernews.com/" },
             { title: "Briter Bridges", desc: "Innovation ecosystem intelligence in Africa.", link: "https://briterbridges.com/" }
+        ],
+        'Continental Frameworks': [
+            { title: "CESA 16-25 / 26-35", desc: "Continental Education Strategy for Africa.", link: "https://edu-au.org/cesa" },
+            { title: "ACQF", desc: "African Continental Qualifications Framework.", link: "https://acqf.africa/" },
+            { title: "Continental TVET Strategy", desc: "Strategy to revitalize TVET (2025-34).", link: "https://au.int/en/education/tvet" }
         ]
     },
     energy: {
@@ -1447,6 +1452,11 @@ const signalResources = {
         'Innovation Investments/Grants': [
             { title: "GOGLA Resources", desc: "Off-grid solar market reports.", link: "https://www.gogla.org/resources" },
             { title: "EEP Africa", desc: "Clean energy financing.", link: "https://eepafrica.org/" }
+        ],
+        'Continental Frameworks': [
+            { title: "CESA 16-25 / 26-35", desc: "Continental Education Strategy for Africa.", link: "https://edu-au.org/cesa" },
+            { title: "ACQF", desc: "African Continental Qualifications Framework.", link: "https://acqf.africa/" },
+            { title: "Continental TVET Strategy", desc: "Strategy to revitalize TVET (2025-34).", link: "https://au.int/en/education/tvet" }
         ]
     },
     digital: {
@@ -1457,6 +1467,11 @@ const signalResources = {
         'Innovation Investments/Grants': [
             { title: "Partech Africa", desc: "Tech investment reports.", link: "https://partechpartners.com/africa-reports/" },
             { title: "Disrupt Africa", desc: "Startup news and investment reports.", link: "https://disrupt-africa.com/" }
+        ],
+        'Continental Frameworks': [
+            { title: "CESA 16-25 / 26-35", desc: "Continental Education Strategy for Africa.", link: "https://edu-au.org/cesa" },
+            { title: "ACQF", desc: "African Continental Qualifications Framework.", link: "https://acqf.africa/" },
+            { title: "Continental TVET Strategy", desc: "Strategy to revitalize TVET (2025-34).", link: "https://au.int/en/education/tvet" }
         ]
     }
 };
@@ -1778,7 +1793,8 @@ const apprenticeshipStandards = [
     { c: 'Kenya', name: 'NITA Guidelines', url: 'https://www.nita.go.ke/' },
     { c: 'Tanzania', name: 'VETA Apprenticeship', url: 'https://www.veta.go.tz/' },
     { c: 'Uganda', name: 'DIT Standards', url: 'https://dituganda.org/' },
-    { c: 'Rwanda', name: 'RTB Workplace Learning', url: 'https://www.rtb.gov.rw/' }
+    { c: 'Rwanda', name: 'RTB Workplace Learning', url: 'https://www.rtb.gov.rw/' },
+    { c: 'Regional', name: 'Continental TVET Strategy', url: 'https://au.int/en/education/tvet' }
 ];
 
 // --- 39. National Mentorships ---
