@@ -279,7 +279,7 @@ const baseSectorDetailData = {
                         narrative: "The fundamental ability to interpret circuit diagrams and safely install AC/DC wiring. In renewable energy, this specifically covers high-voltage DC cabling for solar arrays and connection to inverters."
                     }, 
                     { 
-                        name: "PV Systems", 
+                        name: "Solar PV", 
                         desc: "Solar panel configuration",
                         narrative: "Designing and installing Photovoltaic (PV) systems involves calculating load requirements, selecting appropriate panel/battery combinations, and understanding solar geometry to maximize energy capture.",
                         isHot: true
@@ -483,175 +483,175 @@ const roleEmployers = {
 const roleSkills = {
     // --- AGRI SECTOR ---
     "Precision Ag Specialist": {
-        technical: ["GIS Mapping", "GPS Calibration", "Remote Sensing", "Variable Rate Technology (VRT)", "Data Interpretation"],
+        technical: ["GIS Mapping", "Precision Ag", "Remote Sensing", "Data Analysis", "Drone Ops"],
         employability: ["Analytical Thinking", "Attention to Detail", "Problem Solving", "Tech Savviness", "Written Communication"]
     },
     "Drone Pilot": {
-        technical: ["Drone Ops", "Flight Path Planning", "Multispectral Imaging", "Aviation Regulations (KCAA/RCAA)", "Drone Maintenance"],
+        technical: ["Drone Ops", "Flight Planning", "Remote Sensing", "Air Law", "Field Ops"],
         employability: ["Situational Awareness", "Safety Consciousness", "Reporting Accuracy", "Adaptability", "Focus/Concentration"]
     },
     "Soil Data Analyst": {
-        technical: ["Soil Analysis", "Python", "Lab Report Interpretation", "Nutrient Management", "Data Viz"],
+        technical: ["Soil Analysis", "Python", "Data Analysis", "Crop Science", "Data Viz"],
         employability: ["Critical Thinking", "Data Storytelling", "Time Management", "Ethics (Integrity)", "Scientific Curiosity"]
     },
     "Smart Irrigation Tech": {
-        technical: ["Hydraulic Systems", "IoT Sensors", "System Calibration", "Electrical Troubleshooting", "Plumbing/Piping"],
+        technical: ["Water Management", "IoT Sensors", "Precision Ag", "Field Ops", "Installation"],
         employability: ["Troubleshooting", "Adaptability", "Client Communication", "Physical Stamina", "Safety Awareness"]
     },
     "Supply Chain Manager": {
-        technical: ["Logistics", "Cold Chain Management", "ERP Systems", "Inventory Mgmt", "Procurement"],
+        technical: ["Logistics", "Supply Chain", "Inventory Mgmt", "Agribusiness", "Digital Tools"],
         employability: ["Negotiation", "Leadership", "Crisis Management", "Strategic Planning", "Team Coordination"]
     },
     "Agri-Input Sales": {
-        technical: ["Product Knowledge (Seeds/Chems)", "CRM Software", "Crop Protection Basics", "Sales Strategy", "Basic Accounting"],
+        technical: ["Crop Science", "Digital Tools", "Agribusiness", "Communication", "Economics"],
         employability: ["Persuasion", "Empathy", "Resilience", "Active Listening", "Networking"]
     },
     "Farm IoT Engineer": {
-        technical: ["IoT Sensors", "LoRaWAN/GSM Networking", "Hardware Debugging", "Electronics Repair", "Cloud Integration"],
+        technical: ["IoT Sensors", "Networking", "Field Ops", "Electronics Repair", "Cloud Computing"],
         employability: ["Systems Thinking", "Innovation", "Persistence", "Continuous Learning", "Collaboration"]
     },
     "Post-Harvest Specialist": {
-        technical: ["Storage Technology", "Quality Control Standards", "Cold Chain Logistics", "Food Safety (HACCP)", "Packaging Solutions"],
+        technical: ["Inventory Mgmt", "Food Security", "Logistics", "Manufacturing", "Supply Chain"],
         employability: ["Process Oriented", "Hygiene Awareness", "Attention to Detail", "Efficiency", "Problem Solving"]
     },
     "Climate Risk Analyst": {
-        technical: ["Climate Modeling", "Python", "Risk Assessment", "Geospatial Analysis", "Actuarial Basics"],
+        technical: ["Climate Modeling", "Python", "Climate Adaptation", "GIS Mapping", "Data Analysis"],
         employability: ["Analytical Reasoning", "Forecasting", "Technical Communication", "Strategic View", "Research Skills"]
     },
     "Digital Extension Officer": {
-        technical: ["Mobile Data Platforms", "Adult Education Principles", "Basic Agronomy", "Data Collection Tools", "Content Translation"],
+        technical: ["Digital Advisory", "Communication", "Crop Science", "Data Collection", "Digital Tools"],
         employability: ["Cultural Awareness", "Patience", "Public Speaking", "Coaching", "Empathy"]
     },
     "Urban Farming Architect": {
-        technical: ["Hydroponic Systems Design", "AutoCAD", "Structural Basics", "LED Lighting Systems", "Water Management"],
+        technical: ["Water Management", "AutoCAD", "Installation", "Green Tech", "Sustainability"],
         employability: ["Creativity", "Design Thinking", "Sustainability Focus", "Planning", "Visualization"]
     },
     "Livestock Health Tech": {
-        technical: ["Veterinary Basics", "Wearable Sensors", "Health Tracking Software", "Sample Collection", "Biosecurity Protocols"],
+        technical: ["Farm Management", "IoT Sensors", "Record Keeping", "Data Collection", "Food Security"],
         employability: ["Compassion", "Observation", "Quick Response", "Physical Handling", "Record Keeping"]
     },
     "Agricultural Extension Officer": {
-        technical: ["Crop Science", "Soil Analysis", "Data Collection (ODK/Kobo)", "Pest Management", "Adult Education"],
+        technical: ["Crop Science", "Soil Analysis", "Data Collection", "Communication", "Digital Advisory"],
         employability: ["Community Mobilization", "Public Speaking", "Active Listening", "Adaptability", "Problem Solving"]
     },
     "Farm Services Operator": {
-        technical: ["Mechanization Ops", "Drone Spraying", "GPS Navigation", "Equipment Maintenance", "Safety Protocols"],
+        technical: ["Mechanization", "Drone Ops", "Precision Ag", "Field Ops", "Safety Protocols"],
         employability: ["Time Management", "Customer Service", "Reliability", "Physical Stamina", "Basic Numeracy"]
     },
     "Irrigation Technician": {
-        technical: ["Irrigation Systems", "Plumbing", "Soil Moisture Sensors", "Water Pump Maintenance", "System Calibration"],
+        technical: ["Water Management", "Installation", "IoT Sensors", "Field Ops", "Precision Ag"],
         employability: ["Troubleshooting", "Attention to Detail", "Physical Stamina", "Teamwork", "Adaptability"]
     },
     "Agro-Processing Technician": {
-        technical: ["Food Safety (HACCP)", "Processing Machinery", "Quality Control", "Packaging", "Hygiene Standards"],
+        technical: ["Food Security", "Manufacturing", "Quality Control", "Supply Chain", "Safety Protocols"],
         employability: ["Process Discipline", "Cleanliness", "Team Collaboration", "Attention to Detail", "Safety Awareness"]
     },
     "Aquaculture Farm Technician": {
-        technical: ["Water Quality Testing", "Fish Feeding", "Pond Management", "Harvesting", "Record Keeping"],
+        technical: ["Water Management", "Farm Management", "Record Keeping", "Sustainability", "Food Security"],
         employability: ["Observation", "Consistency", "Physical Fitness", "Problem Solving", "Patience"]
     },
     "Fisheries Compliance Officer": {
-        technical: ["Maritime Law", "Inspection Procedures", "Data Collection", "Reporting", "Conflict Resolution"],
+        technical: ["Regulatory Compl.", "Audit", "Data Collection", "Communication", "Record Keeping"],
         employability: ["Integrity", "Communication", "Firmness", "Observation", "Report Writing"]
     },
 
     // --- ENERGY SECTOR ---
     "Solar PV Installer": {
-        technical: ["Electrical Wiring", "PV Systems", "Inverter Configuration", "Roof Mounting Systems", "Safety Protocols"],
+        technical: ["Electrical Wiring", "Solar PV", "Installation", "Safety Protocols", "Field Ops"],
         employability: ["Physical Stamina", "Teamwork", "Safety Compliance", "Reliability", "Attention to Detail"]
     },
     "Grid Systems Engineer": {
-        technical: ["Grid Mgmt", "SCADA", "Grid Code Compliance", "High Voltage Safety", "Simulation Software (PSS/E)"],
+        technical: ["Grid Mgmt", "SCADA", "Regulatory Compl.", "Safety Protocols", "Grid Systems"],
         employability: ["Complex Problem Solving", "Project Management", "Accuracy", "Stress Management", "Analytical Thinking"]
     },
     "Energy Auditor": {
-        technical: ["Energy Efficiency", "Thermal Imaging", "HVAC Systems Analysis", "Data Logging", "Cost-Benefit Analysis"],
+        technical: ["Energy Efficiency", "Audit", "Thermodynamics", "Data Analysis", "Economics"],
         employability: ["Client Advisory", "Observational Skills", "Mathematical Aptitude", "Communication", "Integrity"]
     },
     "Geothermal Technician": {
-        technical: ["Steam Field Operations", "Turbine Maintenance", "Pressure Systems", "Mechanical Repair", "Drilling Support"],
+        technical: ["Thermodynamics", "Field Ops", "Mechanical Repair", "Safety Protocols", "Installation"],
         employability: ["Operational Discipline", "Safety Focus", "Technical Reporting", "Physical Aptitude", "Alertness"]
     },
     "Wind Turbine Tech": {
-        technical: ["Composite Repair", "Hydraulics", "Working at Heights", "Electrical Troubleshooting", "SCADA Monitoring"],
+        technical: ["Wind Power", "Field Ops", "Safety Protocols", "Electrical Wiring", "SCADA"],
         employability: ["Risk Assessment", "Resilience", "Team Coordination", "Physical Fitness", "Calmness Under Pressure"]
     },
     "Energy Policy Analyst": {
-        technical: ["Regulatory Compl.", "Tariff Modeling", "Legal Writing", "Stakeholder Analysis", "Economic Statistics"],
+        technical: ["Regulatory Compl.", "Economics", "Policy", "Communication", "Data Analysis"],
         employability: ["Critical Analysis", "Persuasion", "Written Communication", "Political Awareness", "Ethics"]
     },
     "Smart Meter Tech": {
-        technical: ["AMI Systems", "Telecoms Debugging", "Meter Installation", "Data Analysis", "Customer Service Tools"],
+        technical: ["Grid Systems", "Networking", "Installation", "Data Analysis", "Communication"],
         employability: ["Troubleshooting", "Integrity", "Driving/Mobility", "Tech Literacy", "Patience"]
     },
     "Project Manager": {
-        technical: ["Scheduling (MS Project)", "Budgeting", "Procurement", "Risk Management", "Stakeholder Communications"],
+        technical: ["Project Mgmt", "Economics", "Supply Chain", "Risk Management", "Communication"],
         employability: ["Leadership", "Organization", "Negotiation", "Conflict Resolution", "Delegation"]
     },
     "Safety Inspector": {
-        technical: ["Safety Protocols", "ISO Standards", "Incident Investigation", "Hazard Identification", "Training Delivery"],
+        technical: ["Safety Protocols", "Compliance", "Audit", "Hazard Identification", "Communication"],
         employability: ["Firmness", "Attention to Detail", "Communication", "Integrity", "Observational Skills"]
     },
     "Bioenergy Specialist": {
-        technical: ["Biomass Conversion", "Digester Design", "Waste Management", "Gas Safety", "Chemical Analysis"],
+        technical: ["Biomass", "Sustainability", "Safety Protocols", "Data Analysis", "Green Tech"],
         employability: ["Innovation", "Sustainability Mindset", "Process Safety", "Analytical Skills", "Hands-on Approach"]
     },
     "EV Charging Tech": {
-        technical: ["High Power Electronics", "Network Protocols (OCPP)", "Diagnostics", "Grid Connection", "Payment Systems"],
+        technical: ["Electrical Wiring", "Networking", "Field Ops", "Grid Systems", "Digital Tools"],
         employability: ["Tech Savvy", "Customer Service", "Safety Awareness", "Problem Solving", "Adaptability"]
     },
     "Energy Storage Specialist": {
-        technical: ["Battery Chemistry (Li-ion)", "BMS Configuration", "System Sizing", "Thermal Management", "Grid Integration"],
+        technical: ["Solar PV", "Grid Systems", "Project Mgmt", "Thermodynamics", "Green Tech"],
         employability: ["Forward Thinking", "Analysis", "Safety Consciousness", "Precision", "Continuous Learning"]
     },
 
     // --- DIGITAL SECTOR ---
     "Data Scientist": {
-        technical: ["Python/R Programming", "Machine Learning Algorithms", "SQL & Database Mgmt", "Data Visualization", "Statistics"],
+        technical: ["Python", "Machine Learning", "SQL", "Data Science", "Data Viz"],
         employability: ["Business Acumen", "Curiosity", "Data Storytelling", "Skepticism", "Collaboration"]
     },
     "Cloud Architect": {
-        technical: ["AWS/Azure Architecture", "Network Security", "Infrastructure as Code", "Cost Optimization", "Migration Strategy"],
+        technical: ["Cloud Architecture", "Network Security", "DevOps", "Cloud Computing", "Strategy"],
         employability: ["Strategic Planning", "Decision Making", "Stakeholder Management", "Mentoring", "Visionary Thinking"]
     },
     "Cybersecurity Analyst": {
-        technical: ["Threat Intelligence", "Firewall Configuration", "Penetration Testing", "Compliance (ISO 27001)", "Incident Response"],
+        technical: ["Threat Intelligence", "Network Security", "Cybersecurity", "Compliance", "Network Security"],
         employability: ["Integrity", "Vigilance", "Stress Management", "Investigative Mindset", "Confidentiality"]
     },
     "Frontend Dev": {
-        technical: ["React.js / Vue", "CSS Frameworks (Tailwind)", "JavaScript (ES6+)", "Git Version Control", "Web Performance"],
+        technical: ["React", "Web Dev", "JavaScript", "DevOps", "UI Design"],
         employability: ["Creativity", "User Empathy", "Collaboration", "Attention to Detail", "Patience"]
     },
     "Backend Dev": {
-        technical: ["Node.js / Python", "API Design (REST/GraphQL)", "Database Design", "Server Management", "Caching Strategies"],
+        technical: ["Python", "API Design", "Database Mgmt", "Cloud Computing", "Web Dev"],
         employability: ["Logic", "Efficiency", "Continuous Learning", "Systems Thinking", "Reliability"]
     },
     "UX/UI Designer": {
-        technical: ["Figma / Adobe XD", "Prototyping", "User Research", "Wireframing", "Design Systems"],
+        technical: ["Figma", "Prototyping", "User Research", "UI Design", "Product Design"],
         employability: ["Empathy", "Visual Eye", "Communication", "Receptiveness to Feedback", "Innovation"]
     },
     "AI/ML Engineer": {
-        technical: ["Deep Learning (PyTorch/TF)", "Model Tuning", "NLP / Computer Vision", "Linear Algebra", "MLOps"],
+        technical: ["Deep Learning", "Machine Learning", "AI", "Data Science", "DevOps"],
         employability: ["Innovation", "Ethics", "Problem Decomposition", "Mathematical Aptitude", "Abstraction"]
     },
     "Product Manager": {
-        technical: ["Product Roadmapping", "Agile/Scrum", "User Stories", "Market Research", "Product Analytics"],
+        technical: ["Product Management", "Agile", "Strategy", "User Research", "Data Analysis"],
         employability: ["Empathy", "Prioritization", "Leadership", "Communication", "Strategic Thinking"]
     },
     "DevOps Engineer": {
-        technical: ["CI/CD Pipelines", "Docker / Kubernetes", "Linux Administration", "Monitoring Tools", "Scripting (Bash/Go)"],
+        technical: ["CI/CD", "Cloud Computing", "DevOps", "Automation", "Python"],
         employability: ["Automation Mindset", "Reliability", "Crisis Response", "Collaboration", "Efficiency"]
     },
     "Digital Marketer": {
-        technical: ["SEO / SEM", "Analytics (GA4)", "Content Strategy", "Social Media Ads", "CRM Tools"],
+        technical: ["SEO", "Digital Marketing", "Social Media", "Data Analysis", "Digital Tools"],
         employability: ["Creativity", "Data Analysis", "Adaptability", "Persuasion", "Trend Awareness"]
     },
     "Blockchain Developer": {
-        technical: ["Smart Contracts (Solidity)", "Cryptography", "DApp Development", "Consensus Algorithms", "Web3.js"],
+        technical: ["Web Dev", "Cybersecurity", "JavaScript", "Data Science", "Python"],
         employability: ["Logic", "Security First Mindset", "Innovation", "Mathematical Aptitude", "Attention to Detail"]
     },
     "Systems Administrator": {
-        technical: ["OS Management (Linux/Win)", "Networking Basics", "Active Directory", "Backup & Recovery", "Virtualization"],
+        technical: ["DevOps", "Networking", "Network Security", "Database Mgmt", "Cloud Computing"],
         employability: ["Troubleshooting", "Patience", "Service Orientation", "Reliability", "Organization"]
     }
 };
@@ -935,8 +935,8 @@ const roleResourcesMap = {
     ],
     "Backend Dev": [
         { title: "GitHub: Octoverse Report", url: "https://octoverse.github.com" },
-        { title: "System Design Primer", url: "https://github.com/donnemartin/system-design-primer" },
-        { title: "Node.js Best Practices", url: "https://github.com/goldbergyoni/nodebestpractices" },
+        { title: "System Design Primer", url: "https://github.com/" },
+        { title: "Node.js Best Practices", url: "https://github.com/" },
         { title: "12 Factor App", url: "https://12factor.net/" }
     ],
     "AI/ML Engineer": [
@@ -1299,7 +1299,7 @@ const skillLevelDescriptions = {
     },
     energy: {
         "Electrical Wiring": { beg: "Cuts, strips, and connects wires under supervision.", int: "Reads schematics to wire complex panels and distribution boards.", adv: "Designs industrial wiring systems and troubleshoots high-voltage faults." },
-        "PV Systems": { beg: "Mounts panels and connects standard connectors (MC4).", int: "Sizes strings, configures inverters, and commissions systems.", adv: "Designs utility-scale solar farms and storage integration." },
+        "Solar PV": { beg: "Mounts panels and connects standard connectors (MC4).", int: "Sizes strings, configures inverters, and commissions systems.", adv: "Designs utility-scale solar farms and storage integration." },
         "SCADA": { beg: "Monitors screens for alarms and logs basic events.", int: "Diagnoses system faults and performs remote switching.", adv: "Programs SCADA logic, integrates new hardware, and manages cybersecurity." },
         "Safety Protocols": { beg: "Uses PPE correctly and follows permit-to-work checklists.", int: "Conducts risk assessments and supervises site safety.", adv: "Develops corporate HSE policies and manages safety audits." },
         "AutoCAD": { beg: "Edits existing drawings and prints layouts.", int: "Creates detailed electrical schematics and site plans.", adv: "Manages BIM models and complex 3D plant designs." },
@@ -1345,7 +1345,7 @@ const specificJobTitles = {
     },
     energy: {
         "Electrical Wiring": ["Solar Installer", "Industrial Electrician", "Grid Technician", "Panel Assembler"],
-        "PV Systems": ["Solar Design Engineer", "O&M Technician", "PV Systems Integrator", "Site Assessor"],
+        "Solar PV": ["Solar Design Engineer", "O&M Technician", "PV Systems Integrator", "Site Assessor"],
         "SCADA": ["Control Room Operator", "Automation Engineer", "Grid Systems Analyst", "Tele-control Tech"],
         "Safety Protocols": ["HSE Officer", "Site Safety Inspector", "Compliance Manager", "Risk Assessor"],
         "AutoCAD": ["CAD Draughtsman", "Solar Layout Designer", "Technical Illustrator", "Schematic Technician"],
@@ -1391,7 +1391,7 @@ const skillHotspots = {
     },
     energy: {
         "Electrical Wiring": "Universal demand, peaking in <strong>urban construction booms</strong> (Nairobi, Kigali) and industrial zones.",
-        "PV Systems": "Booming in off-grid counties (e.g., <strong>Turkana, Marsabit</strong>) and for commercial rooftop installations in industrial areas.",
+        "Solar PV": "Booming in off-grid counties (e.g., <strong>Turkana, Marsabit</strong>) and for commercial rooftop installations in industrial areas.",
         "SCADA": "Concentrated in National Control Centers and geothermal fields in <strong>Olkaria (Naivasha)</strong>.",
         "Safety Protocols": "Strictly enforced in oil & gas exploration zones and large infrastructure projects across the region.",
         "AutoCAD": "Standard requirement for EPC contractors and engineering consultancies in major cities.",

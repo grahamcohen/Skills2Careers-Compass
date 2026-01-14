@@ -617,7 +617,7 @@ function getOJAMetrics(roleTitle, country) {
         }
 
         // --- HELPER: GENERATE OUTCOME DATA (Updated for Real Data) ---
-        const generateOutcomeScorecard = (providerName, courseType) => {
+        window.generateOutcomeScorecard = (providerName, courseType) => {
             const name = providerName || "";
             const config = (typeof outcomeScorecardConfig !== 'undefined') ? outcomeScorecardConfig : { verified: [], online: [] };
             
@@ -674,7 +674,9 @@ function getOJAMetrics(roleTitle, country) {
                  c.durationMonths = c.duration;
                  c.skillsCovered = c.skills || [];
                  c.occupationsMapped = ["Specialist", "Analyst"]; 
-                 c.outcomeData = generateOutcomeScorecard(c.provider, c.type);
+                 if (!c.outcomeData) {
+                     c.outcomeData = window.generateOutcomeScorecard(c.provider, c.type);
+                 }
             });
 
             return { short, med, long };
@@ -870,6 +872,44 @@ function getOJAMetrics(roleTitle, country) {
             renderPATHWAYContent();
         }
 
+        // --- NEW: Skill Gap Analysis Utility ---
+        window.getSkillGapAnalysis = function(targetRole, userSkillsList) {
+            // Ensure data is available
+            if (typeof roleSkills === 'undefined') {
+                console.warn("roleSkills data not loaded.");
+                return null;
+            }
+            
+            const targetData = roleSkills[targetRole];
+            if (!targetData) {
+                console.warn(`Role '${targetRole}' not found in database.`);
+                return { error: "Role not found", matchScore: 0, technicalGaps: [], employabilityGaps: [] };
+            }
+
+            const requiredTech = targetData.technical || [];
+            const requiredSoft = targetData.employability || [];
+            
+            // Normalize user skills for comparison (case-insensitive)
+            const userSet = new Set((userSkillsList || []).map(s => s.toLowerCase().trim()));
+
+            // Identify Gaps (Return original casing from required list)
+            const techGaps = requiredTech.filter(s => !userSet.has(s.toLowerCase().trim()));
+            const softGaps = requiredSoft.filter(s => !userSet.has(s.toLowerCase().trim()));
+            
+            // Calculate Match Score
+            const totalRequired = requiredTech.length + requiredSoft.length;
+            const totalGaps = techGaps.length + softGaps.length;
+            const matchScore = totalRequired > 0 ? Math.round(((totalRequired - totalGaps) / totalRequired) * 100) : 0;
+
+            return {
+                role: targetRole,
+                matchScore,
+                technicalGaps: techGaps,
+                employabilityGaps: softGaps,
+                totalRequired
+            };
+        }
+
         // --- NEW: Calculate Diagnostic Results (Updated with Skills Analysis) ---
         window.calculateDiagnosticResults = function() {
             // 1. Get Values & Analyze Individual Inputs
@@ -912,6 +952,13 @@ function getOJAMetrics(roleTitle, country) {
             const totalScore = (scoreQuals * 0.1) + (scoreB * 0.5) + (scoreA * 0.3) + (scoreEvidence * 0.1);
             const percent = Math.round((totalScore / 5) * 100);
 
+            // 3. Run Skill Gap Analysis (Using Utility)
+            // We consider a skill "possessed" if score >= 4 (Proficient) to maintain high standards
+            const userSkillsList = allSkillsData.filter(s => s.score >= 4).map(s => s.skill);
+            const analysis = window.getSkillGapAnalysis(selectedRole, userSkillsList);
+            const techGaps = analysis.technicalGaps;
+            const empGaps = analysis.employabilityGaps;
+
             // 3. Determine Tier & Segments
             let tier = "Explorer";
             let tierCode = "explorer"; 
@@ -943,24 +990,30 @@ function getOJAMetrics(roleTitle, country) {
 
             // 4. SKILLS ANALYSIS LOGIC
             // Identify Strengths & Gaps for Narrative
+            // 4. Narrative Generation
             const strengths = allSkillsData.filter(s => s.score >= 4).map(s => s.skill);
             const gaps = allSkillsData.filter(s => s.score < 4).map(s => s.skill);
+            const allGaps = [...techGaps, ...empGaps];
 
             let synthesisText = '';
             // Use tier/percent to drive the main narrative for consistency
             if (percent > 85) {
                 synthesisText = `Excellent work! You demonstrate high proficiency across key areas for this role.`;
                 if (gaps.length > 0) synthesisText += ` Consider polishing <strong>${gaps.slice(0, 2).join(', ')}</strong> to reach expert level.`;
+                if (allGaps.length > 0) synthesisText += ` Consider polishing <strong>${allGaps.slice(0, 2).join(', ')}</strong> to reach expert level.`;
                 else synthesisText += ` Focus on portfolio building and networking.`;
             } else if (percent > 65) {
                 synthesisText = `You have a solid foundation.`;
                 if (strengths.length > 0) synthesisText += ` You are strong in <strong>${strengths.slice(0, 2).join(', ')}</strong>.`;
                 if (gaps.length > 0) synthesisText += ` To become fully job-ready, focus on strengthening <strong>${gaps.slice(0, 3).join(', ')}</strong>.`;
+                if (allGaps.length > 0) synthesisText += ` To become fully job-ready, focus on strengthening <strong>${allGaps.slice(0, 3).join(', ')}</strong>.`;
             } else if (percent > 40) {
                 synthesisText = `You are making good progress but have some key gaps.`;
                 if (gaps.length > 0) synthesisText += ` Prioritize training in <strong>${gaps.slice(0, 3).join(', ')}</strong> to build your profile.`;
+                if (allGaps.length > 0) synthesisText += ` Prioritize training in <strong>${allGaps.slice(0, 3).join(', ')}</strong> to build your profile.`;
             } else {
                 synthesisText = `You are at the beginning of your journey. Focus on foundational training in <strong>${gaps.slice(0, 3).join(', ')}</strong>.`;
+                synthesisText = `You are at the beginning of your journey. Focus on foundational training in <strong>${allGaps.slice(0, 3).join(', ')}</strong>.`;
             }
 
             // --- NEW: Dynamic Related Roles Logic ---
@@ -1059,6 +1112,7 @@ function getOJAMetrics(roleTitle, country) {
             // Generate Pathway IN-PLACE (Tab 1)
             if(typeof window.generatePersonalizedPathway === 'function') {
                 window.generatePersonalizedPathway(tierCode, activeSectorId, softSkillsData.filter(s => s.score < 4).map(s => s.skill), techSkillsData.filter(s => s.score < 4).map(s => s.skill), selectedRole, 'diagnostic-inline-pathway');
+                window.generatePersonalizedPathway(tierCode, activeSectorId, empGaps, techGaps, selectedRole, 'diagnostic-inline-pathway');
             }
             
             if(window.lucide) lucide.createIcons();
@@ -1114,8 +1168,8 @@ function getOJAMetrics(roleTitle, country) {
                 prioritizedCourses.sort((a, b) => {
                     const countMatches = (course) => {
                         if (!course.skillsCovered) return 0;
-                        // Check if any course skill loosely matches a gap skill
-                        return course.skillsCovered.filter(s => techGaps.some(g => s.toLowerCase().includes(g.toLowerCase()) || g.toLowerCase().includes(s.toLowerCase()))).length;
+                        // Use exact match since data is standardized
+                        return course.skillsCovered.filter(s => techGaps.some(g => s.toLowerCase().trim() === g.toLowerCase().trim())).length;
                     };
                     
                     const matchesA = countMatches(a);
@@ -1430,7 +1484,7 @@ function getOJAMetrics(roleTitle, country) {
 
             const html = courses.map(t => {
                 const matchedGaps = (techGaps && t.skillsCovered) 
-                    ? t.skillsCovered.filter(s => techGaps.some(g => s.toLowerCase().includes(g.toLowerCase()) || g.toLowerCase().includes(s.toLowerCase()))) 
+                    ? t.skillsCovered.filter(s => techGaps.some(g => s.toLowerCase().trim() === g.toLowerCase().trim())) 
                     : [];
                 
                 const unevocTag = t.unesco_unevoc ? `<span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium bg-orange-100 text-orange-800 border border-orange-200" title="UNESCO-UNEVOC Network Member">UNEVOC</span>` : '';
@@ -1439,6 +1493,18 @@ function getOJAMetrics(roleTitle, country) {
                 const href = hasLink ? `href="${t.url}" target="_blank"` : '';
                 const cursor = hasLink ? 'hover:shadow-md cursor-pointer' : 'cursor-default opacity-75';
                 const icon = hasLink ? `<i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-indigo-500 transition-colors ml-auto"></i>` : ``;
+
+                // Tracer Data / Stars
+                const outcome = t.outcomeData || { stars: 0 };
+                let starsHtml = '';
+                if (outcome.stars > 0) {
+                    const tooltipText = outcome.methodology ? `Rated ${outcome.stars}/5 based on ${outcome.methodology}` : `Outcome Rating: ${outcome.stars}/5`;
+                    starsHtml = `<div class="flex items-center gap-0.5 mt-1.5 cursor-help" title="${tooltipText}">`;
+                    for(let i=0; i<5; i++) {
+                        starsHtml += `<i data-lucide="star" class="w-2.5 h-2.5 ${i < outcome.stars ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}"></i>`;
+                    }
+                    starsHtml += `</div>`;
+                }
 
                 let durColor = "text-slate-500";
                 if (sortType === 'quickest') {
@@ -1455,6 +1521,7 @@ function getOJAMetrics(roleTitle, country) {
                             ${matchedGaps.length > 0 ? `<span class="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-1 py-0.5 rounded shrink-0">Match</span>` : ''}
                         </div>
                         <div class="text-[10px] text-slate-600 mb-1.5 line-clamp-1">${t.provider}</div>
+                        ${starsHtml}
                     </div>
                     <div class="flex items-center gap-2 text-[10px] text-slate-500 border-t border-blue-100 pt-1.5 mt-auto">
                         <span class="${durColor}">${t.duration}</span>
@@ -6156,7 +6223,7 @@ window.toggleCareerHub = function() {
 
             filtered.forEach(c => {
                 // Outcome Data Logic
-                const outcome = c.outcomeData || { stars: 1, methodology: 'No Data', uplift: 'No Data' };
+                const outcome = c.outcomeData || window.generateOutcomeScorecard(c.provider, c.type);
                 const rating = outcome.stars || 1;
                 
                 let stars = '';

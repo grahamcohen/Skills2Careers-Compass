@@ -83,7 +83,7 @@
                 <i data-lucide="compass" class="w-6 h-6 md:w-8 md:h-8 text-indigo-600"></i>
                 <h2 class="text-xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-900 to-purple-800 tracking-tight">Skills2Careers Compass</h2>
             </div>
-            <p class="text-xs md:text-sm text-slate-500 mb-4 font-medium relative z-10">Find your place in the digital economy, agriculture, and renewable energy sectors.</p>
+            <p class="text-xs md:text-sm text-slate-500 mb-4 font-medium relative z-10">Your tool for navigating the future of work in East Africa.</p>
             
             <!-- Dynamic Persona Value Prop -->
             <div class="max-w-4xl mx-auto mb-2 relative z-10">
@@ -338,8 +338,31 @@
                         </div>
                         <div id="course-filters-grid" class="grid grid-cols-2 gap-3">
                             <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Country</label>
+                                <select id="filter-country" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="all">All Countries</option>
+                                    <option value="Kenya">Kenya</option>
+                                    <option value="Tanzania">Tanzania</option>
+                                    <option value="Uganda">Uganda</option>
+                                    <option value="Rwanda">Rwanda</option>
+                                    <option value="Burundi">Burundi</option>
+                                    <option value="South Sudan">South Sudan</option>
+                                    <option value="DRC">DR Congo</option>
+                                    <option value="Somalia">Somalia</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Sector</label>
+                                <select id="filter-sector" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="all">All Sectors</option>
+                                    <option value="agri">Agritech</option>
+                                    <option value="energy">Renewable Energy</option>
+                                    <option value="digital">Digital Economy</option>
+                                </select>
+                            </div>
+                            <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Mode</label>
-                                <select id="filter-mode" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                <select id="filter-mode" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
                                     <option value="all">Any Mode</option>
                                     <option value="Online">Online</option>
                                     <option value="In-Person">In-Person</option>
@@ -348,7 +371,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Cost Model</label>
-                                <select id="filter-cost" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                <select id="filter-cost" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
                                     <option value="all">Any Cost</option>
                                     <option value="free">Free / Audit Available</option>
                                     <option value="paid">Paid / Subscription</option>
@@ -359,7 +382,7 @@
                         <div id="extra-course-filters" class="hidden grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Duration</label>
-                                <select id="filter-duration" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                <select id="filter-duration" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
                                     <option value="all">Any Duration</option>
                                     <option value="short">&lt; 1 Month</option>
                                     <option value="1-3m">1 - 3 Months</option>
@@ -371,7 +394,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Credential Type</label>
-                                <select id="filter-type" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                <select id="filter-type" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
                                     <option value="all">All Types</option>
                                     <option value="cert">Certificate / License</option>
                                     <option value="micro">Micro-credential</option>
@@ -383,11 +406,19 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Language</label>
-                                <select id="filter-lang" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                <select id="filter-lang" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
                                     <option value="all">Any Language</option>
                                     <option value="English">English</option>
                                     <option value="Swahili">Kiswahili</option>
                                     <option value="French">French</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Feature</label>
+                                <select id="filter-feature" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="all">Any Feature</option>
+                                    <option value="unesco">UNESCO / GSA</option>
+                                    <option value="women">Women-Focused</option>
                                 </select>
                             </div>
                         </div>
