@@ -1271,13 +1271,21 @@ const sectorPathwayResources = {
         { title: "Hello Tractor", desc: "Tractor sharing & fleet management.", link: "https://hellotractor.com/", icon: "truck" },
         { title: "FAO eLearning", desc: "Certified climate-smart modules.", link: "https://elearning.fao.org/", icon: "book-open" },
         { title: "Zindi Africa", desc: "Competitions to build portfolio.", link: "https://zindi.africa/", icon: "award" },
-        { title: "Moringa School", desc: "Project-based tech training.", link: "https://moringaschool.com/", icon: "code" }
+        { title: "Moringa School", desc: "Project-based tech training.", link: "https://moringaschool.com/", icon: "code" },
+        { title: "CareerVillage Coach", desc: "AI Career Coach & Mentorship.", link: "https://www.careervillage.org/", icon: "message-circle" }
     ],
     energy: [
         { title: "SEforALL Open Africa Power", desc: "Leadership for young energy professionals.", link: "https://www.seforall.org/", icon: "users" },
         { title: "AFSIA Jobs", desc: "Africa Solar Industry Association vacancies.", link: "http://www.afsiasolar.com/careers/jobs/", icon: "briefcase" },
         { title: "GOGLA Investment Academy", desc: "Off-grid solar finance know-how.", link: "https://www.gogla.org/investment-academy", icon: "trending-up" },
-        { title: "ARE Investment Academy", desc: "DRE investment readiness modules.", link: "https://www.ruralelec.org/", icon: "book-open" }
+        { title: "ARE Investment Academy", desc: "DRE investment readiness modules.", link: "https://www.ruralelec.org/", icon: "book-open" },
+        { title: "CareerVillage Coach", desc: "AI Career Coach & Mentorship.", link: "https://www.careervillage.org/", icon: "message-circle" }
+    ],
+    digital: [
+        { title: "CareerVillage Coach", desc: "AI Career Coach & Mentorship.", link: "https://www.careervillage.org/", icon: "message-circle" },
+        { title: "Andela Learning", desc: "Tech skills & community.", link: "https://andela.com/learning-community/", icon: "code" },
+        { title: "Google Digital Skills", desc: "Free digital marketing courses.", link: "https://learndigital.withgoogle.com/digitalskills", icon: "monitor" },
+        { title: "Zindi Africa", desc: "Data science competitions.", link: "https://zindi.africa/", icon: "database" }
     ]
 };
 
@@ -1549,7 +1557,12 @@ const pathwayQuizOptions = {
 // --- 23. Static CV Tools ---
 const staticCVTools = [
     { title: "Canva Templates", desc: "Free, design-focused CV layouts.", link: "https://www.canva.com/resumes/templates/", icon: "layout" },
-    { title: "Resume Worded", desc: "AI scoring for your CV content.", link: "https://resumeworded.com/", icon: "check-circle" }
+    { title: "Resume Worded", desc: "AI scoring for your CV content.", link: "https://resumeworded.com/", icon: "check-circle" },
+    { title: "O*NET Interest Profiler", desc: "Free RIASEC career assessment.", link: "https://www.mynextmove.org/explore/ip", icon: "clipboard-list" },
+    { title: "LinkedIn Career Explorer", desc: "Skills-based career transition tool.", link: "https://linkedin.github.io/career-explorer/", icon: "shuffle" },
+    { title: "ESCO Skills Cloud", desc: "EU Skills & Occupations Framework.", link: "https://esco.ec.europa.eu/en", icon: "globe" },
+    { title: "O*NET OnLine", desc: "Occupational info & skills framework.", link: "https://www.onetonline.org/", icon: "book" },
+    { title: "CareerVillage Coach", desc: "Personalized AI Career Coach.", link: "https://www.careervillage.org/", icon: "message-circle" }
 ];
 
 // --- 25. Country ISO Map ---

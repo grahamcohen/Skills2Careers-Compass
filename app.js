@@ -3557,10 +3557,16 @@ function getOJAMetrics(roleTitle, country) {
                         <p class="text-sm text-slate-600">Find scholarships, loans, and grants for your <strong>${sectorName}</strong> education.</p>
                     </button>
 
-                    <button onclick="openSkillsView('pp-courses')" class="p-6 bg-blue-50 border border-blue-100 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-md text-left transition-all group md:col-span-2">
+                    <button onclick="openSkillsView('pp-courses')" class="p-6 bg-blue-50 border border-blue-100 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-blue-100 text-blue-600 rounded-lg w-fit mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
                         <p class="text-sm text-slate-600">Search verified <strong>${sectorName}</strong> training providers and certifications.</p>
+                    </button>
+
+                    <button onclick="openSkillsView('pp-resources')" class="p-6 bg-rose-50 border border-rose-100 rounded-xl hover:border-rose-300 hover:bg-white hover:shadow-md text-left transition-all group">
+                        <div class="p-3 bg-rose-100 text-rose-600 rounded-lg w-fit mb-4 group-hover:bg-rose-600 group-hover:text-white transition-colors"><i data-lucide="library" class="w-6 h-6"></i></div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Resource Library</h3>
+                        <p class="text-sm text-slate-600">Access guides on CV writing, interview prep, and networking.</p>
                     </button>
             `;
             if(window.lucide) lucide.createIcons();
@@ -3599,6 +3605,8 @@ function getOJAMetrics(roleTitle, country) {
                     renderLaunchpadTab();
                 } else if (viewId === 'pp-finance') {
                     renderUnifiedFinancialAid();
+                } else if (viewId === 'pp-resources') {
+                    renderResourceLibrary();
                 }
                 
                 // Scroll to top
@@ -4134,6 +4142,21 @@ window.showTrainingHubView = function(view) {
     
     if (view === 'find') {
         content = `
+            <!-- Featured Course Banner -->
+            <div class="bg-gradient-to-r from-slate-900 to-indigo-900 rounded-xl p-4 text-white shadow-md relative overflow-hidden flex items-center justify-between group cursor-pointer mb-4" onclick="window.open('https://www.alxafrica.com/ai-career-essentials/', '_blank')">
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="bg-yellow-400 text-slate-900 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">New & Featured</span>
+                    </div>
+                    <h3 class="font-bold text-lg leading-tight mb-1">ALX AI Career Essentials</h3>
+                    <p class="text-xs text-slate-300 max-w-sm">Master AI tools to boost your productivity. 6 weeks, fully sponsored.</p>
+                </div>
+                <div class="relative z-10 bg-white/10 p-2 rounded-full group-hover:bg-white/20 transition-colors">
+                    <i data-lucide="arrow-right" class="w-5 h-5 text-white"></i>
+                </div>
+                <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl -mr-10 -mt-10"></div>
+            </div>
+
             <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
                 <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2 mb-3"><i data-lucide="filter" class="w-4 h-4 text-indigo-500"></i> Filter Training</h3>
                 <div class="space-y-3">
@@ -5319,6 +5342,14 @@ window.toggleCareerHub = function() {
                             <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">World Bank Data <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
                             <div class="text-xs text-slate-500 mt-1">Harmonized macro indicators.</div>
                         </a>
+                        <a href="https://esco.ec.europa.eu/en" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
+                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">ESCO (EU Skills/Occupations) <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
+                            <div class="text-xs text-slate-500 mt-1">Standard terminology for skills and jobs.</div>
+                        </a>
+                        <a href="https://www.onetonline.org/" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
+                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">O*NET OnLine <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
+                            <div class="text-xs text-slate-500 mt-1">Occupational information and skills framework.</div>
+                        </a>
                     </div>
                 </div>
             `;
@@ -6059,6 +6090,66 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
+        // --- NEW: AI Tools View ---
+        window.showAIToolsView = function() {
+            const container = document.getElementById('career-hub-content');
+            
+            const aiTools = [
+                { title: "ChatGPT / Claude", desc: "Drafting cover letters & interview practice.", link: "https://chat.openai.com/", icon: "message-square" },
+                { title: "Resume Worded", desc: "AI scoring for your CV content.", link: "https://resumeworded.com/", icon: "file-text" },
+                { title: "CareerVillage Coach", desc: "Personalized AI Career Coach.", link: "https://www.careervillage.org/", icon: "user-check" },
+                { title: "Interview Warmup", desc: "Google's AI interview practice tool.", link: "https://grow.google/certificates/interview-warmup/", icon: "mic" },
+                { title: "TealHQ", desc: "AI Resume Builder & Job Tracker.", link: "https://www.tealhq.com/", icon: "briefcase" },
+                { title: "Yoodli", desc: "AI Interview Speech Coach.", link: "https://yoodli.ai/", icon: "video" }
+            ];
+
+            const toolsHtml = aiTools.map(t => `
+                <a href="${t.link}" target="_blank" class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:border-indigo-300 bg-white group transition-all">
+                    <div class="p-2 bg-indigo-50 text-indigo-600 rounded"><i data-lucide="${t.icon}" class="w-4 h-4"></i></div>
+                    <div>
+                        <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700">${t.title}</div>
+                        <div class="text-xs text-slate-500">${t.desc}</div>
+                    </div>
+                    <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-indigo-500 ml-auto"></i>
+                </a>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="animate-fade-in">
+                    <button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="cpu" class="w-5 h-5 text-indigo-500"></i> AI Career Tools</h3>
+                    
+                    <!-- Internal Tool Feature -->
+                    <button onclick="showInterviewPrep()" class="w-full p-4 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl text-white shadow-md mb-6 text-left group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <i data-lucide="mic" class="w-24 h-24 text-white"></i>
+                        </div>
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="p-1.5 bg-white/20 rounded-lg"><i data-lucide="mic" class="w-5 h-5 text-white"></i></div>
+                                <span class="text-xs font-bold uppercase tracking-wide bg-white/20 px-2 py-0.5 rounded">Featured Tool</span>
+                            </div>
+                            <h4 class="font-bold text-lg mb-1">AI Interview Coach</h4>
+                            <p class="text-xs text-emerald-50 mb-3 max-w-xs">Practice answering common questions and get instant AI feedback on your delivery.</p>
+                            <div class="inline-flex items-center gap-2 text-xs font-bold bg-white text-emerald-600 px-3 py-1.5 rounded-lg group-hover:bg-emerald-50 transition-colors">
+                                Start Practice <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                            </div>
+                        </div>
+                    </button>
+
+                    <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-xl mb-6">
+                        <h4 class="font-bold text-sm text-indigo-900 mb-2">Leverage AI for your Job Search</h4>
+                        <p class="text-xs text-indigo-800 leading-relaxed">Use these tools to optimize your resume, practice for interviews, and get personalized career advice. Always review AI outputs for accuracy.</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        ${toolsHtml}
+                    </div>
+                </div>
+            `;
+            if(window.lucide) lucide.createIcons();
+        }
+
         window.resetCareerHub = function() {
             document.getElementById('career-hub-content').innerHTML = `
                 <div class="space-y-4">
@@ -6103,32 +6194,32 @@ window.toggleCareerHub = function() {
                             <p class="text-xs text-slate-500 mt-1">Builder & Templates</p>
                         </button>
                         
-                        <!-- 3. Interview Prep -->
-                        <button onclick="showInterviewPrep()" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-emerald-300 hover:bg-white hover:shadow-sm text-left transition-all group">
-                            <div class="p-2 bg-emerald-100 text-emerald-600 rounded-lg w-fit mb-3 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><i data-lucide="mic" class="w-5 h-5"></i></div>
-                            <h4 class="font-bold text-slate-800 text-sm">Interview Prep</h4>
-                             <p class="text-xs text-slate-500 mt-1">AI Practice Tool</p>
-                        </button>
-                        
-                        <!-- 4. Mentorship -->
+                        <!-- 3. Mentorship -->
                         <button onclick="showMentorshipView()" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-sm text-left transition-all group">
                             <div class="p-2 bg-blue-100 text-blue-600 rounded-lg w-fit mb-3 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="user-check" class="w-5 h-5"></i></div>
                             <h4 class="font-bold text-slate-800 text-sm">Mentorship</h4>
                             <p class="text-xs text-slate-500 mt-1">Communities & Networks</p>
                         </button>
 
-                        <!-- 5. Job Board -->
+                        <!-- 4. Job Board -->
                         <button onclick="showJobBoardView()" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-cyan-300 hover:bg-white hover:shadow-sm text-left transition-all group">
                             <div class="p-2 bg-cyan-100 text-cyan-600 rounded-lg w-fit mb-3 group-hover:bg-cyan-600 group-hover:text-white transition-colors"><i data-lucide="briefcase" class="w-5 h-5"></i></div>
                             <h4 class="font-bold text-slate-800 text-sm">Opportunities</h4>
                             <p class="text-xs text-slate-500 mt-1">Jobs, Gigs & Tenders</p>
                         </button>
                         
-                        <!-- 6. Employer Connect -->
+                        <!-- 5. Employer Connect -->
                         <button onclick="showEmployerConnectView()" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-pink-300 hover:bg-white hover:shadow-sm text-left transition-all group">
                             <div class="p-2 bg-pink-100 text-pink-600 rounded-lg w-fit mb-3 group-hover:bg-pink-600 group-hover:text-white transition-colors"><i data-lucide="handshake" class="w-5 h-5"></i></div>
                             <h4 class="font-bold text-slate-800 text-sm">Employer Connect</h4>
                             <p class="text-xs text-slate-500 mt-1">Fairs & Alumni</p>
+                        </button>
+
+                        <!-- 6. AI Tools -->
+                        <button onclick="showAIToolsView()" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-indigo-300 hover:bg-white hover:shadow-sm text-left transition-all group">
+                            <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg w-fit mb-3 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><i data-lucide="cpu" class="w-5 h-5"></i></div>
+                            <h4 class="font-bold text-slate-800 text-sm">AI Tools</h4>
+                            <p class="text-xs text-slate-500 mt-1">Resume & Interview AI</p>
                         </button>
                     </div>
                 </div>
@@ -6165,7 +6256,7 @@ window.toggleCareerHub = function() {
         }
 
         window.clearCourseFilters = function() {
-            const inputs = ['filter-search', 'filter-country', 'filter-sector', 'filter-duration', 'filter-mode', 'filter-cost', 'filter-type', 'filter-lang', 'filter-feature'];
+            const inputs = ['filter-search', 'filter-country', 'filter-sector', 'filter-topic', 'filter-duration', 'filter-mode', 'filter-cost', 'filter-type', 'filter-lang', 'filter-feature'];
             inputs.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = id === 'filter-search' ? '' : 'all';
@@ -6192,6 +6283,7 @@ window.toggleCareerHub = function() {
         window.renderProviderTable = function() {
             const countryFilter = document.getElementById('filter-country') ? document.getElementById('filter-country').value : 'all';
             const secFilter = document.getElementById('filter-sector') ? document.getElementById('filter-sector').value : 'all';
+            const topicFilter = document.getElementById('filter-topic') ? document.getElementById('filter-topic').value : 'all';
             const durationFilter = document.getElementById('filter-duration') ? document.getElementById('filter-duration').value : 'all';
             const modeFilter = document.getElementById('filter-mode') ? document.getElementById('filter-mode').value : 'all';
             const costFilter = document.getElementById('filter-cost') ? document.getElementById('filter-cost').value : 'all';
@@ -6212,6 +6304,17 @@ window.toggleCareerHub = function() {
             const filtered = courses.filter(c => {
                 const matchCountry = countryFilter === 'all' || c.country === 'all' || c.country === countryFilter;
                 const matchSector = secFilter === 'all' || c.sector === secFilter;
+                
+                let matchTopic = true;
+                if (topicFilter !== 'all') {
+                    const text = (c.name + ' ' + (c.skills || []).join(' ')).toLowerCase();
+                    if (topicFilter === 'ai') matchTopic = text.includes('ai') || text.includes('data') || text.includes('intelligence') || text.includes('machine');
+                    else if (topicFilter === 'dev') matchTopic = text.includes('software') || text.includes('web') || text.includes('app') || text.includes('code') || text.includes('cloud');
+                    else if (topicFilter === 'green') matchTopic = text.includes('solar') || text.includes('energy') || text.includes('wind') || text.includes('climate');
+                    else if (topicFilter === 'agri') matchTopic = text.includes('agri') || text.includes('farm') || text.includes('crop') || text.includes('food');
+                    else if (topicFilter === 'biz') matchTopic = text.includes('business') || text.includes('management') || text.includes('finance') || text.includes('marketing');
+                }
+
                 const matchMode = modeFilter === 'all' || (c.mode && c.mode.toLowerCase() === modeFilter.toLowerCase()) || (modeFilter.toLowerCase() === 'hybrid' && (c.mode === 'Blended' || c.mode === 'Hybrid'));
                 
                 let matchDuration = true;
@@ -6247,7 +6350,7 @@ window.toggleCareerHub = function() {
 
                 const matchSearch = searchFilter === '' || (c.name && c.name.toLowerCase().includes(searchFilter)) || (c.provider && c.provider.toLowerCase().includes(searchFilter));
 
-                return matchCountry && matchSector && matchDuration && matchMode && matchCost && matchLang && matchType && matchFeature && matchSearch;
+                return matchCountry && matchSector && matchTopic && matchDuration && matchMode && matchCost && matchLang && matchType && matchFeature && matchSearch;
             });
 
             if (filtered.length === 0) {
@@ -6526,6 +6629,45 @@ window.toggleCareerHub = function() {
                 </div>
             `).join('');
             
+            if(window.lucide) lucide.createIcons();
+        }
+
+        window.renderResourceLibrary = function() {
+            const container = document.getElementById('pp-resources');
+            if(!container) return;
+
+            const resources = [
+                { title: "How to Write an ATS-Friendly CV", desc: "Optimize your resume to pass through automated screening systems.", icon: "file-text", link: "#" },
+                { title: "Mastering the STAR Method for Interviews", desc: "Structure your answers to behavioral questions effectively.", icon: "star", link: "#" },
+                { title: "Networking for Introverts", desc: "Strategies to build professional connections authentically.", icon: "users", link: "#" },
+                { title: "Salary Negotiation 101", desc: "Tips and scripts for discussing compensation.", icon: "banknote", link: "#" },
+                { title: "Building Your Personal Brand on LinkedIn", desc: "Optimize your profile to attract recruiters.", icon: "linkedin", link: "#" },
+                { title: "A Guide to Informational Interviews", desc: "Learn from professionals in your target field.", icon: "message-square", link: "#" }
+            ];
+
+            const resourcesHtml = resources.map(r => `
+                <a href="${r.link}" class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:border-rose-300 bg-white group transition-all">
+                    <div class="p-2 bg-rose-50 text-rose-600 rounded"><i data-lucide="${r.icon}" class="w-4 h-4"></i></div>
+                    <div>
+                        <div class="font-bold text-sm text-slate-800 group-hover:text-rose-700">${r.title}</div>
+                        <div class="text-xs text-slate-500">${r.desc}</div>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-3 h-3 text-slate-300 group-hover:text-rose-500 ml-auto"></i>
+                </a>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="bg-rose-50 rounded-xl p-4 border border-rose-100 flex items-start gap-3">
+                    <div class="p-2 bg-rose-100 text-rose-600 rounded-lg shrink-0"><i data-lucide="library" class="w-5 h-5"></i></div>
+                    <div>
+                        <h3 class="font-bold text-rose-900 text-sm">Resource Library</h3>
+                        <p class="text-xs text-rose-700 mt-1">Practical guides and articles to support your career journey.</p>
+                    </div>
+                </div>
+                <div class="space-y-3 mt-4">
+                    ${resourcesHtml}
+                </div>
+            `;
             if(window.lucide) lucide.createIcons();
         }
 

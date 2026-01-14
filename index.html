@@ -95,9 +95,13 @@
         </div>
         
 
-        <div class="text-center">
-            <h2 class="text-xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-900 to-purple-800">Start Navigating</h2>
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-indigo-50 text-indigo-600 mb-4 shadow-sm border border-indigo-100">
+                <i data-lucide="compass" class="w-7 h-7"></i>
             </div>
+            <h2 class="text-2xl md:text-4xl font-bold text-slate-900 mb-3 tracking-tight">Start Navigating</h2>
+            <p class="text-slate-500 max-w-xl mx-auto text-sm md:text-base leading-relaxed">Select a pathway below to start your journey.</p>
+        </div>
 
         <!-- Container for dynamically generated sector cards -->
         <div id="sector-cards-container" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
@@ -361,6 +365,17 @@
                                 </select>
                             </div>
                             <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Topic</label>
+                                <select id="filter-topic" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="all">All Topics</option>
+                                    <option value="ai">AI & Data Science</option>
+                                    <option value="dev">Software & Cloud</option>
+                                    <option value="green">Green Energy</option>
+                                    <option value="agri">Agri-Business</option>
+                                    <option value="biz">Business & Soft Skills</option>
+                                </select>
+                            </div>
+                            <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Mode</label>
                                 <select id="filter-mode" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
                                     <option value="all">Any Mode</option>
@@ -474,6 +489,9 @@
 
                 <!-- TAB 5: FINANCIAL AID -->
                 <div id="pp-finance" class="pp-view-content hidden space-y-6"></div>
+
+                <!-- TAB 6: RESOURCE LIBRARY -->
+                <div id="pp-resources" class="pp-view-content hidden space-y-6"></div>
 
             </div>
         </div>
