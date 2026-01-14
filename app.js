@@ -2215,15 +2215,15 @@ function getOJAMetrics(roleTitle, country) {
             // Interest-based refinement
             if (pathwayState.interest) {
                  const interestMap = {
-                    'tech': ['Python', 'IoT', 'Solar', 'Design', 'Coding', 'Technical'],
-                    'code': ['Python', 'Java', 'React', 'API', 'Code'],
-                    'design': ['Design', 'UX', 'CAD', 'Drawing', 'Planning'],
-                    'hands-on': ['Installation', 'Wiring', 'Maintenance', 'Repair', 'Field'],
-                    'field': ['Soil', 'Crop', 'Drone', 'Scouting', 'Farm'],
-                    'biz': ['Sales', 'Management', 'Logistics', 'Finance', 'Business'],
-                    'mgmt': ['Management', 'Audit', 'Policy', 'Planning', 'Project'],
-                    'data': ['Data', 'Analysis', 'Excel', 'Statistics', 'Logic'],
-                    'creative': ['Design', 'Marketing', 'Content', 'Strategy', 'UI']
+                    'tech': ['Python', 'IoT', 'Solar', 'Design', 'Coding', 'Technical', 'Digital', 'Technology'],
+                    'code': ['Python', 'Java', 'React', 'API', 'Code', 'Software', 'Web', 'Development'],
+                    'design': ['Design', 'UX', 'CAD', 'Drawing', 'Planning', 'Product', 'Creative'],
+                    'hands-on': ['Installation', 'Wiring', 'Maintenance', 'Repair', 'Field', 'Technician', 'Practical'],
+                    'field': ['Soil', 'Crop', 'Drone', 'Scouting', 'Farm', 'Agriculture', 'Field'],
+                    'biz': ['Sales', 'Management', 'Logistics', 'Finance', 'Business', 'Supply Chain', 'Entrepreneurship'],
+                    'mgmt': ['Management', 'Audit', 'Policy', 'Planning', 'Project', 'Leadership'],
+                    'data': ['Data', 'Analysis', 'Excel', 'Statistics', 'Logic', 'Science', 'Analytics'],
+                    'creative': ['Design', 'Marketing', 'Content', 'Strategy', 'UI', 'Creative']
                 };
                 const keywords = interestMap[pathwayState.interest] || [];
                 if (keywords.length > 0) {
@@ -2596,6 +2596,32 @@ function getOJAMetrics(roleTitle, country) {
             if (pathwayState.constraints.budget === 'Free') courses = courses.filter(c => c.cost && c.cost.toLowerCase().includes('free'));
             if (pathwayState.constraints.mode === 'Online') courses = courses.filter(c => c.mode === 'Online');
             
+            // NEW: Prioritize courses based on Interest (User's "What sounds most like you" selection)
+            if (pathwayState.interest) {
+                 const interestMap = {
+                    'tech': ['Python', 'IoT', 'Solar', 'Design', 'Coding', 'Technical', 'Digital', 'Technology'],
+                    'code': ['Python', 'Java', 'React', 'API', 'Code', 'Software', 'Web', 'Development'],
+                    'design': ['Design', 'UX', 'CAD', 'Drawing', 'Planning', 'Product', 'Creative'],
+                    'hands-on': ['Installation', 'Wiring', 'Maintenance', 'Repair', 'Field', 'Technician', 'Practical'],
+                    'field': ['Soil', 'Crop', 'Drone', 'Scouting', 'Farm', 'Agriculture', 'Field'],
+                    'biz': ['Sales', 'Management', 'Logistics', 'Finance', 'Business', 'Supply Chain', 'Entrepreneurship'],
+                    'mgmt': ['Management', 'Audit', 'Policy', 'Planning', 'Project', 'Leadership'],
+                    'data': ['Data', 'Analysis', 'Excel', 'Statistics', 'Logic', 'Science', 'Analytics'],
+                    'creative': ['Design', 'Marketing', 'Content', 'Strategy', 'UI', 'Creative']
+                };
+                const keywords = interestMap[pathwayState.interest] || [];
+                
+                if (keywords.length > 0) {
+                    courses.sort((a, b) => {
+                        const getMatchScore = (c) => {
+                            const text = (c.name + " " + (c.description || "") + " " + (c.skills || []).join(" ")).toLowerCase();
+                            return keywords.filter(k => text.includes(k.toLowerCase())).length;
+                        };
+                        return getMatchScore(b) - getMatchScore(a);
+                    });
+                }
+            }
+
             const finalCourses = courses.slice(0, 4); // Limit to 4 for cleaner UI
             const trainingHtml = finalCourses.map(c => `
                 <a href="${c.url}" target="_blank" class="flex flex-col p-4 bg-white border border-slate-200 rounded-lg hover:border-${theme}-300 transition-colors group h-full shadow-sm">
