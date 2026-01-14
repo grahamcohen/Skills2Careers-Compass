@@ -3562,12 +3562,6 @@ function getOJAMetrics(roleTitle, country) {
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
                         <p class="text-sm text-slate-600">Search verified <strong>${sectorName}</strong> training providers and certifications.</p>
                     </button>
-
-                    <button onclick="openSkillsView('pp-resources')" class="p-6 bg-rose-50 border border-rose-100 rounded-xl hover:border-rose-300 hover:bg-white hover:shadow-md text-left transition-all group">
-                        <div class="p-3 bg-rose-100 text-rose-600 rounded-lg w-fit mb-4 group-hover:bg-rose-600 group-hover:text-white transition-colors"><i data-lucide="library" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">Resource Library</h3>
-                        <p class="text-sm text-slate-600">Access guides on CV writing, interview prep, and networking.</p>
-                    </button>
             `;
             if(window.lucide) lucide.createIcons();
         }
@@ -3605,8 +3599,6 @@ function getOJAMetrics(roleTitle, country) {
                     renderLaunchpadTab();
                 } else if (viewId === 'pp-finance') {
                     renderUnifiedFinancialAid();
-                } else if (viewId === 'pp-resources') {
-                    renderResourceLibrary();
                 }
                 
                 // Scroll to top
@@ -6629,45 +6621,6 @@ window.toggleCareerHub = function() {
                 </div>
             `).join('');
             
-            if(window.lucide) lucide.createIcons();
-        }
-
-        window.renderResourceLibrary = function() {
-            const container = document.getElementById('pp-resources');
-            if(!container) return;
-
-            const resources = [
-                { title: "How to Write an ATS-Friendly CV", desc: "Optimize your resume to pass through automated screening systems.", icon: "file-text", link: "#" },
-                { title: "Mastering the STAR Method for Interviews", desc: "Structure your answers to behavioral questions effectively.", icon: "star", link: "#" },
-                { title: "Networking for Introverts", desc: "Strategies to build professional connections authentically.", icon: "users", link: "#" },
-                { title: "Salary Negotiation 101", desc: "Tips and scripts for discussing compensation.", icon: "banknote", link: "#" },
-                { title: "Building Your Personal Brand on LinkedIn", desc: "Optimize your profile to attract recruiters.", icon: "linkedin", link: "#" },
-                { title: "A Guide to Informational Interviews", desc: "Learn from professionals in your target field.", icon: "message-square", link: "#" }
-            ];
-
-            const resourcesHtml = resources.map(r => `
-                <a href="${r.link}" class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:border-rose-300 bg-white group transition-all">
-                    <div class="p-2 bg-rose-50 text-rose-600 rounded"><i data-lucide="${r.icon}" class="w-4 h-4"></i></div>
-                    <div>
-                        <div class="font-bold text-sm text-slate-800 group-hover:text-rose-700">${r.title}</div>
-                        <div class="text-xs text-slate-500">${r.desc}</div>
-                    </div>
-                    <i data-lucide="arrow-right" class="w-3 h-3 text-slate-300 group-hover:text-rose-500 ml-auto"></i>
-                </a>
-            `).join('');
-
-            container.innerHTML = `
-                <div class="bg-rose-50 rounded-xl p-4 border border-rose-100 flex items-start gap-3">
-                    <div class="p-2 bg-rose-100 text-rose-600 rounded-lg shrink-0"><i data-lucide="library" class="w-5 h-5"></i></div>
-                    <div>
-                        <h3 class="font-bold text-rose-900 text-sm">Resource Library</h3>
-                        <p class="text-xs text-rose-700 mt-1">Practical guides and articles to support your career journey.</p>
-                    </div>
-                </div>
-                <div class="space-y-3 mt-4">
-                    ${resourcesHtml}
-                </div>
-            `;
             if(window.lucide) lucide.createIcons();
         }
 
