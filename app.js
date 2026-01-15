@@ -37,49 +37,42 @@ class DataManager {
             document.body.appendChild(spinner);
         }
 
-        // 1. Critical Load (Fast) - Config & Landing Page Data
-        const criticalResults = await Promise.allSettled([
-            this.fetchData('app_data.json'),
+        // Use Promise.allSettled to prevent one failure from crashing the app
+        const results = await Promise.allSettled([
+            this.fetchData('wages.json'),
             this.fetchData('ventures.json'),
             this.fetchData('top_occupations.json'),
-            this.fetchData('top_skills.json')
-        ]);
-
-        // Load App Data (UI Config)
-        const appData = (criticalResults[0].status === 'fulfilled' && criticalResults[0].value) ? criticalResults[0].value : {};
-        if (appData) Object.assign(window, appData); // Expose config globally
-
-        this.ventures = (criticalResults[1].status === 'fulfilled' && criticalResults[1].value) ? criticalResults[1].value : this.getFallbackVentures();
-        this.topOccupations = (criticalResults[2].status === 'fulfilled' && criticalResults[2].value) ? criticalResults[2].value : [];
-        this.topSkills = (criticalResults[3].status === 'fulfilled' && criticalResults[3].value) ? criticalResults[3].value : [];
-
-        this.normalizeData();
-        
-        // Hide Spinner immediately after critical data to improve perceived load time
-        spinner.classList.add('hidden');
-
-        // 2. Background Load (Heavy) - Wages, Courses, Resources
-        Promise.allSettled([
-            this.fetchData('wages.json'),
+            this.fetchData('top_skills.json'),
             this.fetchData('courses.json'),
+            this.fetchData('app_data.json'),
             this.fetchData('resources_general.json'),
             this.fetchData('resources_evidence.json'),
             this.fetchData('resources_digital.json'),
             this.fetchData('resources_agri.json'),
             this.fetchData('resources_energy.json'),
             this.fetchData('Scholarships.json')
-        ]).then(results => {
-            this.wages = (results[0].status === 'fulfilled' && results[0].value) ? results[0].value : [];
-            this.courses = (results[1].status === 'fulfilled' && results[1].value) ? results[1].value : [];
-            
-            const generalRes = (results[2].status === 'fulfilled' && results[2].value) ? results[2].value : {};
-            const evidenceRes = (results[3].status === 'fulfilled' && results[3].value) ? results[3].value : [];
-            const digitalRes = (results[4].status === 'fulfilled' && results[4].value) ? results[4].value : {};
-            const agriRes = (results[5].status === 'fulfilled' && results[5].value) ? results[5].value : {};
-            const energyRes = (results[6].status === 'fulfilled' && results[6].value) ? results[6].value : {};
-            this.scholarships = (results[7].status === 'fulfilled' && results[7].value) ? results[7].value : this.getFallbackScholarships();
+        ]);
 
-            this.digitalResources = {
+        // Extract data safely
+        this.wages = (results[0].status === 'fulfilled' && results[0].value) ? results[0].value : [];
+        this.ventures = (results[1].status === 'fulfilled' && results[1].value) ? results[1].value : this.getFallbackVentures();
+        this.topOccupations = (results[2].status === 'fulfilled' && results[2].value) ? results[2].value : [];
+        this.topSkills = (results[3].status === 'fulfilled' && results[3].value) ? results[3].value : [];
+        this.courses = (results[4].status === 'fulfilled' && results[4].value) ? results[4].value : [];
+        this.scholarships = (results[11].status === 'fulfilled' && results[11].value) ? results[11].value : this.getFallbackScholarships();
+
+        // Load App Data (UI Config)
+        const appData = (results[5].status === 'fulfilled' && results[5].value) ? results[5].value : {};
+        if (appData) Object.assign(window, appData); // Expose config globally
+
+        // Construct Digital Resources from split files
+        const generalRes = (results[6].status === 'fulfilled' && results[6].value) ? results[6].value : {};
+        const evidenceRes = (results[7].status === 'fulfilled' && results[7].value) ? results[7].value : [];
+        const digitalRes = (results[8].status === 'fulfilled' && results[8].value) ? results[8].value : {};
+        const agriRes = (results[9].status === 'fulfilled' && results[9].value) ? results[9].value : {};
+        const energyRes = (results[10].status === 'fulfilled' && results[10].value) ? results[10].value : {};
+
+        this.digitalResources = {
             ...generalRes,
             "evidence_providers": evidenceRes,
             "digital": digitalRes,
@@ -87,22 +80,22 @@ class DataManager {
             "energy": energyRes
         };
 
+        this.normalizeData();
         this.linkData();
+
+        // Expose for backward compatibility
         window.digitalResources = this.digitalResources;
         
-            console.log(`Background data loaded: ${this.wages.length} wages, ${this.courses.length} courses.`);
-            
-            // Refresh views if they are already open
-            if (typeof updateHeroStats === 'function') updateHeroStats();
-            if (typeof updateTrainingProviders === 'function') updateTrainingProviders();
-        });
+        console.log(`DataManager loaded: ${this.wages.length} wages, ${this.ventures.length} ventures, ${this.topOccupations.length} occupations, ${this.topSkills.length} skills, ${this.courses.length} courses.`);
         
-        console.log(`DataManager critical loaded.`);
-        
-        // Initial renders
+        // Force re-renders
         try { if (typeof renderOccupationsView === 'function') renderOccupationsView(); } catch(e) { console.warn("Error rendering occupations:", e); }
+        try { if (typeof resetCareerHub === 'function') resetCareerHub(); } catch(e) { console.warn("Error resetting hub:", e); }
         try { if (typeof renderSectorCards === 'function') renderSectorCards(); } catch(e) { console.warn("Error rendering cards:", e); }
         try { if (typeof updateHeroStats === 'function') updateHeroStats(); } catch(e) { console.warn("Error updating stats:", e); }
+
+        // Hide Spinner
+        spinner.classList.add('hidden');
     }
 
     async fetchData(url) {
@@ -3569,6 +3562,12 @@ function getOJAMetrics(roleTitle, country) {
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
                         <p class="text-sm text-slate-600">Search verified <strong>${sectorName}</strong> training providers and certifications.</p>
                     </button>
+
+                    <button onclick="openSkillsView('pp-resources')" class="p-6 bg-rose-50 border border-rose-100 rounded-xl hover:border-rose-300 hover:bg-white hover:shadow-md text-left transition-all group">
+                        <div class="p-3 bg-rose-100 text-rose-600 rounded-lg w-fit mb-4 group-hover:bg-rose-600 group-hover:text-white transition-colors"><i data-lucide="library" class="w-6 h-6"></i></div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Resource Library</h3>
+                        <p class="text-sm text-slate-600">Access guides on CV writing, interview prep, and networking.</p>
+                    </button>
             `;
             if(window.lucide) lucide.createIcons();
         }
@@ -3606,6 +3605,8 @@ function getOJAMetrics(roleTitle, country) {
                     renderLaunchpadTab();
                 } else if (viewId === 'pp-finance') {
                     renderUnifiedFinancialAid();
+                } else if (viewId === 'pp-resources') {
+                    renderResourceLibrary();
                 }
                 
                 // Scroll to top
@@ -3944,24 +3945,6 @@ function getOJAMetrics(roleTitle, country) {
                     </div>
 
                     <div>
-                        <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide border-b border-slate-200 pb-2 mb-3">Continental Frameworks</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <a href="https://edu-au.org/cesa" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
-                                <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">CESA 16-25 / 26-35 <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
-                                <div class="text-xs text-slate-500 mt-1">Continental Education Strategy for Africa.</div>
-                            </a>
-                            <a href="https://acqf.africa/" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
-                                <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">ACQF <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
-                                <div class="text-xs text-slate-500 mt-1">African Continental Qualifications Framework.</div>
-                            </a>
-                            <a href="https://au.int/en/education/tvet" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
-                                <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">Continental TVET Strategy <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
-                                <div class="text-xs text-slate-500 mt-1">Strategy to revitalize TVET in Africa (2025-34).</div>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div>
                         <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide border-b border-slate-200 pb-2 mb-3">Sector Specific Sources</h3>
                         <div class="space-y-3">
                             <!-- Agri -->
@@ -4153,16 +4136,6 @@ window.resetTrainingHub = function() {
     if(window.lucide) lucide.createIcons();
 }
 
-        // --- NEW: Reset Training Hub Filters ---
-        window.resetTrainingHubFilters = function() {
-            const inputs = ['drawer-hub-country', 'drawer-hub-language', 'drawer-hub-sector', 'drawer-hub-mode-quick', 'drawer-hub-course-type', 'drawer-hub-budget'];
-            inputs.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = 'all';
-            });
-            renderTrainingHubCourses();
-        }
-
 window.showTrainingHubView = function(view) {
     const container = document.getElementById('training-hub-content');
     let content = '';
@@ -4186,10 +4159,6 @@ window.showTrainingHubView = function(view) {
 
             <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
                 <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2 mb-3"><i data-lucide="filter" class="w-4 h-4 text-indigo-500"></i> Filter Training</h3>
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="filter" class="w-4 h-4 text-indigo-500"></i> Filter Training</h3>
-                            <button onclick="resetTrainingHubFilters()" class="text-xs font-bold text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors"><i data-lucide="rotate-ccw" class="w-3 h-3"></i> Reset Filters</button>
-                        </div>
                 <div class="space-y-3">
                         <div class="grid grid-cols-2 gap-3">
                         <div>
@@ -5381,18 +5350,6 @@ window.toggleCareerHub = function() {
                             <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">O*NET OnLine <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
                             <div class="text-xs text-slate-500 mt-1">Occupational information and skills framework.</div>
                         </a>
-                        <a href="https://acqf.africa/" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
-                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">ACQF (Qualifications) <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
-                            <div class="text-xs text-slate-500 mt-1">African Continental Qualifications Framework.</div>
-                        </a>
-                        <a href="https://edu-au.org/cesa" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
-                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">CESA Strategy <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
-                            <div class="text-xs text-slate-500 mt-1">Continental Education Strategy for Africa.</div>
-                        </a>
-                        <a href="https://au.int/en/education/tvet" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
-                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">AU TVET Strategy <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
-                            <div class="text-xs text-slate-500 mt-1">Continental Strategy for TVET (2025-34).</div>
-                        </a>
                     </div>
                 </div>
             `;
@@ -5945,7 +5902,7 @@ window.toggleCareerHub = function() {
         window.updateHeroPersona = function(type) {
             const content = {
                 learner: {
-                    text: "In 5 minutes, you’ll have a shortlist of occupations you’re suited for + an idea of skills in demand + information on training options in your country.",
+                    text: "In 10 minutes, you’ll have a shortlist of occupations you’re suited for + an idea of skills in demand + information on training options in your country.",
                     },
                 entrepreneur: {
                     text: "Identify high-potential venture niches, access eco-system resources, and build your capability roadmap.",
@@ -5963,7 +5920,7 @@ window.toggleCareerHub = function() {
 
             const data = content[type] || content.learner;
             
-            const descEl = document.getElementById('persona-dynamic-text');
+            const descEl = document.getElementById('hero-desc');
             
             if(descEl) {
                 descEl.style.opacity = '0';
@@ -6675,6 +6632,45 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
+        window.renderResourceLibrary = function() {
+            const container = document.getElementById('pp-resources');
+            if(!container) return;
+
+            const resources = [
+                { title: "How to Write an ATS-Friendly CV", desc: "Optimize your resume to pass through automated screening systems.", icon: "file-text", link: "#" },
+                { title: "Mastering the STAR Method for Interviews", desc: "Structure your answers to behavioral questions effectively.", icon: "star", link: "#" },
+                { title: "Networking for Introverts", desc: "Strategies to build professional connections authentically.", icon: "users", link: "#" },
+                { title: "Salary Negotiation 101", desc: "Tips and scripts for discussing compensation.", icon: "banknote", link: "#" },
+                { title: "Building Your Personal Brand on LinkedIn", desc: "Optimize your profile to attract recruiters.", icon: "linkedin", link: "#" },
+                { title: "A Guide to Informational Interviews", desc: "Learn from professionals in your target field.", icon: "message-square", link: "#" }
+            ];
+
+            const resourcesHtml = resources.map(r => `
+                <a href="${r.link}" class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:border-rose-300 bg-white group transition-all">
+                    <div class="p-2 bg-rose-50 text-rose-600 rounded"><i data-lucide="${r.icon}" class="w-4 h-4"></i></div>
+                    <div>
+                        <div class="font-bold text-sm text-slate-800 group-hover:text-rose-700">${r.title}</div>
+                        <div class="text-xs text-slate-500">${r.desc}</div>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-3 h-3 text-slate-300 group-hover:text-rose-500 ml-auto"></i>
+                </a>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="bg-rose-50 rounded-xl p-4 border border-rose-100 flex items-start gap-3">
+                    <div class="p-2 bg-rose-100 text-rose-600 rounded-lg shrink-0"><i data-lucide="library" class="w-5 h-5"></i></div>
+                    <div>
+                        <h3 class="font-bold text-rose-900 text-sm">Resource Library</h3>
+                        <p class="text-xs text-rose-700 mt-1">Practical guides and articles to support your career journey.</p>
+                    </div>
+                </div>
+                <div class="space-y-3 mt-4">
+                    ${resourcesHtml}
+                </div>
+            `;
+            if(window.lucide) lucide.createIcons();
+        }
+
         // --- NEW: Render Training Hub Drawer Courses ---
         window.renderTrainingHubCourses = function() {
             const countryFilter = document.getElementById('drawer-hub-country') ? document.getElementById('drawer-hub-country').value : 'all';
@@ -6955,12 +6951,6 @@ window.toggleCareerHub = function() {
                 console.warn("Data dependencies (data.js) missing or not loaded.");
             }
 
-            // Set static subline for Personas
-            const heroDesc = document.getElementById('hero-desc');
-            if(heroDesc) {
-                heroDesc.innerText = "Your tool for navigating the East African labor market.";
-            }
-
             injectSectorDrawer(); // Inject the new Sector Drawer
             renderMainLanding(); // Render the 3-Pillar Dashboard
             if(window.lucide) lucide.createIcons();
@@ -7162,15 +7152,6 @@ window.toggleCareerHub = function() {
             if (!container) return;
 
             container.innerHTML = `
-                <div class="text-center mb-8 animate-fade-in">
-                    <h2 class="text-2xl md:text-3xl font-bold text-teal-600 flex items-center justify-center gap-2 whitespace-nowrap">
-                        <i data-lucide="compass" class="w-6 h-6 md:w-8 md:h-8"></i> Start Navigating
-                    </h2>
-                    <p class="text-sm text-slate-600 mt-2 max-w-2xl mx-auto">
-                        In 5 minutes, you’ll have a shortlist of occupations you’re suited for + an idea of skills in demand + information on training options in your country.
-                    </p>
-                </div>
-
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
                     <!-- Block 1: High Growth Sectors -->
                     <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-indigo-50 border border-indigo-200 rounded-2xl p-6 hover:border-indigo-400 hover:shadow-lg transition-all group relative overflow-hidden">
@@ -7181,7 +7162,7 @@ window.toggleCareerHub = function() {
                             <div class="w-12 h-12 bg-white text-indigo-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                                 <i data-lucide="bar-chart-2" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-sm md:text-xl font-bold text-slate-900 whitespace-nowrap">High Growth Sectors</h3>
+                            <h3 class="text-xl font-bold text-slate-900">High Growth Sectors</h3>
                         </div>
                         <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Explore fast growing sectors and access real-time market intelligence. Identify occupations and skills in demand, as well as entrepreneurship opportunities.</p>
                         <div class="mt-auto flex items-center gap-2 text-sm font-bold text-indigo-600 group-hover:gap-3 transition-all relative z-10">
@@ -7198,7 +7179,7 @@ window.toggleCareerHub = function() {
                             <div class="w-12 h-12 bg-white text-emerald-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                                 <i data-lucide="graduation-cap" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-sm md:text-xl font-bold text-slate-900 whitespace-nowrap">Skills & Training Hub</h3>
+                            <h3 class="text-xl font-bold text-slate-900">Skills & Training Hub</h3>
                         </div>
                         <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Use tools to assess your fit for different occupations and careers, build a personalized training and learning pathway, or support your entrepreneurship journey.</p>
                         <div class="mt-auto flex items-center gap-2 text-sm font-bold text-emerald-600 group-hover:gap-3 transition-all relative z-10">
@@ -7215,9 +7196,9 @@ window.toggleCareerHub = function() {
                             <div class="w-12 h-12 bg-white text-orange-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                                 <i data-lucide="handshake" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-sm md:text-xl font-bold text-slate-900 whitespace-nowrap">Career & Community Tools</h3>
+                            <h3 class="text-xl font-bold text-slate-900">Career & Community Tools</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Connect with careers guidance and counselling resources, mentors, employers and the wider support community.</p>
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Connect with guidance resources, mentors, and the wider Campus Africa community.</p>
                         <div class="mt-auto flex items-center gap-2 text-sm font-bold text-orange-600 group-hover:gap-3 transition-all relative z-10">
                             Access Tools <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
