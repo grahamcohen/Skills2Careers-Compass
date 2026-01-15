@@ -12,7 +12,8 @@
     "costType": "Freemium",
     "mode": "Online",
     "sector": "digital",
-    "skills": ["Data Analysis", "org/professional-certificates/google-data-analytics",
+    "skills": ["Data Analysis", "SQL", "Tableau", "R Programming"],
+    "url": "https://www.coursera.org/professional-certificates/google-data-analytics",
     "country": "all",
     "description": "Gain an immersive understanding of the practices and processes used by a junior or associate data analyst. Learn key analytical skills (data cleaning, analysis, & visualization) and tools (spreadsheets, SQL, R programming, Tableau).",
     "language": "English",
@@ -71,7 +72,8 @@
     "costType": "Freemium",
     "mode": "Online",
     "sector": "digital",
-    "skills": ["Netwo:ctes/google-it-support",
+    "skills": ["Networking", "IT Support", "System Admin"],
+    "url": "https://www.coursera.org/professional-certificates/google-it-support",
     "country": "all",
     "description": "Prepare for an entry-level role in IT support. Learn to perform day-to-day IT support tasks including computer assembly, wireless networking, installing programs, and customer service.",
     "language": "English",
@@ -102,7 +104,8 @@
     "sector": "digital",
     "skills": ["Database Mgmt", "Web Dev", "Data Analysis"],
     "url": "https://digital.ku.ac.ke/",
-    "country": in": "rs students to work in the dynamic IT environment by integrating business management with information technology. It covers programming, database systems, and business strategy.",
+    "country": "Kenya",
+    "description": "Prepares students to work in the dynamic IT environment by integrating business management with information technology. It covers programming, database systems, and business strategy.",
     "language": "English",
     "prerequisites": "KCSE C+ (Math C, English C)",
     "tracerAvailable": false,
@@ -123,7 +126,8 @@
     "sector": "digital",
     "skills": ["Project Mgmt", "Strategy", "Economics"],
     "url": "https://www.usiu.ac.ke/usiuonline/",
-    "country": "Kenya"ogr working professionals. Focuses on strategic management, entrepreneurship, and digital transformation in the African context.",
+    "country": "Kenya",
+    "description": "For working professionals. Focuses on strategic management, entrepreneurship, and digital transformation in the African context.",
     "language": "English",
     "prerequisites": "Undergraduate Degree + 2 years experience",
     "tracerAvailable": false,
@@ -146,7 +150,7 @@
     "url": "https://www.coursera.org/learn/google-ai-essentials",
     "country": "all",
     "description": "Learn how to use generative AI tools to help speed up daily tasks, make more informed decisions, and develop new ideas and content. No prior AI experience required.",
-    "language": None",
+    "language": "English",
     "gsa_member": true,
     "tracerAvailable": false,
     "lastUpdated": "2024",
@@ -206,7 +210,7 @@
     "country": "all",
     "description": "Learn to build and deploy enterprise-grade applications with minimal coding using the OutSystems low-code platform. Includes AI-assisted development features.",
     "language": "English",
-    "gsa_memberes": "Basic logic skills",
+    "prerequisites": "Basic logic skills",
     "tracerAvailable": false,
     "lastUpdated": "2024",
     "outcomeData": {
@@ -235,7 +239,7 @@
     "country": "all",
     "description": "A foundational course on Artificial Intelligence, covering key concepts, applications, and ethical considerations. Earn a verified digital credential from IBM.",
     "language": "English",
-    "gsa_member": 
+    "gsa_member": true,
     "tracerAvailable": false,
     "lastUpdated": "2024",
     "outcomeData": {
@@ -295,7 +299,8 @@
     "language": "English",
     "prerequisites": "KCSE C-",
     "tracerAvailable": false,
-    "lastUpdated": "2023", "
+    "lastUpdated": "2023",
+    "outcomeData": {
       "available": true,
       "placement": { "d90": null, "m6": null, "y1": null },
       "uplift": null,
@@ -323,7 +328,8 @@
     "language": "English",
     "prerequisites": "STEM Undergraduate Degree",
     "tracerAvailable": false,
-    "lastUpdated": "2
+    "lastUpdated": "2024"
+  },
   {
     "id": "e4",
     "name": "Digital and Green Innovation Acceleration",
@@ -346,6 +352,7 @@
     "tracerAvailable": false,
     "lastUpdated": "2024"
   },
+  {
     "id": "e6",
     "name": "Sustainability and Green IT",
     "provider": "IBM SkillsBuild",
@@ -368,7 +375,8 @@
     "tracerAvailable": false,
     "lastUpdated": "2024",
     "outcomeData": {
-      "available": true,G", "y1": null },
+      "available": true,
+      "placement": { "d90": null, "m6": "Global Avg", "y1": null },
       "uplift": "Varies",
       "methodology": "Self-Reported",
       "stars": 3
@@ -397,7 +405,8 @@
     "tracerAvailable": false,
     "lastUpdated": "2024",
     "outcomeData": {
-      "availa6" 
+      "available": true,
+      "placement": { "d90": null, "m6": null, "y1": null },
       "uplift": null,
       "methodology": "No Data",
       "stars": 0
@@ -427,7 +436,8 @@
   },
   {
     "id": "a2",
-    "name": "Sma
+    "name": "Smart Farming",
+    "provider": "atingi",
     "type": "Short Course",
     "level": "short",
     "duration": "Self-paced",
@@ -449,7 +459,7 @@
     "outcomeData": {
       "available": true,
       "placement": { "d90": null, "m6": null, "y1": null },
-      "uplift": o
+      "uplift": "Varies",
       "stars": 2
     }
   },
@@ -480,7 +490,8 @@
       "uplift": null,
       "methodology": "No Data",
       "stars": 0
-    } 
+    }
+  },
   {
     "id": "a4",
     "name": "dSkills@EA - Digital Skills for East African Industry",
@@ -510,6 +521,7 @@
       "stars": 0
     }
   },
+  {
     "id": "r1",
     "name": "Master of Science in Electrical and Computer Engineering",
     "provider": "CMU Africa (Rwanda)",
@@ -539,6 +551,7 @@
     }
   },
   {
+    "id": "d_drc_2",
     "name": "Full Stack Development",
     "provider": "Kadea Academy (DR Congo)",
     "type": "Bootcamp",
@@ -567,7 +580,8 @@
     }
   },
   {
-    "id": "r3",t Africa Skills for Transformation (EASTRIP)",
+    "id": "r3",
+    "name": "East Africa Skills for Transformation (EASTRIP)",
     "provider": "World Bank / Regional TVETs",
     "type": "TVET Diploma",
     "level": "med",
@@ -596,7 +610,8 @@
     }
   },
   {
-    "id": " "Culm"
+    "id": "p1",
+    "name": "Coursera Platform",
     "provider": "Coursera",
     "type": "Learning Platform",
     "level": "all",
@@ -626,7 +641,8 @@
     "durationHours": null,
     "difficulty": "All Levels",
     "cost": "Free (Audit) / Paid",
-    "costType": ine",
+    "costType": "Freemium",
+    "mode": "Online",
     "sector": "digital",
     "skills": ["Web Dev", "Field Ops", "Data Science"],
     "url": "https://www.edx.org/",
@@ -647,7 +663,7 @@
     "difficulty": "Beginner",
     "cost": "Free",
     "costType": "Free",
-    "mode": "Online",o
+    "mode": "Online",
     "skills": ["Web Dev", "Python", "Data Viz"],
     "url": "https://www.freecodecamp.org/",
     "country": "all",
@@ -797,7 +813,8 @@
     "cost": "Paid",
     "costType": "Paid",
     "mode": "Hybrid",
-    "sector": "digita
+    "sector": "digital",
+    "skills": ["Web Dev", "Data Science", "Cybersecurity"],
     "url": "https://moringaschool.com/",
     "country": "Kenya",
     "description": "A multi-disciplinary learning-accelerator committed to closing the skills gap in Africa's job market by providing high-potential tech talent with the skills they need.",
@@ -819,7 +836,8 @@
     "type": "Learning Platform",
     "level": "all",
     "duration": "Self-paced",
-    "durationHou: "All Levels",
+    "durationHours": null,
+    "difficulty": "All Levels",
     "cost": "Subsidized",
     "costType": "Subsidized",
     "mode": "Online",
@@ -846,7 +864,7 @@
     "mode": "Hybrid",
     "sector": "digital",
     "skills": ["Digital Tools", "Digital Marketing", "Communication"],
-    "url": "https:uy"
+    "url": "https://ajiradigital.go.ke/",
     "description": "A government initiative to empower over one million young people to access digital job opportunities. Offers free training and mentorship.",
     "language": "English",
     "tracerAvailable": false,
@@ -867,7 +885,8 @@
     "sector": "agri",
     "skills": ["Drone Ops", "Regulatory Compl.", "Flight Planning"],
     "url": "https://www.kcaa.or.ke/",
-    "country": " Licenrial drone operations. Covers air law, flight planning, and practical flight tests. Standard: Civil Aviation Regs.",
+    "country": "Kenya",
+    "description": "License for commercial drone operations. Covers air law, flight planning, and practical flight tests. Standard: Civil Aviation Regs.",
     "language": "English",
     "tracerAvailable": false,
     "lastUpdated": "2024"
@@ -888,7 +907,8 @@
     "skills": ["Solar PV", "Safety Protocols", "Installation"],
     "url": "https://www.epra.go.ke/",
     "country": "Kenya",
-    "description"
+    "description": "National license for solar PV technicians. Required for installation and maintenance of solar systems.",
+    "language": "English",
     "tracerAvailable": false,
     "lastUpdated": "2024"
   },
@@ -931,7 +951,8 @@
     "country": "all",
     "description": "Certification in digital extension methods for agriculture. Standard: Global GAP / FAO.",
     "language": "English",
-    "tracerAvailable024"
+    "tracerAvailable": false,
+    "lastUpdated": "2024"
   },
   {
     "id": "c_field_data",
@@ -953,6 +974,7 @@
     "language": "English",
     "tracerAvailable": false,
     "lastUpdated": "2024"
+  },
   {
     "id": "c_cust_handover",
     "name": "Customer Handover & After-Sales Support",
@@ -995,6 +1017,7 @@
     "tracerAvailable": false,
     "lastUpdated": "2024"
   },
+  {
     "id": "p13",
     "name": "IBM SkillsBuild",
     "provider": "IBM",
@@ -1016,6 +1039,7 @@
     "tracerAvailable": false,
     "lastUpdated": "2024"
   },
+  {
     "id": "p14",
     "name": "Andela Learning Community",
     "provider": "Andela",
@@ -1035,7 +1059,8 @@
     "language": "English",
     "tracerAvailable": true,
     "lastUpdated": "2024",
-    "outcomeData: true
+    "outcomeData": {
+      "available": true,
       "placement": { "d90": null, "m6": "High", "y1": null },
       "uplift": "+87%",
       "methodology": "IFC Case Study",
@@ -1058,7 +1083,8 @@
     "skills": ["Communication", "Project Mgmt"],
     "url": "https://www.fuzu.com/",
     "country": "all",
-    "description"English",
+    "description": "Career development platform offering jobs, learning, and career guidance.",
+    "language": "English",
     "tracerAvailable": false,
     "lastUpdated": "2024"
   },
@@ -1085,7 +1111,8 @@
   },
   {
     "id": "p17",
-    "name": "CORE Ac
+    "name": "CORE Academy",
+    "provider": "CORE",
     "type": "Training Provider",
     "level": "med",
     "duration": "Self-paced",
@@ -1106,7 +1133,8 @@
   {
     "id": "p18",
     "name": "RES4Africa Academy",
-    "provider": "RES4
+    "provider": "RES4Africa",
+    "type": "Training Provider",
     "level": "adv",
     "duration": "Variable",
     "durationHours": null,
@@ -1128,7 +1156,8 @@
     "name": "RENAC Online",
     "provider": "RENAC",
     "type": "Training Provider",
-    "level": "mo"Variable",
+    "level": "med",
+    "duration": "Variable",
     "durationHours": null,
     "difficulty": "Intermediate",
     "cost": "Paid",
@@ -1149,7 +1178,8 @@
     "provider": "Makerere University",
     "type": "University Degree",
     "level": "long",
-    "duration":rs": 4800,
+    "duration": "4 years",
+    "durationHours": 4800,
     "difficulty": "Advanced",
     "cost": "Variable (UGX)",
     "costType": "Paid",
@@ -1169,7 +1199,8 @@
     "provider": "Sokoine University of Agriculture",
     "type": "University Degree",
     "level": "long",
-    "duration": "3 ye
+    "duration": "3 years",
+    "durationHours": 3600,
     "difficulty": "Advanced",
     "cost": "Variable (TZS)",
     "costType": "Paid",
@@ -1190,7 +1221,8 @@
     "type": "TVET Diploma",
     "level": "med",
     "duration": "2 years",
-    "durationHou
+    "durationHours": 2400,
+    "difficulty": "Intermediate",
     "cost": "Subsidized",
     "costType": "Subsidized",
     "mode": "In-Person",
@@ -1211,7 +1243,8 @@
     "level": "med",
     "duration": "6 months",
     "durationHours": 720,
-    "difficulty":
+    "difficulty": "Intermediate",
+    "cost": "Paid",
     "costType": "Paid",
     "mode": "In-Person",
     "sector": "agri",
@@ -1233,7 +1266,8 @@
     "durationHours": 4800,
     "difficulty": "Advanced",
     "cost": "Variable",
-    "costType": "Pain",
+    "costType": "Paid",
+    "mode": "In-Person",
     "sector": "agri",
     "skills": ["Climate Adaptation", "Farm Management", "Crop Science"],
     "url": "https://simad.edu.so/",
@@ -1255,6 +1289,7 @@
     "cost": "Variable",
     "costType": "Paid",
     "mode": "In-Person",
+    "sector": "agri",
     "skills": ["Crop Science", "Field Ops", "Manufacturing"],
     "url": "https://ub.edu.bi/",
     "country": "Burundi",
@@ -1275,7 +1310,8 @@
     "cost": "Variable",
     "costType": "Paid",
     "mode": "In-Person",
-    "sector": "Crop Science", "Sustainability", "Soil Analysis"],
+    "sector": "agri",
+    "skills": ["Crop Science", "Sustainability", "Soil Analysis"],
     "url": "https://unikin.ac.cd/",
     "country": "DR Congo",
     "description": "Foundational degree in agronomic sciences with a focus on the Congo Basin ecosystem.",
@@ -1296,7 +1332,8 @@
     "costType": "Paid",
     "mode": "In-Person",
     "sector": "agri",
-    "skills": ["s://uoj.edu.ss/",
+    "skills": ["Sustainability", "Climate Adaptation", "Forestry"],
+    "url": "https://uoj.edu.ss/",
     "country": "South Sudan",
     "description": "Covers the management of natural resources including agriculture, forestry, and fisheries.",
     "language": "English",
@@ -1317,7 +1354,8 @@
     "mode": "Online",
     "sector": "agri",
     "skills": ["Sustainability", "Crop Science", "Food Security"],
-    "url": "httnall",
+    "url": "https://www.edx.org/",
+    "country": "all",
     "description": "Learn the principles of sustainable food production from a world-leading agricultural university.",
     "language": "English",
     "prerequisites": "None",
@@ -1338,7 +1376,8 @@
     "sector": "energy",
     "skills": ["Policy", "Biomass", "Solar PV"],
     "url": "https://cedat.mak.ac.ug/",
-    "country": ": "Advanced training in renewable energy technologies, policy, and management.",
+    "country": "Uganda",
+    "description": "Advanced training in renewable energy technologies, policy, and management.",
     "language": "English",
     "prerequisites": "BSc Engineering/Science",
     "lastUpdated": "2024"
@@ -1358,7 +1397,8 @@
     "sector": "energy",
     "skills": ["Thermodynamics", "Grid Systems", "Thermodynamics"],
     "url": "https://coet.udsm.ac.tz/",
-    "country": "Tgtelgeneration and renewable energy systems.",
+    "country": "Tanzania",
+    "description": "Focuses on power generation and renewable energy systems.",
     "language": "English",
     "prerequisites": "ACSEE Physics/Math",
     "lastUpdated": "2024"
@@ -1380,7 +1420,8 @@
     "url": "https://cst.ur.ac.rw/",
     "country": "Rwanda",
     "description": "Focuses on electrical power systems, renewable energy integration, and energy efficiency.",
-    "language": h",se
+    "language": "English",
+    "prerequisites": "Advanced Level",
     "lastUpdated": "2024"
   },
   {
@@ -1401,7 +1442,8 @@
     "country": "Kenya",
     "description": "Advanced solar training for designing and installing complex grid-tie and hybrid systems. Prepares for EPRA T3 licensing.",
     "language": "English",
-    "prerequisites": "T1/T2 Lering
+    "prerequisites": "T1/T2 License",
+    "lastUpdated": "2024"
   },
   {
     "id": "e_online_1",
@@ -1421,7 +1463,8 @@
     "country": "all",
     "description": "Free online courses on energy efficiency and data center management from industry experts.",
     "language": "English/French",
-    "prere""a
+    "prerequisites": "None",
+    "lastUpdated": "2024"
   },
   {
     "id": "e_online_2",
@@ -1442,7 +1485,8 @@
     "description": "Basics of biogas production, digester types, and safety. Relevant for rural energy access.",
     "language": "English",
     "prerequisites": "None",
-    "lastUpdated":
+    "lastUpdated": "2024"
+  },
   {
     "id": "d_ug_1",
     "name": "Catalyst Software Engineering",
@@ -1464,6 +1508,7 @@
     "prerequisites": "Basic Coding Knowledge",
     "lastUpdated": "2024"
   },
+  {
     "id": "d_tz_1",
     "name": "BSc in Computer Science",
     "provider": "University of Dar es Salaam",
@@ -1485,7 +1530,8 @@
     "lastUpdated": "2024"
   },
   {
-    "id": "d_rw_1",Computer Science",
+    "id": "d_rw_1",
+    "name": "BSc in Computer Science",
     "provider": "African Leadership University (ALU)",
     "type": "University Degree",
     "level": "long",
@@ -1506,7 +1552,8 @@
   },
   {
     "id": "d_pan_1",
-    "name": "ALX"ALX Africa",
+    "name": "ALX Software Engineering",
+    "provider": "ALX Africa",
     "type": "Bootcamp",
     "level": "long",
     "duration": "12 months",
@@ -1527,7 +1574,8 @@
   {
     "id": "d_pan_2",
     "name": "ALX Virtual Assistant",
-    "provider":art Course",
+    "provider": "ALX Africa",
+    "type": "Short Course",
     "level": "short",
     "duration": "8 weeks",
     "durationHours": 100,
@@ -1548,7 +1596,8 @@
     "id": "d_pan_3",
     "name": "Power Learn Project Scholarship",
     "provider": "Power Learn Project",
-    "type": "Bod",
+    "type": "Bootcamp",
+    "level": "med",
     "duration": "16 weeks",
     "durationHours": 300,
     "difficulty": "Beginner",
@@ -1568,7 +1617,8 @@
     "id": "d_ke_3",
     "name": "Android Developer",
     "provider": "Zalego Academy",
-    "type": "Bootcamp
+    "type": "Bootcamp",
+    "level": "med",
     "duration": "4 months",
     "durationHours": 320,
     "difficulty": "Intermediate",
@@ -1590,7 +1640,8 @@
     "provider": "Kinshasa Digital Academy",
     "type": "Bootcamp",
     "level": "med",
-    "duration": ",Hurs": 1000,
+    "duration": "6 months",
+    "durationHours": 1000,
     "difficulty": "Intermediate",
     "cost": "Free (Selection)",
     "costType": "Subsidized",
@@ -1610,7 +1661,8 @@
     "provider": "Jamhuriya University of Science & Tech",
     "type": "University Degree",
     "level": "long",
-    "duration": "4 yea
+    "duration": "4 years",
+    "durationHours": 4800,
     "difficulty": "Advanced",
     "cost": "Variable",
     "costType": "Paid",
@@ -1631,7 +1683,8 @@
     "type": "Diploma",
     "level": "med",
     "duration": "2 years",
-    "durationHours":e
+    "durationHours": 2400,
+    "difficulty": "Intermediate",
     "cost": "Paid",
     "costType": "Paid",
     "mode": "In-Person",
@@ -1653,7 +1706,8 @@
     "duration": "3 years",
     "durationHours": 3600,
     "difficulty": "Advanced",
-    "cost": "Variable"," 
+    "cost": "Variable",
+    "costType": "Paid",
     "mode": "In-Person",
     "sector": "digital",
     "skills": ["Database Mgmt", "Database Mgmt", "Project Mgmt"],
@@ -1674,7 +1728,8 @@
     "durationHours": 2400,
     "difficulty": "Intermediate",
     "cost": "Variable",
-    "costType": "erson",
+    "costType": "Paid",
+    "mode": "In-Person",
     "sector": "agri",
     "skills": ["Crop Science", "Farm Management", "Digital Advisory"],
     "url": "https://www.bukuracollege.ac.ke/",
@@ -1694,7 +1749,8 @@
     "durationHours": 2400,
     "difficulty": "Intermediate",
     "cost": "Variable",
-    "costType": "Paid"
+    "costType": "Paid",
+    "mode": "In-Person",
     "sector": "agri",
     "skills": ["Crop Science", "Crop Science", "Soil Analysis"],
     "url": "https://bac.ac.ug/",
@@ -1715,7 +1771,8 @@
     "difficulty": "Advanced",
     "cost": "Variable",
     "costType": "Paid",
-    "mode": "In-Persot
+    "mode": "In-Person",
+    "sector": "agri",
     "skills": ["Food Security", "Food Security", "Policy"],
     "url": "https://www.nm-aist.ac.tz/",
     "country": "Tanzania",
@@ -1736,7 +1793,8 @@
     "cost": "Variable",
     "costType": "Paid",
     "mode": "In-Person",
-    "sector": "ennyrtocols"],
+    "sector": "energy",
+    "skills": ["Solar PV", "Installation", "Safety Protocols"],
     "url": "https://nakawavti.ac.ug/",
     "country": "Uganda",
     "description": "Vocational training for solar technicians, covering basic installation and maintenance.",
@@ -1758,7 +1816,8 @@
     "mode": "In-Person",
     "sector": "energy",
     "skills": ["Biomass", "Installation"],
-    "url": "httczzania",
+    "url": "https://camartec.go.tz/",
+    "country": "Tanzania",
     "description": "Practical training on constructing domestic biogas plants.",
     "language": "Swahili/English",
     "prerequisites": "None",
@@ -1779,7 +1838,8 @@
     "sector": "digital",
     "skills": ["Cloud Computing", "AWS/Azure", "SQL"],
     "url": "https://learn.microsoft.com/en-us/credentials/certifications/azure-data-fundamentals/",
-    "country": "all",dational knowledge of core data concepts and how they are implemented using Microsoft Azure data services.",
+    "country": "all",
+    "description": "Foundational knowledge of core data concepts and how they are implemented using Microsoft Azure data services.",
     "language": "English",
     "prerequisites": "None",
     "lastUpdated": "2024"
@@ -1800,7 +1860,7 @@
     "skills": ["Python", "Python", "API Design", "DevOps"],
     "url": "https://www.coursera.org/professional-certificates/meta-back-end-developer",
     "country": "all",
-    "descriptionunch yobkn
+    "description": "Launch your career as a back-end developer. Build job-ready skills for an in-demand career.",
     "prerequisites": "None",
     "lastUpdated": "2024"
   },
@@ -1821,7 +1881,8 @@
     "url": "https://aws.amazon.com/certification/certified-cloud-practitioner/",
     "country": "all",
     "description": "Validates overall understanding of the AWS Cloud platform. Entry-level certification.",
-    "language": ": "None",
+    "language": "English",
+    "prerequisites": "None",
     "lastUpdated": "2024"
   },
   {
@@ -1841,7 +1902,8 @@
     "url": "https://www.africanmanagers.org/",
     "country": "all",
     "description": "Practical business management course tailored for entrepreneurs in the agricultural sector.",
-    "language": "Englrrs
+    "language": "English",
+    "prerequisites": "None",
     "lastUpdated": "2024"
   },
   {
@@ -1864,6 +1926,7 @@
     "language": "English",
     "prerequisites": "Basic Solar",
     "lastUpdated": "2024"
+  },
   {
     "id": "d_ug_2",
     "name": "Data Science Fellowship",
@@ -1886,6 +1949,7 @@
     "prerequisites": "Selection",
     "lastUpdated": "2024"
   },
+  {
     "id": "d_tz_2",
     "name": "Innovation & Data Lab",
     "provider": "Sahara Ventures",
@@ -1906,6 +1970,7 @@
     "prerequisites": "None",
     "lastUpdated": "2024"
   },
+  {
     "id": "a_ke_4",
     "name": "MSc in Agricultural & Applied Economics",
     "provider": "University of Nairobi",
@@ -1926,7 +1991,8 @@
     "prerequisites": "BSc",
     "lastUpdated": "2024"
   },
-  {e
+  {
+    "id": "e_ke_3",
     "name": "BSc in Energy Technology",
     "provider": "Kenyatta University",
     "type": "University Degree",
@@ -1948,7 +2014,8 @@
   },
   {
     "id": "d_rw_2",
-    "name": "MSc in Information "Carnersity Africa",
+    "name": "MSc in Information Technology",
+    "provider": "Carnegie Mellon University Africa",
     "type": "Master Degree",
     "level": "long",
     "duration": "2 years",
@@ -1968,7 +2035,8 @@
   },
   {
     "id": "a_rw_2",
-    "name": "BSc in An
+    "name": "BSc in Animal Production",
+    "provider": "University of Rwanda",
     "type": "University Degree",
     "level": "long",
     "duration": "4 years",
@@ -1989,7 +2057,8 @@
   {
     "id": "e_bi_1",
     "name": "Licence en Electromécanique",
-    "provider": "
+    "provider": "Université du Burundi",
+    "type": "University Degree",
     "level": "long",
     "duration": "4 years",
     "durationHours": 4800,
@@ -2010,7 +2079,8 @@
     "id": "d_ke_4",
     "name": "Cybersecurity Bootcamp",
     "provider": "Moringa School",
-    "type": "Boc",
+    "type": "Bootcamp",
+    "level": "med",
     "duration": "5 months",
     "durationHours": 600,
     "difficulty": "Intermediate",
@@ -2032,7 +2102,8 @@
     "provider": "Coursera (Various)",
     "type": "Short Course",
     "level": "short",
-    "duration":rs": 20,
+    "duration": "20 hours",
+    "durationHours": 20,
     "difficulty": "Beginner",
     "cost": "Free (Audit)",
     "costType": "Freemium",
@@ -2052,7 +2123,8 @@
     "provider": "DTU (Coursera)",
     "type": "Short Course",
     "level": "short",
-    "duration": "
+    "duration": "5 weeks",
+    "durationHours": 30,
     "difficulty": "Intermediate",
     "cost": "Free (Audit)",
     "costType": "Freemium",
@@ -2074,7 +2146,8 @@
     "level": "short",
     "duration": "15 hours",
     "durationHours": 15,
-    "difficulty": "Beginne
+    "difficulty": "Beginner",
+    "cost": "Free",
     "costType": "Free",
     "mode": "Online",
     "sector": "digital",
@@ -2096,6 +2169,7 @@
     "durationHours": 3600,
     "difficulty": "Intermediate",
     "cost": "Variable",
+    "costType": "Paid",
     "mode": "In-Person",
     "sector": "agri",
     "skills": ["Water Management", "Water Management", "GIS Mapping"],
@@ -2115,7 +2189,8 @@
     "duration": "1 year",
     "durationHours": 1200,
     "difficulty": "Beginner",
-    "cost": "Subs
+    "cost": "Subsidized",
+    "costType": "Subsidized",
     "mode": "In-Person",
     "sector": "energy",
     "skills": ["Electrical Wiring", "Installation", "Field Ops"],
@@ -2137,7 +2212,8 @@
     "difficulty": "Advanced",
     "cost": "Variable",
     "costType": "Paid",
-    "mode": "In-Pl",
+    "mode": "In-Person",
+    "sector": "digital",
     "skills": ["Web Dev", "DevOps", "Project Mgmt"],
     "url": "https://cocis.mak.ac.ug/",
     "country": "Uganda",
@@ -2158,7 +2234,8 @@
     "cost": "Variable",
     "costType": "Paid",
     "mode": "In-Person",
-    "sector": "Sustainability", "Farm Management", "Sustainability"],
+    "sector": "agri",
+    "skills": ["Sustainability", "Farm Management", "Sustainability"],
     "url": "https://agriculture.uonbi.ac.ke/",
     "country": "Kenya",
     "description": "Management of arid and semi-arid lands for sustainable livestock production.",
@@ -2178,7 +2255,8 @@
     "cost": "Variable",
     "costType": "Paid",
     "mode": "In-Person",
-    "sectoeg: " rfey],
+    "sector": "energy",
+    "skills": ["Green Tech", "Policy", "Energy Efficiency"],
     "url": "https://www.nm-aist.ac.tz/",
     "country": "Tanzania",
     "description": "Postgraduate research and training in sustainable energy solutions.",
@@ -2200,7 +2278,8 @@
     "mode": "Online",
     "sector": "digital",
     "skills": ["UX Research", "Figma", "Prototyping"],
-    "url": "httrall",
+    "url": "https://www.coursera.org/professional-certificates/google-ux-design",
+    "country": "all",
     "description": "Prepare for a career in UX design. Learn foundations of UX research, wireframing, and prototyping.",
     "language": "English",
     "prerequisites": "None",
@@ -2221,7 +2300,8 @@
     "sector": "agri",
     "skills": ["Soil Analysis", "Soil Analysis", "Sustainability"],
     "url": "https://www.edx.org/",
-    "country": ": "Learn about the importance of soil and how to manage it sustainably for crop production.",
+    "country": "all",
+    "description": "Learn about the importance of soil and how to manage it sustainably for crop production.",
     "language": "English",
     "prerequisites": "Basic Science",
     "lastUpdated": "2024"
@@ -2241,7 +2321,8 @@
     "sector": "energy",
     "skills": ["Grid Systems", "Grid Systems", "Electrical Wiring"],
     "url": "https://www.coursera.org/learn/electric-power-systems",
-    "countl"tin:"ea he grid.",
+    "country": "all",
+    "description": "Learn the standards and policies of the electric utility industry, and the basic vocabulary used in the business.",
     "language": "English",
     "prerequisites": "Basic Circuits",
     "lastUpdated": "2024"
@@ -2262,7 +2343,7 @@
     "skills": ["Cloud Computing", "Cloud Computing", "DevOps"],
     "url": "https://www.coursera.org/learn/introduction-to-cloud",
     "country": "all",
-    "descr ge
+    "description": "This course introduces you to the core concepts of cloud computing.",
     "prerequisites": "None",
     "lastUpdated": "2024"
   },
@@ -2304,7 +2385,7 @@
     "url": "https://kyu.ac.ug/",
     "country": "Uganda",
     "description": "Practical engineering degree with a focus on industrial application.",
-    "language": "
+    "language": "English",
     "lastUpdated": "2024"
   },
   {
@@ -2326,7 +2407,8 @@
     "description": "Technical diploma in computing and IT.",
     "language": "English",
     "prerequisites": "CSEE",
-    "lastUpdated24"
+    "lastUpdated": "2024"
+  },
   {
     "id": "a_rw_3",
     "name": "MSc in Agribusiness",
@@ -2348,6 +2430,7 @@
     "prerequisites": "BSc",
     "lastUpdated": "2024"
   },
+  {
     "id": "e_ke_4",
     "name": "Biogas Technician Course",
     "provider": "Kenya Industrial Research and Development Institute (KIRDI)",
@@ -2368,7 +2451,8 @@
     "prerequisites": "None",
     "lastUpdated": "2024"
   },
-  {ne_7",
+  {
+    "id": "d_online_7",
     "name": "Python for Everybody",
     "provider": "University of Michigan (Coursera)",
     "type": "Specialization",
@@ -2389,7 +2473,8 @@
     "lastUpdated": "2024"
   },
   {
-    "id": "c_career_readiness and Employability Skills",
+    "id": "c_career_readiness",
+    "name": "Career Readiness and Employability Skills",
     "provider": "Campus Africa",
     "type": "Learning Path",
     "level": "med",
