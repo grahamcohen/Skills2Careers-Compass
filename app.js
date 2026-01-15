@@ -1116,7 +1116,6 @@ function getOJAMetrics(roleTitle, country) {
             
             // Generate Pathway IN-PLACE (Tab 1)
             if(typeof window.generatePersonalizedPathway === 'function') {
-                window.generatePersonalizedPathway(tierCode, activeSectorId, softSkillsData.filter(s => s.score < 4).map(s => s.skill), techSkillsData.filter(s => s.score < 4).map(s => s.skill), selectedRole, 'diagnostic-inline-pathway');
                 window.generatePersonalizedPathway(tierCode, activeSectorId, empGaps, techGaps, selectedRole, 'diagnostic-inline-pathway');
             }
             
