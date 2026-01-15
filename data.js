@@ -1876,3 +1876,55 @@ const heroPersonaContent = {
         text: "View workforce data and trends to inform education and employment policy.",
     }
 };
+
+// --- 46. Real Courses Data (Fallback) ---
+const realCourses = [
+    {
+        "id": "c_001",
+        "name": "Solar PV Installation T1/T2",
+        "provider": "Strathmore Energy Research Centre",
+        "country": "Kenya",
+        "sector": "energy",
+        "level": "med",
+        "duration": "3 Weeks",
+        "mode": "In-Person",
+        "cost": "Paid",
+        "type": "Certificate",
+        "url": "https://serc.strathmore.edu/",
+        "skills": ["Solar PV", "Electrical Wiring", "Safety Protocols"],
+        "gsa_member": true,
+        "lastUpdated": "2024"
+    },
+    {
+        "id": "c_002",
+        "name": "Data Science Core",
+        "provider": "Moringa School",
+        "country": "Kenya",
+        "sector": "digital",
+        "level": "long",
+        "duration": "20 Weeks",
+        "mode": "Hybrid",
+        "cost": "Paid",
+        "type": "Bootcamp",
+        "url": "https://moringaschool.com/",
+        "skills": ["Python", "Data Analysis", "Machine Learning"],
+        "women_focused": true,
+        "lastUpdated": "2024"
+    },
+    {
+        "id": "c_003",
+        "name": "Introduction to Agribusiness",
+        "provider": "African Management Institute",
+        "country": "Rwanda",
+        "sector": "agri",
+        "level": "short",
+        "duration": "4 Weeks",
+        "mode": "Online",
+        "cost": "Free",
+        "type": "Short Course",
+        "url": "https://www.africanmanagers.org/",
+        "skills": ["Agribusiness", "Financial Literacy", "Market Access"],
+        "unesco_unevoc": true,
+        "lastUpdated": "2024"
+    }
+];

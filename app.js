@@ -6688,6 +6688,16 @@ window.toggleCareerHub = function() {
 
             let courses = dataManager.courses && dataManager.courses.length > 0 ? dataManager.courses : (typeof realCourses !== 'undefined' ? realCourses : []);
 
+            // Normalize courses for display (ensure skillsCovered and outcomeData exist)
+            courses = courses.map(c => ({
+                ...c,
+                skillsCovered: c.skills || [],
+                costDisplay: c.cost,
+                durationMonths: c.duration,
+                school: c.provider,
+                outcomeData: c.outcomeData || window.generateOutcomeScorecard(c.provider, c.type)
+            }));
+
             const filtered = courses.filter(c => {
                 const matchCountry = countryFilter === 'all' || c.country === 'all' || c.country === countryFilter;
                 const matchSector = secFilter === 'all' || c.sector === secFilter;
