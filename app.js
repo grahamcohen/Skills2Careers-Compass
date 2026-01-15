@@ -58,7 +58,7 @@ class DataManager {
         this.ventures = (results[1].status === 'fulfilled' && results[1].value) ? results[1].value : this.getFallbackVentures();
         this.topOccupations = (results[2].status === 'fulfilled' && results[2].value) ? results[2].value : [];
         this.topSkills = (results[3].status === 'fulfilled' && results[3].value) ? results[3].value : [];
-        this.courses = (results[4].status === 'fulfilled' && results[4].value) ? results[4].value : [];
+        this.courses = (results[4].status === 'fulfilled' && results[4].value) ? results[4].value : (typeof realCourses !== 'undefined' ? realCourses : []);
         this.scholarships = (results[11].status === 'fulfilled' && results[11].value) ? results[11].value : this.getFallbackScholarships();
 
         // Load App Data (UI Config)
