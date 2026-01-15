@@ -19,6 +19,25 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
+        
+        /* Lite Mode Optimizations for Low Bandwidth */
+        body.low-bandwidth .bg-gradient-to-r, 
+        body.low-bandwidth .bg-gradient-to-br {
+            background: #f8fafc !important; /* slate-50 fallback */
+        }
+        body.low-bandwidth .text-transparent {
+            color: #1e293b !important; /* slate-800 fallback */
+            background: none !important;
+            -webkit-text-fill-color: #1e293b !important;
+        }
+        body.low-bandwidth .animate-fade-in, 
+        body.low-bandwidth .animate-pulse,
+        body.low-bandwidth .animate-spin {
+            animation: none !important;
+        }
+        body.low-bandwidth * {
+            transition: none !important;
+        }
     </style>
 </head>
 <body class="antialiased overflow-x-hidden">

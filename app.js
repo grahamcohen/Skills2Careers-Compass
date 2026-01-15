@@ -99,14 +99,33 @@ class DataManager {
     }
 
     async fetchData(url) {
+        const cacheKey = `ai4eac_cache_${url}`;
+        const cached = localStorage.getItem(cacheKey);
+        const cacheTime = localStorage.getItem(`${cacheKey}_time`);
+        const now = Date.now();
+        const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours cache
+
+        if (cached && cacheTime && (now - parseInt(cacheTime) < ONE_DAY)) {
+            return JSON.parse(cached);
+        }
+
         try {
-            // Add 5s timeout to prevent hanging
+            // Increased timeout to 15s for slow connections
             const controller = new AbortController();
-            const id = setTimeout(() => controller.abort(), 5000);
+            const id = setTimeout(() => controller.abort(), 15000);
             const response = await fetch(url, { signal: controller.signal });
             clearTimeout(id);
             if (!response.ok) throw new Error(`HTTP error ${response.status}`);
-            return await response.json();
+            const data = await response.json();
+            
+            try {
+                localStorage.setItem(cacheKey, JSON.stringify(data));
+                localStorage.setItem(`${cacheKey}_time`, now.toString());
+            } catch (e) {
+                console.warn("Cache quota exceeded, skipping cache for " + url);
+            }
+            
+            return data;
         } catch (e) {
             console.warn(`Could not load ${url}:`, e);
             return null;
@@ -3316,9 +3335,10 @@ function getOJAMetrics(roleTitle, country) {
             const isLite = document.body.classList.toggle('low-bandwidth');
             const btn = document.getElementById('lb-toggle');
             btn.innerText = isLite ? 'Full Mode' : 'Lite Mode';
+            localStorage.setItem('ai4eac_lite_mode', isLite);
             
             if (isLite) {
-                alert("Lite reduces images/charts for cheaper data use");
+                console.log("Lite mode enabled: Reducing visual load for performance.");
             }
         }
 
@@ -6956,6 +6976,15 @@ window.toggleCareerHub = function() {
         window.addEventListener('DOMContentLoaded', () => {
             if (typeof countryData === 'undefined' || typeof baseSectorDetailData === 'undefined') {
                 console.warn("Data dependencies (data.js) missing or not loaded.");
+            }
+
+            // Auto-detect Lite Mode (Saved preference or Slow Connection)
+            const savedLite = localStorage.getItem('ai4eac_lite_mode');
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            const isSlow = connection && (connection.saveData || connection.effectiveType === '2g' || connection.effectiveType === '3g');
+            
+            if (savedLite === 'true' || (savedLite === null && isSlow)) {
+                toggleLowBandwidth();
             }
 
             injectSectorDrawer(); // Inject the new Sector Drawer
