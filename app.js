@@ -2999,8 +2999,6 @@ function getOJAMetrics(roleTitle, country) {
 
             const codesHtml = (onet || esco) 
                 ? `<span class="block mt-1 text-[10px] text-slate-400 font-mono opacity-80">
-                    ${onet ? `O*NET: ${onet}` : ''} 
-                    ${onet && esco ? ' | ' : ''} 
                     ${esco ? `ESCO: ${esco}` : ''}
                    </span>` 
                 : '';
@@ -3557,16 +3555,14 @@ function getOJAMetrics(roleTitle, country) {
                         <p class="text-sm text-slate-600">Find scholarships, loans, and grants for your <strong>${sectorName}</strong> education.</p>
                     </button>
 
-                    <button onclick="openSkillsView('pp-courses')" class="p-6 bg-blue-50 border border-blue-100 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-md text-left transition-all group">
-                        <div class="p-3 bg-blue-100 text-blue-600 rounded-lg w-fit mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
-                        <p class="text-sm text-slate-600">Search verified <strong>${sectorName}</strong> training providers and certifications.</p>
-                    </button>
-
-                    <button onclick="openSkillsView('pp-resources')" class="p-6 bg-rose-50 border border-rose-100 rounded-xl hover:border-rose-300 hover:bg-white hover:shadow-md text-left transition-all group">
-                        <div class="p-3 bg-rose-100 text-rose-600 rounded-lg w-fit mb-4 group-hover:bg-rose-600 group-hover:text-white transition-colors"><i data-lucide="library" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">Resource Library</h3>
-                        <p class="text-sm text-slate-600">Access guides on CV writing, interview prep, and networking.</p>
+                    <button onclick="openSkillsView('pp-courses')" class="p-6 bg-blue-50 border border-blue-100 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-md text-left transition-all group col-span-1 md:col-span-2">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                            <div class="p-3 bg-blue-100 text-blue-600 rounded-lg w-fit group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-6 h-6"></i></div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
+                                <p class="text-sm text-slate-600">Search verified <strong>${sectorName}</strong> training providers and certifications.</p>
+                            </div>
+                        </div>
                     </button>
             `;
             if(window.lucide) lucide.createIcons();
@@ -5963,10 +5959,12 @@ window.toggleCareerHub = function() {
                 }
             }
 
-            const courseCount = dataManager.courses.length;
-            const providerCount = new Set(dataManager.courses.map(c => c.provider)).size;
-            const occCount = dataManager.topOccupations.length;
-            const skillCount = dataManager.topSkills.length;
+            // Safety checks
+            const courses = dataManager.courses || [];
+            const courseCount = courses.length;
+            const providerCount = new Set(courses.map(c => c.provider)).size;
+            const occCount = (dataManager.topOccupations || []).length;
+            const skillCount = (dataManager.topSkills || []).length;
             
             let datasetCount = 0;
             if (dataManager.digitalResources) {
@@ -5980,17 +5978,17 @@ window.toggleCareerHub = function() {
             const dateStr = now.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
             statsContainer.innerHTML = `
-                <div class="mt-4 pt-2 border-t border-slate-200/60 animate-fade-in">
-                    <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[10px] text-slate-500 font-medium px-2">
-                        <span class="font-bold text-slate-400 uppercase tracking-wide mr-1">Database:</span>
+                <div class="mt-4 pt-2 border-t border-slate-200/60 animate-fade-in w-full">
+                    <div class="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-2 text-[10px] text-slate-500 font-medium px-2">
+                        <span class="font-bold text-slate-400 uppercase tracking-wide mr-1 hidden sm:inline">Database:</span>
                         <div class="flex items-center gap-1" title="Training Courses"><i data-lucide="book-open" class="w-3 h-3 text-indigo-400"></i> <span>${courseCount} Courses</span></div>
-                        <span class="text-slate-300">•</span>
+                        <span class="text-slate-300 hidden sm:inline">•</span>
                         <div class="flex items-center gap-1" title="Training Providers"><i data-lucide="building-2" class="w-3 h-3 text-indigo-400"></i> <span>${providerCount} Providers</span></div>
-                        <span class="text-slate-300">•</span>
+                        <span class="text-slate-300 hidden sm:inline">•</span>
                         <div class="flex items-center gap-1" title="Mapped Occupations"><i data-lucide="briefcase" class="w-3 h-3 text-indigo-400"></i> <span>${occCount} Roles</span></div>
-                        <span class="text-slate-300">•</span>
+                        <span class="text-slate-300 hidden sm:inline">•</span>
                         <div class="flex items-center gap-1" title="Tracked Skills"><i data-lucide="cpu" class="w-3 h-3 text-indigo-400"></i> <span>${skillCount} Skills</span></div>
-                        <span class="ml-2 text-[9px] text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">Updated ${dateStr}</span>
+                        <span class="ml-2 text-[9px] text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100 hidden sm:inline-block">Updated ${dateStr}</span>
                     </div>
                 </div>
             `;
