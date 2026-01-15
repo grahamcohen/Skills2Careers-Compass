@@ -106,7 +106,13 @@ class DataManager {
         const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours cache
 
         if (cached && cacheTime && (now - parseInt(cacheTime) < ONE_DAY)) {
-            return JSON.parse(cached);
+            try {
+                return JSON.parse(cached);
+            } catch (e) {
+                console.warn(`Corrupt cache for ${url}, clearing and refetching.`);
+                localStorage.removeItem(cacheKey);
+                localStorage.removeItem(`${cacheKey}_time`);
+            }
         }
 
         try {
@@ -7086,6 +7092,16 @@ window.toggleCareerHub = function() {
             } else {
                 badge.classList.add('hidden');
             }
+        }
+
+        window.clearAppCache = function() {
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('ai4eac_')) {
+                    localStorage.removeItem(key);
+                }
+            });
+            alert("Cache cleared. The page will now reload to fetch fresh data.");
+            location.reload();
         }
 
         window.renderMyPlan = function() {
