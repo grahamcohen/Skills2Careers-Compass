@@ -37,42 +37,49 @@ class DataManager {
             document.body.appendChild(spinner);
         }
 
-        // Use Promise.allSettled to prevent one failure from crashing the app
-        const results = await Promise.allSettled([
-            this.fetchData('wages.json'),
+        // 1. Critical Load (Fast) - Config & Landing Page Data
+        const criticalResults = await Promise.allSettled([
+            this.fetchData('app_data.json'),
             this.fetchData('ventures.json'),
             this.fetchData('top_occupations.json'),
-            this.fetchData('top_skills.json'),
+            this.fetchData('top_skills.json')
+        ]);
+
+        // Load App Data (UI Config)
+        const appData = (criticalResults[0].status === 'fulfilled' && criticalResults[0].value) ? criticalResults[0].value : {};
+        if (appData) Object.assign(window, appData); // Expose config globally
+
+        this.ventures = (criticalResults[1].status === 'fulfilled' && criticalResults[1].value) ? criticalResults[1].value : this.getFallbackVentures();
+        this.topOccupations = (criticalResults[2].status === 'fulfilled' && criticalResults[2].value) ? criticalResults[2].value : [];
+        this.topSkills = (criticalResults[3].status === 'fulfilled' && criticalResults[3].value) ? criticalResults[3].value : [];
+
+        this.normalizeData();
+        
+        // Hide Spinner immediately after critical data to improve perceived load time
+        spinner.classList.add('hidden');
+
+        // 2. Background Load (Heavy) - Wages, Courses, Resources
+        Promise.allSettled([
+            this.fetchData('wages.json'),
             this.fetchData('courses.json'),
-            this.fetchData('app_data.json'),
             this.fetchData('resources_general.json'),
             this.fetchData('resources_evidence.json'),
             this.fetchData('resources_digital.json'),
             this.fetchData('resources_agri.json'),
             this.fetchData('resources_energy.json'),
             this.fetchData('Scholarships.json')
-        ]);
+        ]).then(results => {
+            this.wages = (results[0].status === 'fulfilled' && results[0].value) ? results[0].value : [];
+            this.courses = (results[1].status === 'fulfilled' && results[1].value) ? results[1].value : [];
+            
+            const generalRes = (results[2].status === 'fulfilled' && results[2].value) ? results[2].value : {};
+            const evidenceRes = (results[3].status === 'fulfilled' && results[3].value) ? results[3].value : [];
+            const digitalRes = (results[4].status === 'fulfilled' && results[4].value) ? results[4].value : {};
+            const agriRes = (results[5].status === 'fulfilled' && results[5].value) ? results[5].value : {};
+            const energyRes = (results[6].status === 'fulfilled' && results[6].value) ? results[6].value : {};
+            this.scholarships = (results[7].status === 'fulfilled' && results[7].value) ? results[7].value : this.getFallbackScholarships();
 
-        // Extract data safely
-        this.wages = (results[0].status === 'fulfilled' && results[0].value) ? results[0].value : [];
-        this.ventures = (results[1].status === 'fulfilled' && results[1].value) ? results[1].value : this.getFallbackVentures();
-        this.topOccupations = (results[2].status === 'fulfilled' && results[2].value) ? results[2].value : [];
-        this.topSkills = (results[3].status === 'fulfilled' && results[3].value) ? results[3].value : [];
-        this.courses = (results[4].status === 'fulfilled' && results[4].value) ? results[4].value : [];
-        this.scholarships = (results[11].status === 'fulfilled' && results[11].value) ? results[11].value : this.getFallbackScholarships();
-
-        // Load App Data (UI Config)
-        const appData = (results[5].status === 'fulfilled' && results[5].value) ? results[5].value : {};
-        if (appData) Object.assign(window, appData); // Expose config globally
-
-        // Construct Digital Resources from split files
-        const generalRes = (results[6].status === 'fulfilled' && results[6].value) ? results[6].value : {};
-        const evidenceRes = (results[7].status === 'fulfilled' && results[7].value) ? results[7].value : [];
-        const digitalRes = (results[8].status === 'fulfilled' && results[8].value) ? results[8].value : {};
-        const agriRes = (results[9].status === 'fulfilled' && results[9].value) ? results[9].value : {};
-        const energyRes = (results[10].status === 'fulfilled' && results[10].value) ? results[10].value : {};
-
-        this.digitalResources = {
+            this.digitalResources = {
             ...generalRes,
             "evidence_providers": evidenceRes,
             "digital": digitalRes,
@@ -80,22 +87,22 @@ class DataManager {
             "energy": energyRes
         };
 
-        this.normalizeData();
         this.linkData();
-
-        // Expose for backward compatibility
         window.digitalResources = this.digitalResources;
         
-        console.log(`DataManager loaded: ${this.wages.length} wages, ${this.ventures.length} ventures, ${this.topOccupations.length} occupations, ${this.topSkills.length} skills, ${this.courses.length} courses.`);
+            console.log(`Background data loaded: ${this.wages.length} wages, ${this.courses.length} courses.`);
+            
+            // Refresh views if they are already open
+            if (typeof updateHeroStats === 'function') updateHeroStats();
+            if (typeof updateTrainingProviders === 'function') updateTrainingProviders();
+        });
         
-        // Force re-renders
+        console.log(`DataManager critical loaded.`);
+        
+        // Initial renders
         try { if (typeof renderOccupationsView === 'function') renderOccupationsView(); } catch(e) { console.warn("Error rendering occupations:", e); }
-        try { if (typeof resetCareerHub === 'function') resetCareerHub(); } catch(e) { console.warn("Error resetting hub:", e); }
         try { if (typeof renderSectorCards === 'function') renderSectorCards(); } catch(e) { console.warn("Error rendering cards:", e); }
         try { if (typeof updateHeroStats === 'function') updateHeroStats(); } catch(e) { console.warn("Error updating stats:", e); }
-
-        // Hide Spinner
-        spinner.classList.add('hidden');
     }
 
     async fetchData(url) {
@@ -4146,6 +4153,16 @@ window.resetTrainingHub = function() {
     if(window.lucide) lucide.createIcons();
 }
 
+        // --- NEW: Reset Training Hub Filters ---
+        window.resetTrainingHubFilters = function() {
+            const inputs = ['drawer-hub-country', 'drawer-hub-language', 'drawer-hub-sector', 'drawer-hub-mode-quick', 'drawer-hub-course-type', 'drawer-hub-budget'];
+            inputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = 'all';
+            });
+            renderTrainingHubCourses();
+        }
+
 window.showTrainingHubView = function(view) {
     const container = document.getElementById('training-hub-content');
     let content = '';
@@ -4169,6 +4186,10 @@ window.showTrainingHubView = function(view) {
 
             <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
                 <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2 mb-3"><i data-lucide="filter" class="w-4 h-4 text-indigo-500"></i> Filter Training</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="filter" class="w-4 h-4 text-indigo-500"></i> Filter Training</h3>
+                            <button onclick="resetTrainingHubFilters()" class="text-xs font-bold text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors"><i data-lucide="rotate-ccw" class="w-3 h-3"></i> Reset Filters</button>
+                        </div>
                 <div class="space-y-3">
                         <div class="grid grid-cols-2 gap-3">
                         <div>
@@ -5924,7 +5945,7 @@ window.toggleCareerHub = function() {
         window.updateHeroPersona = function(type) {
             const content = {
                 learner: {
-                    text: "In 10 minutes, you’ll have a shortlist of occupations you’re suited for + an idea of skills in demand + information on training options in your country.",
+                    text: "In 5 minutes, you’ll have a shortlist of occupations you’re suited for + an idea of skills in demand + information on training options in your country.",
                     },
                 entrepreneur: {
                     text: "Identify high-potential venture niches, access eco-system resources, and build your capability roadmap.",
@@ -5942,7 +5963,7 @@ window.toggleCareerHub = function() {
 
             const data = content[type] || content.learner;
             
-            const descEl = document.getElementById('hero-desc');
+            const descEl = document.getElementById('persona-dynamic-text');
             
             if(descEl) {
                 descEl.style.opacity = '0';
@@ -6934,6 +6955,12 @@ window.toggleCareerHub = function() {
                 console.warn("Data dependencies (data.js) missing or not loaded.");
             }
 
+            // Set static subline for Personas
+            const heroDesc = document.getElementById('hero-desc');
+            if(heroDesc) {
+                heroDesc.innerText = "Your tool for navigating the East African labor market.";
+            }
+
             injectSectorDrawer(); // Inject the new Sector Drawer
             renderMainLanding(); // Render the 3-Pillar Dashboard
             if(window.lucide) lucide.createIcons();
@@ -7135,6 +7162,15 @@ window.toggleCareerHub = function() {
             if (!container) return;
 
             container.innerHTML = `
+                <div class="text-center mb-8 animate-fade-in">
+                    <h2 class="text-2xl md:text-3xl font-bold text-teal-600 flex items-center justify-center gap-2 whitespace-nowrap">
+                        <i data-lucide="compass" class="w-6 h-6 md:w-8 md:h-8"></i> Start Navigating
+                    </h2>
+                    <p class="text-sm text-slate-600 mt-2 max-w-2xl mx-auto">
+                        In 5 minutes, you’ll have a shortlist of occupations you’re suited for + an idea of skills in demand + information on training options in your country.
+                    </p>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
                     <!-- Block 1: High Growth Sectors -->
                     <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-indigo-50 border border-indigo-200 rounded-2xl p-6 hover:border-indigo-400 hover:shadow-lg transition-all group relative overflow-hidden">
@@ -7145,7 +7181,7 @@ window.toggleCareerHub = function() {
                             <div class="w-12 h-12 bg-white text-indigo-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                                 <i data-lucide="bar-chart-2" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900">High Growth Sectors</h3>
+                            <h3 class="text-sm md:text-xl font-bold text-slate-900 whitespace-nowrap">High Growth Sectors</h3>
                         </div>
                         <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Explore fast growing sectors and access real-time market intelligence. Identify occupations and skills in demand, as well as entrepreneurship opportunities.</p>
                         <div class="mt-auto flex items-center gap-2 text-sm font-bold text-indigo-600 group-hover:gap-3 transition-all relative z-10">
@@ -7162,7 +7198,7 @@ window.toggleCareerHub = function() {
                             <div class="w-12 h-12 bg-white text-emerald-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                                 <i data-lucide="graduation-cap" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900">Skills & Training Hub</h3>
+                            <h3 class="text-sm md:text-xl font-bold text-slate-900 whitespace-nowrap">Skills & Training Hub</h3>
                         </div>
                         <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Use tools to assess your fit for different occupations and careers, build a personalized training and learning pathway, or support your entrepreneurship journey.</p>
                         <div class="mt-auto flex items-center gap-2 text-sm font-bold text-emerald-600 group-hover:gap-3 transition-all relative z-10">
@@ -7179,9 +7215,9 @@ window.toggleCareerHub = function() {
                             <div class="w-12 h-12 bg-white text-orange-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                                 <i data-lucide="handshake" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900">Career & Community Tools</h3>
+                            <h3 class="text-sm md:text-xl font-bold text-slate-900 whitespace-nowrap">Career & Community Tools</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Connect with guidance resources, mentors, and the wider Campus Africa community.</p>
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Connect with careers guidance and counselling resources, mentors, employers and the wider support community.</p>
                         <div class="mt-auto flex items-center gap-2 text-sm font-bold text-orange-600 group-hover:gap-3 transition-all relative z-10">
                             Access Tools <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
