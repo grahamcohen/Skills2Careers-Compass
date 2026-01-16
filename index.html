@@ -378,7 +378,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Sector</label>
-                                <select id="filter-sector" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                <select id="filter-sector" onchange="setGlobalSector(this.value); renderProviderTable();" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
                                     <option value="all">All Sectors</option>
                                     <option value="agri">Agritech</option>
                                     <option value="energy">Renewable Energy</option>
@@ -386,14 +386,10 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Topic</label>
-                                <select id="filter-topic" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
-                                    <option value="all">All Topics</option>
-                                    <option value="ai">AI & Data Science</option>
-                                    <option value="dev">Software & Cloud</option>
-                                    <option value="green">Green Energy</option>
-                                    <option value="agri">Agri-Business</option>
-                                    <option value="biz">Business & Soft Skills</option>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Skill Focus</label>
+                                <select id="filter-skill" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="all">All Skills</option>
+                                    <!-- Populated dynamically -->
                                 </select>
                             </div>
                             <div>

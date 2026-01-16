@@ -3469,6 +3469,9 @@ function getOJAMetrics(roleTitle, country) {
         window.setGlobalSector = function(sector) {
             activeSectorId = sector;
             
+            // Update Skill Filter in Find Courses
+            if(typeof populateCourseSkillFilter === 'function') populateCourseSkillFilter(sector);
+
             // Update Tabs
             ['agri', 'energy', 'digital'].forEach(s => {
                 const tab = document.getElementById(`tab-sector-${s}`);
@@ -4537,14 +4540,65 @@ window.toggleCareerHub = function() {
             // Reset filters to ensure search finds results globally
             const selects = document.querySelectorAll('#course-filters-grid select');
             selects.forEach(s => s.value = 'all');
-
-            const searchInput = document.getElementById('filter-search');
-            if(searchInput) {
-                searchInput.value = skillName;
+            
+            // Set Sector based on active context
+            const sectorSelect = document.getElementById('filter-sector');
+            if(sectorSelect) {
+                sectorSelect.value = activeSectorId;
+                if(typeof populateCourseSkillFilter === 'function') populateCourseSkillFilter(activeSectorId);
             }
+
+            // Set Skill Filter
+            const skillSelect = document.getElementById('filter-skill');
+            if(skillSelect) {
+                // Check if skill exists in options
+                let exists = false;
+                for (let i = 0; i < skillSelect.options.length; i++) {
+                    if (skillSelect.options[i].value === skillName) {
+                        skillSelect.value = skillName;
+                        exists = true;
+                        break;
+                    }
+                }
+                
+                if (!exists) {
+                    // Fallback to search if skill not in dropdown
+                    if(searchInput) searchInput.value = skillName;
+                }
+            } else {
+                if(searchInput) searchInput.value = skillName;
+            }
+
             openUnifiedHub('pp-courses', null, null);
             // Force render to ensure filter is applied (handled by openSkillsView now)
             setTimeout(() => { renderProviderTable(); }, 150);
+        }
+
+        window.populateCourseSkillFilter = function(sector) {
+            const skillSelect = document.getElementById('filter-skill');
+            if (!skillSelect) return;
+
+            // Clear existing
+            skillSelect.innerHTML = '<option value="all">All Skills</option>';
+
+            // Get skills for sector
+            const skills = dataManager.getSkills(sector);
+            if (skills && skills.length > 0) {
+                skills.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s.name;
+                    option.text = s.name;
+                    skillSelect.appendChild(option);
+                });
+            } else if (baseSectorDetailData[sector]) {
+                // Fallback
+                baseSectorDetailData[sector].skills.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s.name;
+                    option.text = s.name;
+                    skillSelect.appendChild(option);
+                });
+            }
         }
 
         window.openResourceModal = function(category) {
@@ -6331,11 +6385,13 @@ window.toggleCareerHub = function() {
         }
 
         window.clearCourseFilters = function() {
-            const inputs = ['filter-search', 'filter-country', 'filter-sector', 'filter-topic', 'filter-duration', 'filter-mode', 'filter-cost', 'filter-type', 'filter-lang', 'filter-feature'];
+            const inputs = ['filter-search', 'filter-country', 'filter-sector', 'filter-skill', 'filter-duration', 'filter-mode', 'filter-cost', 'filter-type', 'filter-lang', 'filter-feature'];
             inputs.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = id === 'filter-search' ? '' : 'all';
             });
+            // Reset skill dropdown based on reset sector
+            if(typeof populateCourseSkillFilter === 'function') populateCourseSkillFilter('all');
             renderProviderTable();
         }
 
@@ -6358,7 +6414,7 @@ window.toggleCareerHub = function() {
         window.renderProviderTable = function() {
             const countryFilter = document.getElementById('filter-country') ? document.getElementById('filter-country').value : 'all';
             const secFilter = document.getElementById('filter-sector') ? document.getElementById('filter-sector').value : 'all';
-            const topicFilter = document.getElementById('filter-topic') ? document.getElementById('filter-topic').value : 'all';
+            const skillFilter = document.getElementById('filter-skill') ? document.getElementById('filter-skill').value : 'all';
             const durationFilter = document.getElementById('filter-duration') ? document.getElementById('filter-duration').value : 'all';
             const modeFilter = document.getElementById('filter-mode') ? document.getElementById('filter-mode').value : 'all';
             const costFilter = document.getElementById('filter-cost') ? document.getElementById('filter-cost').value : 'all';
@@ -6380,14 +6436,10 @@ window.toggleCareerHub = function() {
                 const matchCountry = countryFilter === 'all' || c.country === 'all' || c.country === countryFilter;
                 const matchSector = secFilter === 'all' || c.sector === secFilter;
                 
-                let matchTopic = true;
-                if (topicFilter !== 'all') {
-                    const text = (c.name + ' ' + (c.skills || []).join(' ')).toLowerCase();
-                    if (topicFilter === 'ai') matchTopic = text.includes('ai') || text.includes('data') || text.includes('intelligence') || text.includes('machine');
-                    else if (topicFilter === 'dev') matchTopic = text.includes('software') || text.includes('web') || text.includes('app') || text.includes('code') || text.includes('cloud');
-                    else if (topicFilter === 'green') matchTopic = text.includes('solar') || text.includes('energy') || text.includes('wind') || text.includes('climate');
-                    else if (topicFilter === 'agri') matchTopic = text.includes('agri') || text.includes('farm') || text.includes('crop') || text.includes('food');
-                    else if (topicFilter === 'biz') matchTopic = text.includes('business') || text.includes('management') || text.includes('finance') || text.includes('marketing');
+                let matchSkill = true;
+                if (skillFilter !== 'all') {
+                    // Check if the course skills array includes the selected skill
+                    matchSkill = c.skills && c.skills.some(s => s.toLowerCase() === skillFilter.toLowerCase());
                 }
 
                 const matchMode = modeFilter === 'all' || (c.mode && c.mode.toLowerCase() === modeFilter.toLowerCase()) || (modeFilter.toLowerCase() === 'hybrid' && (c.mode === 'Blended' || c.mode === 'Hybrid'));
@@ -6425,7 +6477,7 @@ window.toggleCareerHub = function() {
 
                 const matchSearch = searchFilter === '' || (c.name && c.name.toLowerCase().includes(searchFilter)) || (c.provider && c.provider.toLowerCase().includes(searchFilter));
 
-                return matchCountry && matchSector && matchTopic && matchDuration && matchMode && matchCost && matchLang && matchType && matchFeature && matchSearch;
+                return matchCountry && matchSector && matchSkill && matchDuration && matchMode && matchCost && matchLang && matchType && matchFeature && matchSearch;
             });
 
             if (filtered.length === 0) {

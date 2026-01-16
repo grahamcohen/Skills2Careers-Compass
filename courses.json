@@ -109,7 +109,11 @@
     "language": "English",
     "prerequisites": "KCSE C+ (Math C, English C)",
     "tracerAvailable": false,
-    "lastUpdated": "2023"
+    "lastUpdated": "2023",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "d5",
@@ -131,7 +135,11 @@
     "language": "English",
     "prerequisites": "Undergraduate Degree + 2 years experience",
     "tracerAvailable": false,
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "d6",
@@ -305,7 +313,8 @@
       "placement": { "d90": null, "m6": null, "y1": null },
       "uplift": null,
       "methodology": "No Data",
-      "stars": 0
+      "stars": 0,
+      "accreditation": "Accredited"
     }
   },
   {
@@ -328,7 +337,11 @@
     "language": "English",
     "prerequisites": "STEM Undergraduate Degree",
     "tracerAvailable": false,
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "e4",
@@ -432,7 +445,11 @@
     "language": "English",
     "prerequisites": "KCSE C+",
     "tracerAvailable": false,
-    "lastUpdated": "2023"
+    "lastUpdated": "2023",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a2",
@@ -606,7 +623,8 @@
       "placement": { "d90": null, "m6": null, "y1": null },
       "uplift": null,
       "methodology": "No Data",
-      "stars": 0
+      "stars": 0,
+      "accreditation": "Accredited"
     }
   },
   {
@@ -895,6 +913,10 @@
       "regulator_id": "KCAA/ATO/001",
       "practical_theory_ratio": "60:40",
       "industry_partners": ["Astral Aerial", "Kenya Airways"]
+    },
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
     }
   },
   {
@@ -922,6 +944,10 @@
       "regulator_id": "NITA/TRN/123",
       "practical_theory_ratio": "70:30",
       "industry_partners": ["Davis & Shirtliff", "Knights Energy"]
+    },
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
     }
   },
   {
@@ -1006,7 +1032,11 @@
     "description": "Unit of Competency: Solar T2 Curriculum. Focuses on educating customers on system usage and safety.",
     "language": "English",
     "tracerAvailable": false,
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "c_workplace_docs",
@@ -1224,7 +1254,11 @@
     "description": "Specialized training in fruit, vegetable, and flower production, crucial for Tanzania's export market.",
     "language": "English",
     "prerequisites": "ACSEE",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_rw_1",
@@ -1245,7 +1279,11 @@
     "description": "Hands-on technical training in modern crop production techniques and farm mechanization.",
     "language": "English",
     "prerequisites": "Secondary School Certificate",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_ke_2",
@@ -1266,7 +1304,11 @@
     "description": "Apprenticeship-based training focusing on the business side of farming and practical skills.",
     "language": "English",
     "prerequisites": "None",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_so_1",
@@ -1287,7 +1329,11 @@
     "description": "Focuses on agricultural challenges in arid and semi-arid environments.",
     "language": "English",
     "prerequisites": "Secondary School Leaving Cert",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_bi_1",
@@ -1308,7 +1354,11 @@
     "description": "Comprehensive agronomy engineering degree covering crop, animal, and environmental sciences.",
     "language": "French",
     "prerequisites": "State Exam",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_drc_1",
@@ -1329,7 +1379,11 @@
     "description": "Foundational degree in agronomic sciences with a focus on the Congo Basin ecosystem.",
     "language": "French",
     "prerequisites": "Baccalaureate",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_ss_1",
@@ -1350,7 +1404,11 @@
     "description": "Covers the management of natural resources including agriculture, forestry, and fisheries.",
     "language": "English",
     "prerequisites": "Secondary Certificate",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_online_1",
@@ -1392,7 +1450,11 @@
     "description": "Advanced training in renewable energy technologies, policy, and management.",
     "language": "English",
     "prerequisites": "BSc Engineering/Science",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "e_tz_1",
@@ -1413,7 +1475,11 @@
     "description": "Focuses on power generation and renewable energy systems.",
     "language": "English",
     "prerequisites": "ACSEE Physics/Math",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "e_rw_1",
@@ -1434,7 +1500,11 @@
     "description": "Focuses on electrical power systems, renewable energy integration, and energy efficiency.",
     "language": "English",
     "prerequisites": "Advanced Level",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "e_ke_2",
@@ -1455,7 +1525,11 @@
     "description": "Advanced solar training for designing and installing complex grid-tie and hybrid systems. Prepares for EPRA T3 licensing.",
     "language": "English",
     "prerequisites": "T1/T2 License",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "e_online_1",
@@ -1539,7 +1613,11 @@
     "description": "Foundational computer science degree covering theory, programming, and systems design.",
     "language": "English",
     "prerequisites": "ACSEE",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "d_rw_1",
@@ -1560,7 +1638,11 @@
     "description": "Project-based degree program emphasizing leadership and mission-driven technology solutions.",
     "language": "English",
     "prerequisites": "Secondary School",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "d_pan_1",
@@ -1686,7 +1768,11 @@
     "description": "Leading CS program in Mogadishu, covering software engineering and network administration.",
     "language": "English",
     "prerequisites": "Secondary Cert",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "d_ss_1",
@@ -1707,7 +1793,11 @@
     "description": "Practical IT diploma for entry-level technical roles in Juba.",
     "language": "English",
     "prerequisites": "Secondary Cert",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "d_bi_1",
@@ -1728,7 +1818,11 @@
     "description": "Combines computer science skills with business management principles.",
     "language": "French",
     "prerequisites": "State Exam",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_ke_3",
@@ -1749,7 +1843,11 @@
     "description": "Middle-level training for agricultural extension officers and farm managers.",
     "language": "English",
     "prerequisites": "KCSE C-",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_ug_2",
@@ -1770,7 +1868,11 @@
     "description": "Practical diploma focusing on crop value chains and sustainable farming.",
     "language": "English",
     "prerequisites": "UACE",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_tz_2",
@@ -1791,7 +1893,11 @@
     "description": "Advanced research degree addressing food security challenges in the region.",
     "language": "English",
     "prerequisites": "BSc",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "e_ug_2",
@@ -1812,7 +1918,11 @@
     "description": "Vocational training for solar technicians, covering basic installation and maintenance.",
     "language": "English",
     "prerequisites": "O-Level",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "e_tz_2",
@@ -1833,7 +1943,11 @@
     "description": "Practical training on constructing domestic biogas plants.",
     "language": "Swahili/English",
     "prerequisites": "None",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "d_online_1",
@@ -2001,7 +2115,11 @@
     "description": "Advanced degree focusing on the economic aspects of agriculture and food policy.",
     "language": "English",
     "prerequisites": "BSc",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "e_ke_3",
@@ -2022,7 +2140,11 @@
     "description": "Degree program covering a wide range of energy technologies including solar, wind, geothermal, and bioenergy.",
     "language": "English",
     "prerequisites": "KCSE C+",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "d_rw_2",
@@ -2043,7 +2165,11 @@
     "description": "Interdisciplinary IT degree preparing students for leadership in the tech sector.",
     "language": "English",
     "prerequisites": "Bachelor's Degree",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_rw_2",
@@ -2064,7 +2190,11 @@
     "description": "Focuses on livestock management, animal health, and production systems.",
     "language": "English",
     "prerequisites": "Advanced Level",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "e_bi_1",
@@ -2085,7 +2215,11 @@
     "description": "Engineering degree covering electrical and mechanical systems, relevant for hydro and power plants.",
     "language": "French",
     "prerequisites": "State Exam",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "d_ke_4",
@@ -2190,7 +2324,11 @@
     "description": "Technical training for designing and managing irrigation systems.",
     "language": "English",
     "prerequisites": "CSEE",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "e_rw_2",
@@ -2211,7 +2349,11 @@
     "description": "Vocational training in domestic and industrial electrical installation.",
     "language": "English",
     "prerequisites": "O-Level",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "d_ug_3",
@@ -2232,7 +2374,11 @@
     "description": "Specialized degree in the principles and practice of software engineering.",
     "language": "English",
     "prerequisites": "UACE Math/Physics",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_ke_5",
@@ -2253,7 +2399,11 @@
     "description": "Management of arid and semi-arid lands for sustainable livestock production.",
     "language": "English",
     "prerequisites": "KCSE C+",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "e_tz_3",
@@ -2274,7 +2424,11 @@
     "description": "Postgraduate research and training in sustainable energy solutions.",
     "language": "English",
     "prerequisites": "BSc Engineering/Science",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "d_online_5",
@@ -2295,7 +2449,11 @@
     "description": "Prepare for a career in UX design. Learn foundations of UX research, wireframing, and prototyping.",
     "language": "English",
     "prerequisites": "None",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_online_4",
@@ -2378,7 +2536,11 @@
     "description": "Specialized training for the dairy value chain.",
     "language": "English",
     "prerequisites": "KCSE D",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "e_ug_3",
@@ -2398,7 +2560,11 @@
     "country": "Uganda",
     "description": "Practical engineering degree with a focus on industrial application.",
     "language": "English",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "d_tz_3",
@@ -2419,7 +2585,11 @@
     "description": "Technical diploma in computing and IT.",
     "language": "English",
     "prerequisites": "CSEE",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "a_rw_3",
@@ -2440,7 +2610,11 @@
     "description": "Advanced business training for the agricultural sector.",
     "language": "English",
     "prerequisites": "BSc",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "e_ke_4",
@@ -2461,7 +2635,11 @@
     "description": "Practical skills for constructing and maintaining biogas digesters.",
     "language": "English",
     "prerequisites": "None",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "d_online_7",
@@ -2482,7 +2660,11 @@
     "description": "Learn to program and analyze data with Python.",
     "language": "English",
     "prerequisites": "None",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "outcomeData": {
+      "available": true,
+      "accreditation": "Accredited"
+    }
   },
   {
     "id": "ai_agri_1",
