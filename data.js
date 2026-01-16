@@ -8,7 +8,9 @@
             'Burundi': { currency: 'BIF', providers: ['Univ. of Burundi', 'BBIN'] },
             'South Sudan': { currency: 'SSP', providers: ['Univ. of Juba', 'Starford Int.'] },
             'DRC': { currency: 'CDF', providers: ['Kinshasa Digital', 'Kadea Academy', 'UNIKIN'] },
-            'Somalia': { currency: 'SOS', providers: ['Simad University', 'Jamhuriya University', 'Hormuud Telecom Foundation'] }
+            'Somalia': { currency: 'SOS', providers: ['Simad University', 'Jamhuriya University', 'Hormuud Telecom Foundation'] },
+            'Nigeria': { currency: 'NGN', providers: ['Precision Field Academy', 'ALX Nigeria'] },
+            'South Africa': { currency: 'ZAR', providers: ['University of Johannesburg', 'Stellenbosch University', 'UKZN'] }
         };
 
         // --- COUNTRY SPECIFIC OVERRIDES ---
@@ -1566,7 +1568,8 @@ const staticCVTools = [
 // --- 25. Country ISO Map ---
 const countryISOMap = {
     'Kenya': 'KEN', 'Tanzania': 'TZA', 'Uganda': 'UGA', 'Rwanda': 'RWA',
-    'Burundi': 'BDI', 'South Sudan': 'SSD', 'DRC': 'COD', 'DR Congo': 'COD', 'Democratic Republic of Congo': 'COD', 'Somalia': 'SOM', 'all': 'KEN'
+    'Burundi': 'BDI', 'South Sudan': 'SSD', 'DRC': 'COD', 'DR Congo': 'COD', 'Democratic Republic of Congo': 'COD', 'Somalia': 'SOM', 
+    'Nigeria': 'NGA', 'South Africa': 'ZAF', 'all': 'KEN'
 };
 
 // --- 26. Fallback Ventures (Safety Net) ---

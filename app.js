@@ -1892,6 +1892,8 @@ function getOJAMetrics(roleTitle, country) {
                                 <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
                                 <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
                                 <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
+                                <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
+                                <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
                             </select>
                         </div>
                     </div>
@@ -3017,6 +3019,7 @@ function getOJAMetrics(roleTitle, country) {
         }
 
         function openOccupationModal(title) {
+            closeAllModals(); // Ensure single active modal
             const modal = document.getElementById('occupation-modal');
             const panel = document.getElementById('occupation-modal-panel');
             
@@ -3043,7 +3046,7 @@ function getOJAMetrics(roleTitle, country) {
             
             // NEW: Fetch and display O*NET / ESCO Codes
             // Priority: Check dynamic occData first, then fallback to baseSectorDetailData
-            const baseOccs = baseSectorDetailData[activeSectorId] ? baseSectorDetailData[activeSectorId].occupations : [];
+            const baseOccs = (typeof baseSectorDetailData !== 'undefined' && baseSectorDetailData[activeSectorId]) ? baseSectorDetailData[activeSectorId].occupations : [];
             const baseOcc = baseOccs.find(o => o.name === title);
             
             const esco = (occData && occData.escoCode) ? occData.escoCode : (baseOcc ? baseOcc.escoCode : null);
@@ -3194,10 +3197,10 @@ function getOJAMetrics(roleTitle, country) {
             `;
 
             // 4. Demand Signals (Updated Label)
-            const baseData = baseSectorDetailData[activeSectorId];
-            const overrides = (countryOverrides[activeCountry] && countryOverrides[activeCountry][activeSectorId]) || {};
+            const baseData = (typeof baseSectorDetailData !== 'undefined') ? baseSectorDetailData[activeSectorId] : {};
+            const overrides = (typeof countryOverrides !== 'undefined' && countryOverrides[activeCountry] && countryOverrides[activeCountry][activeSectorId]) || {};
             const data = { ...baseData, ...overrides };
-            const sectorGrowth = data.jobTrend || baseData.growth.jobTrend;
+            const sectorGrowth = data.jobTrend || (baseData.growth ? baseData.growth.jobTrend : 'N/A');
 
             // --- NEW: Calculate Similar Roles (Moved Up) ---
             const currentTechSkills = new Set(details.specificSkills.technical);
@@ -3402,6 +3405,7 @@ function getOJAMetrics(roleTitle, country) {
 
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
+            if (!modal) return; // Safety check
             const panel = modal.querySelector('div[id$="panel"]');
             
             if(panel) {
@@ -3413,6 +3417,22 @@ function getOJAMetrics(roleTitle, country) {
                 // Only remove overflow-hidden if no other modals are open
                 if(document.querySelectorAll('.fixed.inset-0.z-\\[100\\]:not(.hidden)').length === 0) document.body.classList.remove('overflow-hidden');
             }, 200);
+        }
+
+        // --- NEW: Global Closer Helpers ---
+        function closeAllDrawers() {
+            const drawers = ['sector-hub-drawer', 'career-hub-drawer', 'training-hub-drawer', 'community-hub-drawer', 'unified-hub-modal'];
+            drawers.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && !el.classList.contains('translate-x-full')) {
+                    el.classList.add('translate-x-full');
+                }
+            });
+        }
+
+        function closeAllModals() {
+            const modals = ['occupation-modal', 'skill-modal', 'venture-modal', 'resource-modal', 'certificate-modal', 'evidence-modal'];
+            modals.forEach(id => closeModal(id));
         }
 
         window.setGlobalCountry = function(country) {
@@ -3520,21 +3540,8 @@ function getOJAMetrics(roleTitle, country) {
         }
 
         window.openUnifiedHub = function(startTab = 'pp-diagnostic', roleName = null, pathwayGoal = null) {
-            // Close any open drawers to prevent overlap
-            const careerDrawer = document.getElementById('career-hub-drawer');
-            if (careerDrawer && !careerDrawer.classList.contains('translate-x-full')) {
-                careerDrawer.classList.add('translate-x-full');
-            }
-            const trainingDrawer = document.getElementById('training-hub-drawer');
-            if (trainingDrawer && !trainingDrawer.classList.contains('translate-x-full')) {
-                trainingDrawer.classList.add('translate-x-full');
-            }
-            
-            // Community drawer
-            const communityDrawer = document.getElementById('community-hub-drawer');
-            if (communityDrawer && !communityDrawer.classList.contains('translate-x-full')) {
-                communityDrawer.classList.add('translate-x-full');
-            }
+            // Close all other drawers first
+            closeAllDrawers();
 
             const drawer = document.getElementById('unified-hub-modal');
             
@@ -3584,6 +3591,8 @@ function getOJAMetrics(roleTitle, country) {
                             <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
                             <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
                             <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
+                            <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
+                            <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
                         </select>
                     </div>
                     <div>
@@ -4128,23 +4137,14 @@ function getOJAMetrics(roleTitle, country) {
         }
 
 window.toggleTrainingHub = function() {
-    // Close Unified Hub if open
-    const unifiedDrawer = document.getElementById('unified-hub-modal');
-    if (unifiedDrawer && !unifiedDrawer.classList.contains('translate-x-full')) {
-        unifiedDrawer.classList.add('translate-x-full');
-    }
-
-    // 1. Close the other drawer if it is open
-    const careerDrawer = document.getElementById('career-hub-drawer');
-    if (!careerDrawer.classList.contains('translate-x-full')) {
-        careerDrawer.classList.add('translate-x-full');
-    }
-
-    // 2. Toggle this drawer (Remove class to show, Add class to hide)
     const drawer = document.getElementById('training-hub-drawer');
-    drawer.classList.toggle('translate-x-full');
+    if (!drawer) return;
 
-    if (!drawer.classList.contains('translate-x-full')) {
+    const isClosed = drawer.classList.contains('translate-x-full');
+    closeAllDrawers(); // Close all others
+
+    if (isClosed) {
+        drawer.classList.remove('translate-x-full');
         resetTrainingHub();
     }
     if(window.lucide) lucide.createIcons();
@@ -4170,6 +4170,8 @@ window.resetTrainingHub = function() {
                         <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
                         <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
                         <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
+                        <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
+                        <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
                     </select>
                 </div>
                 <div>
@@ -4248,6 +4250,8 @@ window.showTrainingHubView = function(view) {
                                 <option value="Burundi" ${activeCountry === 'Burundi' ? 'selected' : ''}>Burundi</option>
                                 <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
                                 <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DRC</option>
+                                <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
+                                <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
                             </select>
                         </div>
                         <div>
@@ -4396,32 +4400,19 @@ window.showTrainingHubView = function(view) {
     if(window.lucide) lucide.createIcons();
 }
 window.toggleCareerHub = function() {
-    // Close Unified Hub if open
-    const unifiedDrawer = document.getElementById('unified-hub-modal');
-    if (unifiedDrawer && !unifiedDrawer.classList.contains('translate-x-full')) {
-        unifiedDrawer.classList.add('translate-x-full');
-    }
-
-    // 1. Close the other drawer if it is open
-    const trainingDrawer = document.getElementById('training-hub-drawer');
-    if (!trainingDrawer.classList.contains('translate-x-full')) {
-        trainingDrawer.classList.add('translate-x-full');
-    }
-    
-    // Close community drawer if open
-    const communityDrawer = document.getElementById('community-hub-drawer');
-    if (communityDrawer && !communityDrawer.classList.contains('translate-x-full')) {
-        communityDrawer.classList.add('translate-x-full');
-    }
-
-    // 2. Toggle this drawer
     const drawer = document.getElementById('career-hub-drawer');
-    drawer.classList.toggle('translate-x-full');
+    if (!drawer) return;
 
-    // 3. Run existing logic
-    resetCareerHub(); 
+    const isClosed = drawer.classList.contains('translate-x-full');
+    closeAllDrawers(); // Close all others
+
+    if (isClosed) {
+        drawer.classList.remove('translate-x-full');
+        resetCareerHub();
+    }
 }
         window.openSkillModal = function(skillName) {
+            closeAllModals(); // Ensure single active modal
             const modal = document.getElementById('skill-modal');
             const panel = document.getElementById('skill-modal-panel');
             const sectorName = activeSectorId === 'agri' ? 'Agritech' : activeSectorId === 'energy' ? 'Renewable Energies' : 'Digital Economies / AI';
@@ -4602,6 +4593,7 @@ window.toggleCareerHub = function() {
         }
 
         window.openResourceModal = function(category) {
+            closeAllModals(); // Ensure single active modal
             const modal = document.getElementById('resource-modal');
             const panel = document.getElementById('resource-modal-panel');
             document.getElementById('resource-modal-title').innerText = category;
@@ -4969,6 +4961,7 @@ window.toggleCareerHub = function() {
 
         // --- NEW: Venture Modal Logic ---
         window.openVentureModal = function(title) {
+            closeAllModals(); // Ensure single active modal
             const modal = document.getElementById('venture-modal');
             const panel = document.getElementById('venture-modal-panel');
             
@@ -5732,6 +5725,28 @@ window.toggleCareerHub = function() {
                 </div>
             ` : '';
 
+            // --- NEW: Pending Invitations (Mock) ---
+            let invitesHtml = '';
+            if (activeFilter === 'all' || activeFilter === 'networks') {
+                invitesHtml = `
+                    <div class="p-3 border border-indigo-100 bg-indigo-50/40 rounded-lg mb-3" id="pending-invite-card">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                                    <div class="font-bold text-sm text-indigo-900">Youth in Agribusiness EA</div>
+                                </div>
+                                <div class="text-xs text-indigo-700">Invited by Sarah M. • 2 days ago</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="document.getElementById('pending-invite-card').remove()" class="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2 py-1">Decline</button>
+                                <button onclick="acceptCommunityInvite(this)" class="text-[10px] font-bold bg-indigo-600 text-white px-3 py-1 rounded shadow-sm hover:bg-indigo-700 transition-colors">Accept</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
             // Filter Buttons Helper
             const getBtnClass = (filter) => activeFilter === filter 
                 ? "bg-slate-800 text-white shadow-sm" 
@@ -5754,6 +5769,8 @@ window.toggleCareerHub = function() {
                                 <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
                                 <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
                                 <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
+                                <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
+                                <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
                             </select>
                         </div>
                         <div>
@@ -5775,6 +5792,7 @@ window.toggleCareerHub = function() {
                     </div>
 
                     <div class="space-y-3 overflow-y-auto pr-1 pb-4">
+                        ${invitesHtml}
                         ${featuredHtml}
                         ${itemsHtml.length > 0 ? itemsHtml : '<div class="text-xs text-slate-500 italic text-center py-4">No items found for this category.</div>'}
                         
@@ -5787,6 +5805,20 @@ window.toggleCareerHub = function() {
                     </div>
                 </div>
             `;
+            if(window.lucide) lucide.createIcons();
+        }
+
+        // --- NEW: Accept Invite Helper ---
+        window.acceptCommunityInvite = function(btn) {
+            const card = btn.closest('div.p-3');
+            card.innerHTML = `
+                <div class="flex items-center gap-2 text-emerald-700">
+                    <i data-lucide="check-circle" class="w-5 h-5"></i>
+                    <span class="text-xs font-bold">Invitation Accepted! Added to your network.</span>
+                </div>
+            `;
+            card.classList.remove('bg-indigo-50/40', 'border-indigo-100');
+            card.classList.add('bg-emerald-50', 'border-emerald-100');
             if(window.lucide) lucide.createIcons();
         }
 
@@ -6296,6 +6328,8 @@ window.toggleCareerHub = function() {
                                 <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
                                 <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
                                 <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
+                                <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
+                                <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
                             </select>
                         </div>
                         <div>
@@ -7411,6 +7445,8 @@ window.toggleCareerHub = function() {
                                     <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
                                     <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
                                     <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
+                                    <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
+                                    <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
                                 </select>
                             </div>
                         </div>
@@ -7428,8 +7464,11 @@ window.toggleCareerHub = function() {
         window.toggleSectorHub = function() {
             const drawer = document.getElementById('sector-hub-drawer');
             if (drawer) {
-                drawer.classList.toggle('translate-x-full');
-                if (!drawer.classList.contains('translate-x-full')) {
+                const isClosed = drawer.classList.contains('translate-x-full');
+                closeAllDrawers(); // Close all others
+                
+                if (isClosed) {
+                    drawer.classList.remove('translate-x-full');
                     // Ensure content is rendered when opening
                     renderOccupationsView();
                 }
