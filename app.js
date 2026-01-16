@@ -1867,6 +1867,9 @@ function getOJAMetrics(roleTitle, country) {
         window.renderPathwayStep1 = function() {
             const container = document.getElementById('pp-practice-content');
             if(!container) return;
+
+            const sectorName = activeSectorId === 'agri' ? 'Agritech' : activeSectorId === 'energy' ? 'Renewable Energy' : 'Digital Economy';
+            const countryName = activeCountry === 'all' ? 'East Africa (Regional)' : activeCountry;
             
             container.innerHTML = `
                 <div class="max-w-3xl mx-auto py-6 animate-fade-in">
@@ -1875,36 +1878,20 @@ function getOJAMetrics(roleTitle, country) {
                             <span class="font-bold text-lg">1</span>
                         </div>
                         <h2 class="text-2xl font-bold text-slate-900 mb-2">Let's build your pathway</h2>
-                        <p class="text-slate-500 max-w-md mx-auto">Create a step-by-step roadmap tailored to your career goals. Start by selecting your location and target sector.</p>
+                        <p class="text-slate-500 max-w-md mx-auto">Create a step-by-step roadmap tailored to your career goals.</p>
                     </div>
 
-                    <!-- NEW: Country Selection -->
-                    <div class="mb-8">
-                        <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide mb-3 text-center">1. Choose Location</h3>
-                        <div class="max-w-md mx-auto">
-                            <select onchange="setGlobalCountry(this.value); renderPathwayStep1();" class="w-full p-3 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm bg-white">
-                                <option value="all" ${activeCountry === 'all' ? 'selected' : ''}>Regional (East Africa)</option>
-                                <option value="Kenya" ${activeCountry === 'Kenya' ? 'selected' : ''}>Kenya</option>
-                                <option value="Uganda" ${activeCountry === 'Uganda' ? 'selected' : ''}>Uganda</option>
-                                <option value="Tanzania" ${activeCountry === 'Tanzania' ? 'selected' : ''}>Tanzania</option>
-                                <option value="Rwanda" ${activeCountry === 'Rwanda' ? 'selected' : ''}>Rwanda</option>
-                                <option value="Burundi" ${activeCountry === 'Burundi' ? 'selected' : ''}>Burundi</option>
-                                <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
-                                <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
-                                <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
-                                <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
-                                <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
-                            </select>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-8 text-center">
+                        <p class="text-sm text-slate-600 mb-2">You are exploring opportunities in:</p>
+                        <div class="flex flex-wrap justify-center gap-3">
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-bold text-slate-800 shadow-sm flex items-center gap-2">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-slate-400"></i> ${countryName}
+                            </span>
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm font-bold text-slate-800 shadow-sm flex items-center gap-2">
+                                <i data-lucide="briefcase" class="w-4 h-4 text-slate-400"></i> ${sectorName}
+                            </span>
                         </div>
-                    </div>
-
-                    <div class="mb-10">
-                        <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide mb-3 text-center">2. Choose Sector</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            ${_renderSectorOption('agri', 'Agritech', 'leaf')}
-                            ${_renderSectorOption('energy', 'Renewable Energy', 'sun')}
-                            ${_renderSectorOption('digital', 'Digital Economy', 'cpu')}
-                        </div>
+                        <p class="text-xs text-slate-400 mt-4">To change this, use the filters at the top of the hub.</p>
                     </div>
                     
                     <div class="text-center">
@@ -3019,7 +3006,6 @@ function getOJAMetrics(roleTitle, country) {
         }
 
         function openOccupationModal(title) {
-            closeAllModals(); // Ensure single active modal
             const modal = document.getElementById('occupation-modal');
             const panel = document.getElementById('occupation-modal-panel');
             
@@ -3046,7 +3032,7 @@ function getOJAMetrics(roleTitle, country) {
             
             // NEW: Fetch and display O*NET / ESCO Codes
             // Priority: Check dynamic occData first, then fallback to baseSectorDetailData
-            const baseOccs = (typeof baseSectorDetailData !== 'undefined' && baseSectorDetailData[activeSectorId]) ? baseSectorDetailData[activeSectorId].occupations : [];
+            const baseOccs = baseSectorDetailData[activeSectorId] ? baseSectorDetailData[activeSectorId].occupations : [];
             const baseOcc = baseOccs.find(o => o.name === title);
             
             const esco = (occData && occData.escoCode) ? occData.escoCode : (baseOcc ? baseOcc.escoCode : null);
@@ -3197,10 +3183,10 @@ function getOJAMetrics(roleTitle, country) {
             `;
 
             // 4. Demand Signals (Updated Label)
-            const baseData = (typeof baseSectorDetailData !== 'undefined') ? baseSectorDetailData[activeSectorId] : {};
-            const overrides = (typeof countryOverrides !== 'undefined' && countryOverrides[activeCountry] && countryOverrides[activeCountry][activeSectorId]) || {};
+            const baseData = baseSectorDetailData[activeSectorId];
+            const overrides = (countryOverrides[activeCountry] && countryOverrides[activeCountry][activeSectorId]) || {};
             const data = { ...baseData, ...overrides };
-            const sectorGrowth = data.jobTrend || (baseData.growth ? baseData.growth.jobTrend : 'N/A');
+            const sectorGrowth = data.jobTrend || baseData.growth.jobTrend;
 
             // --- NEW: Calculate Similar Roles (Moved Up) ---
             const currentTechSkills = new Set(details.specificSkills.technical);
@@ -3405,7 +3391,6 @@ function getOJAMetrics(roleTitle, country) {
 
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
-            if (!modal) return; // Safety check
             const panel = modal.querySelector('div[id$="panel"]');
             
             if(panel) {
@@ -3417,22 +3402,6 @@ function getOJAMetrics(roleTitle, country) {
                 // Only remove overflow-hidden if no other modals are open
                 if(document.querySelectorAll('.fixed.inset-0.z-\\[100\\]:not(.hidden)').length === 0) document.body.classList.remove('overflow-hidden');
             }, 200);
-        }
-
-        // --- NEW: Global Closer Helpers ---
-        function closeAllDrawers() {
-            const drawers = ['sector-hub-drawer', 'career-hub-drawer', 'training-hub-drawer', 'community-hub-drawer', 'unified-hub-modal'];
-            drawers.forEach(id => {
-                const el = document.getElementById(id);
-                if (el && !el.classList.contains('translate-x-full')) {
-                    el.classList.add('translate-x-full');
-                }
-            });
-        }
-
-        function closeAllModals() {
-            const modals = ['occupation-modal', 'skill-modal', 'venture-modal', 'resource-modal', 'certificate-modal', 'evidence-modal'];
-            modals.forEach(id => closeModal(id));
         }
 
         window.setGlobalCountry = function(country) {
@@ -3489,9 +3458,6 @@ function getOJAMetrics(roleTitle, country) {
         window.setGlobalSector = function(sector) {
             activeSectorId = sector;
             
-            // Update Skill Filter in Find Courses
-            if(typeof populateCourseSkillFilter === 'function') populateCourseSkillFilter(sector);
-
             // Update Tabs
             ['agri', 'energy', 'digital'].forEach(s => {
                 const tab = document.getElementById(`tab-sector-${s}`);
@@ -3524,9 +3490,12 @@ function getOJAMetrics(roleTitle, country) {
 
             // Update Find Courses Filter (Sync)
             const courseSectorFilter = document.getElementById('filter-sector');
-            if (courseSectorFilter && courseSectorFilter.value !== sector) {
-                courseSectorFilter.value = sector;
+            if (courseSectorFilter) {
+                if (courseSectorFilter.value !== sector) {
+                    courseSectorFilter.value = sector;
+                }
                 if (!document.getElementById('pp-courses').classList.contains('hidden')) {
+                    if (typeof populateSkillFilter === 'function') populateSkillFilter();
                     renderProviderTable();
                 }
             }
@@ -3540,8 +3509,21 @@ function getOJAMetrics(roleTitle, country) {
         }
 
         window.openUnifiedHub = function(startTab = 'pp-diagnostic', roleName = null, pathwayGoal = null) {
-            // Close all other drawers first
-            closeAllDrawers();
+            // Close any open drawers to prevent overlap
+            const careerDrawer = document.getElementById('career-hub-drawer');
+            if (careerDrawer && !careerDrawer.classList.contains('translate-x-full')) {
+                careerDrawer.classList.add('translate-x-full');
+            }
+            const trainingDrawer = document.getElementById('training-hub-drawer');
+            if (trainingDrawer && !trainingDrawer.classList.contains('translate-x-full')) {
+                trainingDrawer.classList.add('translate-x-full');
+            }
+            
+            // Community drawer
+            const communityDrawer = document.getElementById('community-hub-drawer');
+            if (communityDrawer && !communityDrawer.classList.contains('translate-x-full')) {
+                communityDrawer.classList.add('translate-x-full');
+            }
 
             const drawer = document.getElementById('unified-hub-modal');
             
@@ -3591,8 +3573,6 @@ function getOJAMetrics(roleTitle, country) {
                             <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
                             <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
                             <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
-                            <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
-                            <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
                         </select>
                     </div>
                     <div>
@@ -3685,6 +3665,7 @@ function getOJAMetrics(roleTitle, country) {
                 } else if (viewId === 'pp-practice') {
                      if (!preserveState) initPathwayWizard();
                 } else if (viewId === 'pp-courses') {
+                    if (typeof populateSkillFilter === 'function') populateSkillFilter();
                     renderProviderTable();
                 } else if (viewId === 'pp-launchpad') {
                     renderLaunchpadTab();
@@ -4137,14 +4118,23 @@ function getOJAMetrics(roleTitle, country) {
         }
 
 window.toggleTrainingHub = function() {
+    // Close Unified Hub if open
+    const unifiedDrawer = document.getElementById('unified-hub-modal');
+    if (unifiedDrawer && !unifiedDrawer.classList.contains('translate-x-full')) {
+        unifiedDrawer.classList.add('translate-x-full');
+    }
+
+    // 1. Close the other drawer if it is open
+    const careerDrawer = document.getElementById('career-hub-drawer');
+    if (!careerDrawer.classList.contains('translate-x-full')) {
+        careerDrawer.classList.add('translate-x-full');
+    }
+
+    // 2. Toggle this drawer (Remove class to show, Add class to hide)
     const drawer = document.getElementById('training-hub-drawer');
-    if (!drawer) return;
+    drawer.classList.toggle('translate-x-full');
 
-    const isClosed = drawer.classList.contains('translate-x-full');
-    closeAllDrawers(); // Close all others
-
-    if (isClosed) {
-        drawer.classList.remove('translate-x-full');
+    if (!drawer.classList.contains('translate-x-full')) {
         resetTrainingHub();
     }
     if(window.lucide) lucide.createIcons();
@@ -4170,8 +4160,6 @@ window.resetTrainingHub = function() {
                         <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
                         <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
                         <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
-                        <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
-                        <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
                     </select>
                 </div>
                 <div>
@@ -4235,38 +4223,10 @@ window.showTrainingHubView = function(view) {
                 <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl -mr-10 -mt-10"></div>
             </div>
 
-            <!-- Legend -->
-            <div class="flex flex-wrap gap-2 mb-4 px-1">
-                <div class="flex items-center gap-1.5" title="Course is accredited by a national authority">
-                    <span class="text-[9px] font-bold bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-100 flex items-center gap-1"><i data-lucide="shield-check" class="w-2.5 h-2.5"></i> Accredited</span>
-                </div>
-                <div class="flex items-center gap-1.5" title="Provider is regulated by a specific industry body">
-                    <span class="text-[9px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200 flex items-center gap-1"><i data-lucide="file-badge" class="w-2.5 h-2.5"></i> Regulated</span>
-                </div>
-                <div class="flex items-center gap-1.5" title="Includes verified employment outcome data (Scorecard)">
-                    <span class="text-[9px] font-bold bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded border border-indigo-100 flex items-center gap-1"><i data-lucide="bar-chart-2" class="w-2.5 h-2.5"></i> Tracer Data</span>
-                </div>
-            </div>
-
             <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
                 <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2 mb-3"><i data-lucide="filter" class="w-4 h-4 text-indigo-500"></i> Filter Training</h3>
                 <div class="space-y-3">
                         <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label for="drawer-hub-country" class="block text-xs font-medium text-slate-600 mb-1">Country</label>
-                            <select id="drawer-hub-country" onchange="setGlobalCountry(this.value); renderTrainingHubCourses();" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                                <option value="all" ${activeCountry === 'all' ? 'selected' : ''}>East Africa (All)</option>
-                                <option value="Kenya" ${activeCountry === 'Kenya' ? 'selected' : ''}>Kenya</option>
-                                <option value="Tanzania" ${activeCountry === 'Tanzania' ? 'selected' : ''}>Tanzania</option>
-                                <option value="Uganda" ${activeCountry === 'Uganda' ? 'selected' : ''}>Uganda</option>
-                                <option value="Rwanda" ${activeCountry === 'Rwanda' ? 'selected' : ''}>Rwanda</option>
-                                <option value="Burundi" ${activeCountry === 'Burundi' ? 'selected' : ''}>Burundi</option>
-                                <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
-                                <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DRC</option>
-                                <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
-                                <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
-                            </select>
-                        </div>
                         <div>
                             <label for="drawer-hub-language" class="block text-xs font-medium text-slate-600 mb-1">Language</label>
                             <select id="drawer-hub-language" onchange="renderTrainingHubCourses()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
@@ -4274,14 +4234,6 @@ window.showTrainingHubView = function(view) {
                                 <option value="Kiswahili">Kiswahili</option>
                                 <option value="English">English</option>
                                 <option value="French">French</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="drawer-hub-sector" class="block text-xs font-medium text-slate-600 mb-1">Sector</label>
-                            <select id="drawer-hub-sector" onchange="renderTrainingHubCourses()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500">
-                                <option value="agri" ${activeSectorId === 'agri' ? 'selected' : ''}>Agritech</option>
-                                <option value="energy" ${activeSectorId === 'energy' ? 'selected' : ''}>Renewable Energies</option>
-                                <option value="digital" ${activeSectorId === 'digital' ? 'selected' : ''}>Digital Economies / AI</option>
                             </select>
                         </div>
                         <div>
@@ -4376,14 +4328,6 @@ window.showTrainingHubView = function(view) {
                 </div>
             </div>
             <div class="flex flex-col sm:flex-row gap-2">
-                <select id="finance-filter-country" onchange="renderFinancialAid()" class="flex-1 text-xs border border-slate-300 rounded-lg px-2 py-2 focus:ring-indigo-500">
-                    <option value="all">All Countries</option>
-                    <option value="Kenya">Kenya</option>
-                    <option value="Tanzania">Tanzania</option>
-                    <option value="Uganda">Uganda</option>
-                    <option value="Rwanda">Rwanda</option>
-                    <option value="Regional">Regional</option>
-                </select>
                 <select id="finance-filter-type" onchange="renderFinancialAid()" class="flex-1 text-xs border border-slate-300 rounded-lg px-2 py-2 focus:ring-indigo-500">
                     <option value="all">All Types</option>
                     <option value="Scholarship">Scholarship</option>
@@ -4413,19 +4357,32 @@ window.showTrainingHubView = function(view) {
     if(window.lucide) lucide.createIcons();
 }
 window.toggleCareerHub = function() {
-    const drawer = document.getElementById('career-hub-drawer');
-    if (!drawer) return;
-
-    const isClosed = drawer.classList.contains('translate-x-full');
-    closeAllDrawers(); // Close all others
-
-    if (isClosed) {
-        drawer.classList.remove('translate-x-full');
-        resetCareerHub();
+    // Close Unified Hub if open
+    const unifiedDrawer = document.getElementById('unified-hub-modal');
+    if (unifiedDrawer && !unifiedDrawer.classList.contains('translate-x-full')) {
+        unifiedDrawer.classList.add('translate-x-full');
     }
+
+    // 1. Close the other drawer if it is open
+    const trainingDrawer = document.getElementById('training-hub-drawer');
+    if (!trainingDrawer.classList.contains('translate-x-full')) {
+        trainingDrawer.classList.add('translate-x-full');
+    }
+    
+    // Close community drawer if open
+    const communityDrawer = document.getElementById('community-hub-drawer');
+    if (communityDrawer && !communityDrawer.classList.contains('translate-x-full')) {
+        communityDrawer.classList.add('translate-x-full');
+    }
+
+    // 2. Toggle this drawer
+    const drawer = document.getElementById('career-hub-drawer');
+    drawer.classList.toggle('translate-x-full');
+
+    // 3. Run existing logic
+    resetCareerHub(); 
 }
         window.openSkillModal = function(skillName) {
-            closeAllModals(); // Ensure single active modal
             const modal = document.getElementById('skill-modal');
             const panel = document.getElementById('skill-modal-panel');
             const sectorName = activeSectorId === 'agri' ? 'Agritech' : activeSectorId === 'energy' ? 'Renewable Energies' : 'Digital Economies / AI';
@@ -4544,69 +4501,17 @@ window.toggleCareerHub = function() {
             // Reset filters to ensure search finds results globally
             const selects = document.querySelectorAll('#course-filters-grid select');
             selects.forEach(s => s.value = 'all');
-            
-            // Set Sector based on active context
-            const sectorSelect = document.getElementById('filter-sector');
-            if(sectorSelect) {
-                sectorSelect.value = activeSectorId;
-                if(typeof populateCourseSkillFilter === 'function') populateCourseSkillFilter(activeSectorId);
-            }
 
-            // Set Skill Filter
-            const skillSelect = document.getElementById('filter-skill');
-            if(skillSelect) {
-                // Check if skill exists in options
-                let exists = false;
-                for (let i = 0; i < skillSelect.options.length; i++) {
-                    if (skillSelect.options[i].value === skillName) {
-                        skillSelect.value = skillName;
-                        exists = true;
-                        break;
-                    }
-                }
-                
-                if (!exists) {
-                    // Fallback to search if skill not in dropdown
-                    if(searchInput) searchInput.value = skillName;
-                }
-            } else {
-                if(searchInput) searchInput.value = skillName;
+            const searchInput = document.getElementById('filter-search');
+            if(searchInput) {
+                searchInput.value = skillName;
             }
-
             openUnifiedHub('pp-courses', null, null);
             // Force render to ensure filter is applied (handled by openSkillsView now)
             setTimeout(() => { renderProviderTable(); }, 150);
         }
 
-        window.populateCourseSkillFilter = function(sector) {
-            const skillSelect = document.getElementById('filter-skill');
-            if (!skillSelect) return;
-
-            // Clear existing
-            skillSelect.innerHTML = '<option value="all">All Skills</option>';
-
-            // Get skills for sector
-            const skills = dataManager.getSkills(sector);
-            if (skills && skills.length > 0) {
-                skills.forEach(s => {
-                    const option = document.createElement('option');
-                    option.value = s.name;
-                    option.text = s.name;
-                    skillSelect.appendChild(option);
-                });
-            } else if (baseSectorDetailData[sector]) {
-                // Fallback
-                baseSectorDetailData[sector].skills.forEach(s => {
-                    const option = document.createElement('option');
-                    option.value = s.name;
-                    option.text = s.name;
-                    skillSelect.appendChild(option);
-                });
-            }
-        }
-
         window.openResourceModal = function(category) {
-            closeAllModals(); // Ensure single active modal
             const modal = document.getElementById('resource-modal');
             const panel = document.getElementById('resource-modal-panel');
             document.getElementById('resource-modal-title').innerText = category;
@@ -4974,7 +4879,6 @@ window.toggleCareerHub = function() {
 
         // --- NEW: Venture Modal Logic ---
         window.openVentureModal = function(title) {
-            closeAllModals(); // Ensure single active modal
             const modal = document.getElementById('venture-modal');
             const panel = document.getElementById('venture-modal-panel');
             
@@ -5738,28 +5642,6 @@ window.toggleCareerHub = function() {
                 </div>
             ` : '';
 
-            // --- NEW: Pending Invitations (Mock) ---
-            let invitesHtml = '';
-            if (activeFilter === 'all' || activeFilter === 'networks') {
-                invitesHtml = `
-                    <div class="p-3 border border-indigo-100 bg-indigo-50/40 rounded-lg mb-3" id="pending-invite-card">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <div class="flex items-center gap-2 mb-0.5">
-                                    <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                                    <div class="font-bold text-sm text-indigo-900">Youth in Agribusiness EA</div>
-                                </div>
-                                <div class="text-xs text-indigo-700">Invited by Sarah M. • 2 days ago</div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="document.getElementById('pending-invite-card').remove()" class="text-[10px] font-bold text-slate-500 hover:text-slate-700 px-2 py-1">Decline</button>
-                                <button onclick="acceptCommunityInvite(this)" class="text-[10px] font-bold bg-indigo-600 text-white px-3 py-1 rounded shadow-sm hover:bg-indigo-700 transition-colors">Accept</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-
             // Filter Buttons Helper
             const getBtnClass = (filter) => activeFilter === filter 
                 ? "bg-slate-800 text-white shadow-sm" 
@@ -5782,8 +5664,6 @@ window.toggleCareerHub = function() {
                                 <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
                                 <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
                                 <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
-                                <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
-                                <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
                             </select>
                         </div>
                         <div>
@@ -5805,7 +5685,6 @@ window.toggleCareerHub = function() {
                     </div>
 
                     <div class="space-y-3 overflow-y-auto pr-1 pb-4">
-                        ${invitesHtml}
                         ${featuredHtml}
                         ${itemsHtml.length > 0 ? itemsHtml : '<div class="text-xs text-slate-500 italic text-center py-4">No items found for this category.</div>'}
                         
@@ -5818,20 +5697,6 @@ window.toggleCareerHub = function() {
                     </div>
                 </div>
             `;
-            if(window.lucide) lucide.createIcons();
-        }
-
-        // --- NEW: Accept Invite Helper ---
-        window.acceptCommunityInvite = function(btn) {
-            const card = btn.closest('div.p-3');
-            card.innerHTML = `
-                <div class="flex items-center gap-2 text-emerald-700">
-                    <i data-lucide="check-circle" class="w-5 h-5"></i>
-                    <span class="text-xs font-bold">Invitation Accepted! Added to your network.</span>
-                </div>
-            `;
-            card.classList.remove('bg-indigo-50/40', 'border-indigo-100');
-            card.classList.add('bg-emerald-50', 'border-emerald-100');
             if(window.lucide) lucide.createIcons();
         }
 
@@ -6341,8 +6206,6 @@ window.toggleCareerHub = function() {
                                 <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
                                 <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
                                 <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
-                                <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
-                                <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
                             </select>
                         </div>
                         <div>
@@ -6437,8 +6300,6 @@ window.toggleCareerHub = function() {
                 const el = document.getElementById(id);
                 if (el) el.value = id === 'filter-search' ? '' : 'all';
             });
-            // Reset skill dropdown based on reset sector
-            if(typeof populateCourseSkillFilter === 'function') populateCourseSkillFilter('all');
             renderProviderTable();
         }
 
@@ -6458,9 +6319,37 @@ window.toggleCareerHub = function() {
             return null;
         }
 
+        window.populateSkillFilter = function() {
+            const select = document.getElementById('filter-skill');
+            if (!select) return;
+            
+            const sector = activeSectorId;
+            let skills = [];
+
+            // Try DataManager first
+            const dynamicSkills = dataManager.getSkills(sector);
+            if (dynamicSkills && dynamicSkills.length > 0) {
+                skills = dynamicSkills;
+            } else if (typeof baseSectorDetailData !== 'undefined' && baseSectorDetailData[sector]) {
+                // Fallback to static data
+                skills = baseSectorDetailData[sector].skills;
+            }
+
+            // Sort alphabetically
+            skills.sort((a, b) => a.name.localeCompare(b.name));
+            
+            let html = `<option value="all">All Skills</option>`;
+            skills.forEach(s => {
+                html += `<option value="${s.name}">${s.name}</option>`;
+            });
+            
+            select.innerHTML = html;
+            select.value = 'all';
+        }
+
         window.renderProviderTable = function() {
-            const countryFilter = document.getElementById('filter-country') ? document.getElementById('filter-country').value : 'all';
-            const secFilter = document.getElementById('filter-sector') ? document.getElementById('filter-sector').value : 'all';
+            const countryFilter = document.getElementById('filter-country') ? document.getElementById('filter-country').value : activeCountry;
+            const secFilter = document.getElementById('filter-sector') ? document.getElementById('filter-sector').value : activeSectorId;
             const skillFilter = document.getElementById('filter-skill') ? document.getElementById('filter-skill').value : 'all';
             const durationFilter = document.getElementById('filter-duration') ? document.getElementById('filter-duration').value : 'all';
             const modeFilter = document.getElementById('filter-mode') ? document.getElementById('filter-mode').value : 'all';
@@ -6485,8 +6374,11 @@ window.toggleCareerHub = function() {
                 
                 let matchSkill = true;
                 if (skillFilter !== 'all') {
-                    // Check if the course skills array includes the selected skill
-                    matchSkill = c.skills && c.skills.some(s => s.toLowerCase() === skillFilter.toLowerCase());
+                    if (c.skills && Array.isArray(c.skills)) {
+                        matchSkill = c.skills.some(s => s.toLowerCase() === skillFilter.toLowerCase());
+                    } else {
+                        matchSkill = false;
+                    }
                 }
 
                 const matchMode = modeFilter === 'all' || (c.mode && c.mode.toLowerCase() === modeFilter.toLowerCase()) || (modeFilter.toLowerCase() === 'hybrid' && (c.mode === 'Blended' || c.mode === 'Hybrid'));
@@ -6675,7 +6567,7 @@ window.toggleCareerHub = function() {
             const container = document.getElementById('financial-aid-list');
             if (!container) return;
 
-            const countryFilter = document.getElementById('finance-filter-country') ? document.getElementById('finance-filter-country').value : 'all';
+            const countryFilter = document.getElementById('finance-filter-country') ? document.getElementById('finance-filter-country').value : activeCountry;
             const typeFilter = document.getElementById('finance-filter-type') ? document.getElementById('finance-filter-type').value : 'all';
 
             let items = dataManager.scholarships || [];
@@ -6733,17 +6625,6 @@ window.toggleCareerHub = function() {
                     <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
                         <div class="flex flex-col sm:flex-row gap-3 mb-4">
                             <div class="flex-1">
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Country</label>
-                                <select id="pp-finance-filter-country" onchange="updateUnifiedAidList()" class="w-full text-xs border border-slate-300 rounded-lg px-2 py-2 focus:ring-purple-500">
-                                    <option value="all">All Countries</option>
-                                    <option value="Kenya">Kenya</option>
-                                    <option value="Tanzania">Tanzania</option>
-                                    <option value="Uganda">Uganda</option>
-                                    <option value="Rwanda">Rwanda</option>
-                                    <option value="Regional">Regional</option>
-                                </select>
-                            </div>
-                            <div class="flex-1">
                                 <label class="block text-xs font-bold text-slate-500 mb-1">Type</label>
                                 <select id="pp-finance-filter-type" onchange="updateUnifiedAidList()" class="w-full text-xs border border-slate-300 rounded-lg px-2 py-2 focus:ring-purple-500">
                                     <option value="all">All Types</option>
@@ -6766,7 +6647,7 @@ window.toggleCareerHub = function() {
             const container = document.getElementById('pp-finance-list');
             if (!container) return;
 
-            const countryFilter = document.getElementById('pp-finance-filter-country').value;
+            const countryFilter = document.getElementById('pp-finance-filter-country') ? document.getElementById('pp-finance-filter-country').value : activeCountry;
             const typeFilter = document.getElementById('pp-finance-filter-type').value;
 
             let items = dataManager.scholarships || [];
@@ -6847,9 +6728,9 @@ window.toggleCareerHub = function() {
 
         // --- NEW: Render Training Hub Drawer Courses ---
         window.renderTrainingHubCourses = function() {
-            const countryFilter = document.getElementById('drawer-hub-country') ? document.getElementById('drawer-hub-country').value : 'all';
+            const countryFilter = document.getElementById('drawer-hub-country') ? document.getElementById('drawer-hub-country').value : activeCountry;
             const langFilter = document.getElementById('drawer-hub-language') ? document.getElementById('drawer-hub-language').value : 'all';
-            const secFilter = document.getElementById('drawer-hub-sector') ? document.getElementById('drawer-hub-sector').value : 'all';
+            const secFilter = document.getElementById('drawer-hub-sector') ? document.getElementById('drawer-hub-sector').value : activeSectorId;
             const modeFilter = document.getElementById('drawer-hub-mode-quick') ? document.getElementById('drawer-hub-mode-quick').value : 'all';
             
             // Advanced filters
@@ -7458,8 +7339,6 @@ window.toggleCareerHub = function() {
                                     <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
                                     <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
                                     <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
-                                    <option value="Nigeria" ${activeCountry === 'Nigeria' ? 'selected' : ''}>Nigeria</option>
-                                    <option value="South Africa" ${activeCountry === 'South Africa' ? 'selected' : ''}>South Africa</option>
                                 </select>
                             </div>
                         </div>
@@ -7477,11 +7356,8 @@ window.toggleCareerHub = function() {
         window.toggleSectorHub = function() {
             const drawer = document.getElementById('sector-hub-drawer');
             if (drawer) {
-                const isClosed = drawer.classList.contains('translate-x-full');
-                closeAllDrawers(); // Close all others
-                
-                if (isClosed) {
-                    drawer.classList.remove('translate-x-full');
+                drawer.classList.toggle('translate-x-full');
+                if (!drawer.classList.contains('translate-x-full')) {
                     // Ensure content is rendered when opening
                     renderOccupationsView();
                 }

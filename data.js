@@ -1929,3 +1929,84 @@ const realCourses = [
         "lastUpdated": "2024"
     }
 ];
+
+// --- 47. Fallback Scholarships ---
+const fallbackScholarships = [
+    { "id": "aid_001", "name": "Mastercard Foundation Scholars Program", "provider": "Mastercard Foundation", "type": "Scholarship", "coverage": "Full (Tuition + Stipend)", "country": "Regional", "target": "Undergraduate / Master's", "deadline": "Varies by University", "link": "https://mastercardfdn.org/all/scholars/", "desc": "Comprehensive support for academically talented young leaders from economically disadvantaged backgrounds." },
+    { "id": "aid_002", "name": "HELB Undergraduate Loan", "provider": "Government of Kenya", "type": "Loan", "coverage": "Partial (Tuition + Upkeep)", "country": "Kenya", "target": "Undergraduate (Public/Private)", "deadline": "Annual (August)", "link": "https://www.helb.co.ke/", "desc": "Low-interest government loans for Kenyan students in recognized universities and TVETs." },
+    { "id": "aid_003", "name": "HESLB Loan", "provider": "Higher Education Students' Loans Board", "type": "Loan", "coverage": "Partial (Tuition + Meals)", "country": "Tanzania", "target": "Undergraduate", "deadline": "Annual (July-Sept)", "link": "https://www.heslb.go.tz/", "desc": "Loans for needy Tanzanian students admitted to accredited higher education institutions." },
+    { "id": "aid_004", "name": "HESFB Loan Scheme", "provider": "Higher Education Students Financing Board", "type": "Loan", "coverage": "Tuition Fees", "country": "Uganda", "target": "Undergraduate / Diploma", "deadline": "Annual (July)", "link": "https://www.hesfb.go.ug/", "desc": "Loans for Ugandan students pursuing STEM programs and persons with disabilities." },
+    { "id": "aid_005", "name": "Ashinaga Africa Initiative", "provider": "Ashinaga", "type": "Scholarship", "coverage": "Full (International)", "country": "Regional", "target": "Undergraduate", "deadline": "Annual (January)", "link": "https://en.ashinaga.org/apply/aai/", "desc": "Academic leadership program for orphaned students to study abroad and return to contribute to Sub-Saharan Africa." },
+    { "id": "aid_006", "name": "Equity Wings to Fly / Elimu", "provider": "Equity Group Foundation", "type": "Scholarship", "coverage": "Full (Secondary + Uni Support)", "country": "Kenya", "target": "Secondary / TVET / Uni", "deadline": "Annual (December)", "link": "https://equitygroupfoundation.com/wings-to-fly/", "desc": "Comprehensive secondary school scholarship and leadership training for academically promising but financially challenged students." },
+    { "id": "aid_007", "name": "BRD Student Loan (MinEduc)", "provider": "Development Bank of Rwanda", "type": "Loan", "coverage": "Tuition + Living Allowance", "country": "Rwanda", "target": "Undergraduate", "deadline": "Annual", "link": "https://www.brd.rw/brd/education-financing/", "desc": "Government-backed student loans for Rwandan students in public and private higher learning institutions." },
+    { "id": "aid_008", "name": "IUCEA-Kyung Dong Scholarship", "provider": "IUCEA", "type": "Scholarship", "coverage": "Partial (Tuition)", "country": "Regional", "target": "Undergraduate", "deadline": "Annual (March)", "link": "https://www.iucea.org/", "desc": "Scholarships for students from EAC partner states to study at Kyung Dong University in South Korea." },
+    { "id": "aid_009", "name": "Windle International Scholarship", "provider": "Windle International", "type": "Scholarship", "coverage": "Full", "country": "Regional (Refugee Focus)", "target": "Undergraduate / Master's", "deadline": "Varies", "link": "https://windle.org/", "desc": "Education opportunities for refugees and conflict-affected communities in East Africa." },
+    { "id": "aid_010", "name": "KCB Foundation Tujiajiri", "provider": "KCB Foundation", "type": "Grant / Training", "coverage": "Vocational Training", "country": "Kenya", "target": "TVET / Youth", "deadline": "Rolling", "link": "https://kcbgroup.com/foundation/tujiajiri/", "desc": "Vocational skills training and mentorship for youth to establish their own businesses." },
+    { "id": "aid_011", "name": "DAAD In-Country/In-Region", "provider": "DAAD", "type": "Scholarship", "coverage": "Full (Tuition + Stipend)", "country": "Regional", "target": "Master's / PhD", "deadline": "Varies", "link": "https://www.daad.or.ke/en/", "desc": "Support for postgraduate studies at selected partner universities within the East African region." },
+    { "id": "aid_012", "name": "Madhvani Foundation Scholarship", "provider": "Madhvani Foundation", "type": "Scholarship", "coverage": "Tuition Fees", "country": "Uganda", "target": "Undergraduate", "deadline": "Annual (April)", "link": "https://www.madhvanifoundation.com/", "desc": "Scholarships for Ugandan university students demonstrating financial need and academic merit." },
+    { "id": "aid_013", "name": "Excellentia Program", "provider": "Denise Nyakeru Tshisekedi Foundation", "type": "Scholarship", "coverage": "Full", "country": "DR Congo", "target": "Undergraduate", "deadline": "Annual", "link": "https://fondationdnt.org/excellentia/", "desc": "Promoting academic excellence by awarding scholarships to top-performing state exam graduates in DRC." },
+    { "id": "aid_014", "name": "Iftin Foundation Education Fund", "provider": "Iftin Foundation", "type": "Grant", "coverage": "Partial", "country": "Somalia", "target": "Youth / TVET", "deadline": "Rolling", "link": "https://iftinfoundation.org/", "desc": "Support for skills development and education for youth in Somalia." },
+    { "id": "aid_015", "name": "EAC Scholarship Programme", "provider": "EAC / KfW", "type": "Scholarship", "coverage": "Full", "country": "Regional", "target": "Master's", "deadline": "Bi-annual", "link": "https://www.eac.int/",
+    "desc": "Scholarships for Master's students in Mathematics, Engineering, Informatics, Science, Technology and Business Science." }
+];
+
+// --- 48. Apprenticeship Frameworks ---
+const apprenticeshipFrameworks = {
+    digital: {
+        duration: "3 - 6 Months (Project-based)",
+        objective: "Build a portfolio of real-world code/design.",
+        role: "Bug fixing, testing, documentation, junior dev tasks.",
+        employer: "Code reviews, mentorship, access to dev environment."
+    },
+    energy: {
+        duration: "1 - 2 Years (Licensing Track)",
+        objective: "Log required hours for national accreditation (e.g., EPRA).",
+        role: "Installation support, wiring (supervised), strict HSE adherence.",
+        employer: "Licensed supervision, safety gear (PPE), insurance."
+    },
+    agri: {
+        duration: "3 - 6 Months (Seasonal)",
+        objective: "Master crop cycles and farm management systems.",
+        role: "Field scouting, data collection, equipment maintenance.",
+        employer: "Technical guidance, safety training, transport/stipend."
+    },
+    default: {
+        duration: "6 - 12 Months",
+        objective: "Gain practical, on-the-job experience.",
+        role: "Assist senior staff, maintain logbooks, follow safety protocols.",
+        employer: "Provide supervision, tools, and certify completed hours."
+    }
+};
+
+// --- 49. AI Tools ---
+const aiTools = [
+    { title: "ChatGPT / Claude", desc: "Drafting cover letters & interview practice.", link: "https://chat.openai.com/", icon: "message-square" },
+    { title: "Resume Worded", desc: "AI scoring for your CV content.", link: "https://resumeworded.com/", icon: "file-text" },
+    { title: "CareerVillage Coach", desc: "Personalized AI Career Coach.", link: "https://www.careervillage.org/", icon: "user-check" },
+    { title: "Interview Warmup", desc: "Google's AI interview practice tool.", link: "https://grow.google/certificates/interview-warmup/", icon: "mic" },
+    { title: "TealHQ", desc: "AI Resume Builder & Job Tracker.", link: "https://www.tealhq.com/", icon: "briefcase" },
+    { title: "Yoodli", desc: "AI Interview Speech Coach.", link: "https://yoodli.ai/", icon: "video" }
+];
+
+// --- 50. Library Resources ---
+const libraryResources = [
+    { title: "How to Write an ATS-Friendly CV", desc: "Optimize your resume to pass through automated screening systems.", icon: "file-text", link: "#" },
+    { title: "Mastering the STAR Method for Interviews", desc: "Structure your answers to behavioral questions effectively.", icon: "star", link: "#" },
+    { title: "Networking for Introverts", desc: "Strategies to build professional connections authentically.", icon: "users", link: "#" },
+    { title: "Salary Negotiation 101", desc: "Tips and scripts for discussing compensation.", icon: "banknote", link: "#" },
+    { title: "Building Your Personal Brand on LinkedIn", desc: "Optimize your profile to attract recruiters.", icon: "linkedin", link: "#" },
+    { title: "A Guide to Informational Interviews", desc: "Learn from professionals in your target field.", icon: "message-square", link: "#" }
+];
+
+// --- 51. Employer Connect Events ---
+const employerConnectEvents = [
+    { title: "Annual Career Fair", date: "Oct 15, 2025", type: "Virtual" },
+    { title: "East Africa Graduate Recruitment Drive", date: "Nov 02, 2025", type: "Hybrid" },
+    { title: "Industry Networking Night", date: "Monthly", type: "In-Person" }
+];
+
+// --- 52. Alumni Networks ---
+const alumniNetworks = [
+    { name: "Sector Professionals EA", platform: "LinkedIn" },
+    { name: "University Alumni Network", platform: "Portal" }
+];
