@@ -4235,6 +4235,19 @@ window.showTrainingHubView = function(view) {
                 <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl -mr-10 -mt-10"></div>
             </div>
 
+            <!-- Legend -->
+            <div class="flex flex-wrap gap-2 mb-4 px-1">
+                <div class="flex items-center gap-1.5" title="Course is accredited by a national authority">
+                    <span class="text-[9px] font-bold bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-100 flex items-center gap-1"><i data-lucide="shield-check" class="w-2.5 h-2.5"></i> Accredited</span>
+                </div>
+                <div class="flex items-center gap-1.5" title="Provider is regulated by a specific industry body">
+                    <span class="text-[9px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200 flex items-center gap-1"><i data-lucide="file-badge" class="w-2.5 h-2.5"></i> Regulated</span>
+                </div>
+                <div class="flex items-center gap-1.5" title="Includes verified employment outcome data (Scorecard)">
+                    <span class="text-[9px] font-bold bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded border border-indigo-100 flex items-center gap-1"><i data-lucide="bar-chart-2" class="w-2.5 h-2.5"></i> Tracer Data</span>
+                </div>
+            </div>
+
             <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
                 <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2 mb-3"><i data-lucide="filter" class="w-4 h-4 text-indigo-500"></i> Filter Training</h3>
                 <div class="space-y-3">
