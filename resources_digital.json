@@ -20,7 +20,9 @@
         { "title": "iBizAfrica", "desc": "Strathmore University incubator.", "link": "http://www.ibizafrica.co.ke/" },
         { "title": "C4DLab", "desc": "University of Nairobi innovation lab.", "link": "http://c4dlab.ac.ke/" },
         { "title": "AfriLabs Kenya", "desc": "Directory of hubs.", "link": "https://new.afrilabs.com/hubs/?country=Kenya" },
-        { "title": "KICTANet", "desc": "ICT policy community.", "link": "https://www.kictanet.or.ke/" }
+        { "title": "KICTANet", "desc": "ICT policy community.", "link": "https://www.kictanet.or.ke/" },
+        { "title": "LakeHub", "desc": "Technology innovation hub in Kisumu.", "link": "https://lakehub.co.ke/" },
+        { "title": "Swahilipot Hub", "desc": "Community hub in Mombasa.", "link": "https://swahilipothub.co.ke/" }
       ],
       "jobs": [
         { "title": "Ajira Digital Program", "desc": "Digital skills & online work.", "link": "https://ajiradigital.go.ke/" },
@@ -93,7 +95,8 @@
         { "title": "Sahara Ventures", "desc": "Acceleration & investment.", "link": "https://saharaventures.com/" },
         { "title": "Apps and Girls", "desc": "Coding for girls & women.", "link": "https://www.appsandgirls.com/" },
         { "title": "Robotech Labs", "desc": "Robotics & IoT innovation.", "link": "https://robotech.co.tz/" },
-        { "title": "AfriLabs Tanzania", "desc": "Directory of hubs.", "link": "https://new.afrilabs.com/hubs/?country=Tanzania" }
+        { "title": "AfriLabs Tanzania", "desc": "Directory of hubs.", "link": "https://new.afrilabs.com/hubs/?country=Tanzania" },
+        { "title": "Ndoto Hub", "desc": "Innovation hub for women entrepreneurs.", "link": "https://ndotohub.com/" }
       ],
       "jobs": [
         { "title": "TaESA Jobs Gateway / Kazi Jobs", "desc": "Job opportunities gateway.", "link": "https://jobs.kazi.go.tz/" },
@@ -108,7 +111,7 @@
         { "title": "NACTVET Registered Institutions", "desc": "List of registered and accredited institutions.", "link": "https://www.nactvet.go.tz/" }
       ],
       "communities": [
-        { "title": "Tanzania AI Community", "desc": "Fostering AI growth in Tanzania.", "link": "https://twitter.com/TanzaniaAI" },
+        { "title": "Tanzania AI Community (CoP)", "desc": "Community of Practice fostering AI growth.", "link": "https://twitter.com/TanzaniaAI" },
         { "title": "PyData Dar es Salaam", "desc": "Python & Data Science community.", "link": "https://www.meetup.com/PyData-Dar-es-Salaam/" }
       ]
     },
@@ -130,7 +133,8 @@
         { "title": "ICT Chamber", "desc": "Industry coordination.", "link": "https://www.ictchamber.rw/" },
         { "title": "Westerwelle Startup Haus", "desc": "Co-working & maker space.", "link": "https://westerwelle.haus/en/locations/kigali/" },
         { "title": "Impact Hub Kigali", "desc": "Social innovation community.", "link": "https://kigali.impacthub.net/" },
-        { "title": "AfriLabs Rwanda", "desc": "Directory of hubs.", "link": "https://new.afrilabs.com/hubs/?country=Rwanda" }
+        { "title": "AfriLabs Rwanda", "desc": "Directory of hubs.", "link": "https://new.afrilabs.com/hubs/?country=Rwanda" },
+        { "title": "FabLab Rwanda", "desc": "Digital fabrication laboratory.", "link": "http://www.fablab.rw/" }
       ],
       "jobs": [
         { "title": "Job in Rwanda", "desc": "Vacancies & recruitment.", "link": "https://www.jobinrwanda.com/" },

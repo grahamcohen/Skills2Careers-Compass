@@ -183,19 +183,19 @@ const baseSectorDetailData = {
                     source: "FAOSTAT / ILO"
                 },
                 occupations: [
-                    { name: "Agricultural Extension Officer", desc: "Community mobilization, crop advisory, and farmer training.", isHot: true, onetCode: "25-9021.00", escoCode: "2132.2.2" },
-                    { name: "Precision Ag Specialist", desc: "Drone mapping, GIS analysis, and sensor integration.", isHot: true, onetCode: "19-1013.01", escoCode: "2132.2.8" },
-                    { name: "Drone Pilot", desc: "Operates UAVs for crop surveillance and mapping.", isHot: true, onetCode: "49-3011.00", escoCode: "8342.3" },
-                    { name: "Soil Data Analyst", desc: "Interprets soil samples for nutrient management.", onetCode: "19-1013.00", escoCode: "2132.1" },
-                    { name: "Smart Irrigation Tech", desc: "Installs automated water delivery systems.", onetCode: "49-9099.00", escoCode: "7126.2" },
-                    { name: "Supply Chain Manager", desc: "Orchestrates logistics from farm to market.", onetCode: "11-3071.04", escoCode: "1324.4" },
-                    { name: "Agri-Input Sales", desc: "Distributes seeds/chemicals with technical advice.", onetCode: "41-4011.00", escoCode: "3322.2" },
-                    { name: "Farm IoT Engineer", desc: "Maintains connected sensor networks on-farm.", isHot: true, onetCode: "17-2199.00", escoCode: "2151.5" },
-                    { name: "Post-Harvest Specialist", desc: "Implements cold-chain and storage solutions.", onetCode: "19-1012.00", escoCode: "2132.4" },
-                    { name: "Climate Risk Analyst", desc: "Models weather patterns for crop resilience.", onetCode: "19-2021.00", escoCode: "2114.1" },
-                    { name: "Digital Extension Officer", desc: "Delivers mobile advisory services to farmers.", onetCode: "25-9021.00", escoCode: "2132.2" },
-                    { name: "Urban Farming Architect", desc: "Designs vertical and CEA systems for cities.", onetCode: "17-1011.00", escoCode: "2161.1" },
-                    { name: "Livestock Health Tech", desc: "Tracks animal health via wearables/software.", onetCode: "29-2056.00", escoCode: "3240.1" }
+                    { name: "Agricultural Extension Officer", desc: "Community mobilization, crop advisory, and farmer training.", isHot: true, escoCode: "2132.2.2" },
+                    { name: "Precision Ag Specialist", desc: "Drone mapping, GIS analysis, and sensor integration.", isHot: true, escoCode: "2132.2.8" },
+                    { name: "Drone Pilot", desc: "Operates UAVs for crop surveillance and mapping.", isHot: true, escoCode: "8342.3" },
+                    { name: "Soil Data Analyst", desc: "Interprets soil samples for nutrient management.", escoCode: "2132.1" },
+                    { name: "Smart Irrigation Tech", desc: "Installs automated water delivery systems.", escoCode: "7126.2" },
+                    { name: "Supply Chain Manager", desc: "Orchestrates logistics from farm to market.", escoCode: "1324.4" },
+                    { name: "Agri-Input Sales", desc: "Distributes seeds/chemicals with technical advice.", escoCode: "3322.2" },
+                    { name: "Farm IoT Engineer", desc: "Maintains connected sensor networks on-farm.", isHot: true, escoCode: "2151.5" },
+                    { name: "Post-Harvest Specialist", desc: "Implements cold-chain and storage solutions.", escoCode: "2132.4" },
+                    { name: "Climate Risk Analyst", desc: "Models weather patterns for crop resilience.", escoCode: "2114.1" },
+                    { name: "Digital Extension Officer", desc: "Delivers mobile advisory services to farmers.", escoCode: "2132.2" },
+                    { name: "Urban Farming Architect", desc: "Designs vertical and CEA systems for cities.", escoCode: "2161.1" },
+                    { name: "Livestock Health Tech", desc: "Tracks animal health via wearables/software.", escoCode: "3240.1" }
                 ],
                 skills: [
                     { 
@@ -259,18 +259,18 @@ const baseSectorDetailData = {
                     source: "IRENA / IEA"
                 },
                 occupations: [
-                    { name: "Solar PV Installer", desc: "Assembles and maintains photovoltaic systems.", isHot: true, onetCode: "47-2231.00", escoCode: "7411.3.3" },
-                    { name: "Grid Systems Engineer", desc: "Ensures transmission stability and load balance.", isHot: true, onetCode: "17-2071.00", escoCode: "2151.2" },
-                    { name: "Energy Auditor", desc: "Inspects buildings for efficiency improvements.", isHot: true, onetCode: "13-1199.01", escoCode: "2149.6" },
-                    { name: "Geothermal Technician", desc: "Operates steam extraction and generation plant.", onetCode: "49-9099.01", escoCode: "3131.3" },
-                    { name: "Wind Turbine Tech", desc: "Troubleshoots and repairs turbine components.", onetCode: "49-9081.00", escoCode: "7412.2" },
-                    { name: "Energy Policy Analyst", desc: "Evaluates regulations and tariff frameworks.", onetCode: "19-3011.01", escoCode: "2422.5" },
-                    { name: "Smart Meter Tech", desc: "Services Advanced Metering Infrastructure (AMI).", onetCode: "49-9012.00", escoCode: "7411.2" },
-                    { name: "Project Manager", desc: "Oversees renewable construction lifecycles.", onetCode: "11-9021.00", escoCode: "1219.3" },
-                    { name: "Safety Inspector", desc: "Enforces HSE standards and compliance.", onetCode: "19-5011.00", escoCode: "3257.1" },
-                    { name: "Bioenergy Specialist", desc: "Manages biomass conversion systems.", onetCode: "17-2041.00", escoCode: "2143.1" },
-                    { name: "EV Charging Tech", desc: "Maintains electric vehicle infrastructure.", onetCode: "49-2096.00", escoCode: "7412.1" },
-                    { name: "Energy Storage Specialist", desc: "Designs battery (BESS) integration systems.", onetCode: "17-2071.00", escoCode: "2151.4" }
+                    { name: "Solar PV Installer", desc: "Assembles and maintains photovoltaic systems.", isHot: true, escoCode: "7411.3.3" },
+                    { name: "Grid Systems Engineer", desc: "Ensures transmission stability and load balance.", isHot: true, escoCode: "2151.2" },
+                    { name: "Energy Auditor", desc: "Inspects buildings for efficiency improvements.", isHot: true, escoCode: "2149.6" },
+                    { name: "Geothermal Technician", desc: "Operates steam extraction and generation plant.", escoCode: "3131.3" },
+                    { name: "Wind Turbine Tech", desc: "Troubleshoots and repairs turbine components.", escoCode: "7412.2" },
+                    { name: "Energy Policy Analyst", desc: "Evaluates regulations and tariff frameworks.", escoCode: "2422.5" },
+                    { name: "Smart Meter Tech", desc: "Services Advanced Metering Infrastructure (AMI).", escoCode: "7411.2" },
+                    { name: "Project Manager", desc: "Oversees renewable construction lifecycles.", escoCode: "1219.3" },
+                    { name: "Safety Inspector", desc: "Enforces HSE standards and compliance.", escoCode: "3257.1" },
+                    { name: "Bioenergy Specialist", desc: "Manages biomass conversion systems.", escoCode: "2143.1" },
+                    { name: "EV Charging Tech", desc: "Maintains electric vehicle infrastructure.", escoCode: "7412.1" },
+                    { name: "Energy Storage Specialist", desc: "Designs battery (BESS) integration systems.", escoCode: "2151.4" }
                 ],
                 skills: [
                     { 
@@ -333,18 +333,18 @@ const baseSectorDetailData = {
                     source: "ITU / GSMA"
                 },
                 occupations: [
-                    { name: "Data Scientist", desc: "Extracts insights from complex datasets.", isHot: true, onetCode: "15-2051.00", escoCode: "2122.2.4" },
-                    { name: "Cloud Architect", desc: "Designs scalable cloud computing environments.", isHot: true, onetCode: "15-1299.08", escoCode: "2512.3" },
-                    { name: "Cybersecurity Analyst", desc: "Monitors networks for security breaches.", isHot: true, onetCode: "15-1212.00", escoCode: "2529.1.1" },
-                    { name: "Frontend Dev", desc: "Builds interactive user interfaces for web/mobile.", onetCode: "15-1252.00", escoCode: "2512.6" },
-                    { name: "Backend Dev", desc: "Develops server-side logic and APIs.", onetCode: "15-1252.00", escoCode: "2512.5" },
-                    { name: "UX/UI Designer", desc: "Creates intuitive product user experiences.", onetCode: "15-1255.00", escoCode: "2513.1" },
-                    { name: "AI/ML Engineer", desc: "Trains predictive models and algorithms.", onetCode: "15-1221.00", escoCode: "2512.8" },
-                    { name: "Product Manager", desc: "Guides product strategy and development lifecycles.", onetCode: "13-1199.06", escoCode: "2424.1" },
-                    { name: "DevOps Engineer", desc: "Automates CI/CD deployment pipelines.", onetCode: "15-1299.09", escoCode: "2512.7" },
-                    { name: "Digital Marketer", desc: "Drives growth via digital channels.", onetCode: "13-1161.01", escoCode: "2431.5" },
-                    { name: "Blockchain Developer", desc: "Builds decentralized apps and smart contracts.", onetCode: "15-1252.00", escoCode: "2512.9" },
-                    { name: "Systems Administrator", desc: "Maintains IT infrastructure and networks.", onetCode: "15-1244.00", escoCode: "2522.1" }
+                    { name: "Data Scientist", desc: "Extracts insights from complex datasets.", isHot: true, escoCode: "2122.2.4" },
+                    { name: "Cloud Architect", desc: "Designs scalable cloud computing environments.", isHot: true, escoCode: "2512.3" },
+                    { name: "Cybersecurity Analyst", desc: "Monitors networks for security breaches.", isHot: true, escoCode: "2529.1.1" },
+                    { name: "Frontend Dev", desc: "Builds interactive user interfaces for web/mobile.", escoCode: "2512.6" },
+                    { name: "Backend Dev", desc: "Develops server-side logic and APIs.", escoCode: "2512.5" },
+                    { name: "UX/UI Designer", desc: "Creates intuitive product user experiences.", escoCode: "2513.1" },
+                    { name: "AI/ML Engineer", desc: "Trains predictive models and algorithms.", escoCode: "2512.8" },
+                    { name: "Product Manager", desc: "Guides product strategy and development lifecycles.", escoCode: "2424.1" },
+                    { name: "DevOps Engineer", desc: "Automates CI/CD deployment pipelines.", escoCode: "2512.7" },
+                    { name: "Digital Marketer", desc: "Drives growth via digital channels.", escoCode: "2431.5" },
+                    { name: "Blockchain Developer", desc: "Builds decentralized apps and smart contracts.", escoCode: "2512.9" },
+                    { name: "Systems Administrator", desc: "Maintains IT infrastructure and networks.", escoCode: "2522.1" }
                 ],
                 skills: [
                     { 
@@ -787,7 +787,7 @@ const roleResourcesMap = {
     ],
     "Agri-Input Sales": [
         { title: "Apollo Agriculture: Agent Model", url: "https://apolloagriculture.com/" },
-        { title: "Safaricom DigiFarm", url: "https://www.safaricom.co.ke/personal/value-added-services/digifarm" },
+        { title: "Safaricom DigiFarm", url: "https://www.safaricom.co.ke/media-center-landing/frequently-asked-questions/digifarm-faqs?utm_source=chatgpt.com" },
         { title: "CropLife Africa Middle East", url: "https://croplifeafrica.org/" },
         { title: "Agro-Dealer Development (AFAP)", url: "https://www.afap-partnership.org/" }
     ],
@@ -1558,10 +1558,8 @@ const pathwayQuizOptions = {
 const staticCVTools = [
     { title: "Canva Templates", desc: "Free, design-focused CV layouts.", link: "https://www.canva.com/resumes/templates/", icon: "layout" },
     { title: "Resume Worded", desc: "AI scoring for your CV content.", link: "https://resumeworded.com/", icon: "check-circle" },
-    { title: "O*NET Interest Profiler", desc: "Free RIASEC career assessment.", link: "https://www.mynextmove.org/explore/ip", icon: "clipboard-list" },
     { title: "LinkedIn Career Explorer", desc: "Skills-based career transition tool.", link: "https://linkedin.github.io/career-explorer/", icon: "shuffle" },
     { title: "ESCO Skills Cloud", desc: "EU Skills & Occupations Framework.", link: "https://esco.ec.europa.eu/en", icon: "globe" },
-    { title: "O*NET OnLine", desc: "Occupational info & skills framework.", link: "https://www.onetonline.org/", icon: "book" },
     { title: "CareerVillage Coach", desc: "Personalized AI Career Coach.", link: "https://www.careervillage.org/", icon: "message-circle" }
 ];
 

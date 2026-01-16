@@ -11,6 +11,25 @@ let pathwayState = { goal: null, constraints: {} }; // Store Pathway Builder sta
 let myPlan = { roles: new Set(), skills: new Set(), courses: new Set() }; // New My Plan State
 let favoriteVentures = new Set(); // Store favorite ventures
 
+// --- CONFIGURATION ---
+const API_CONFIG = {
+    baseUrl: '', // Leave empty for local files, set to 'https://api.yourdomain.com/v1/' for MVP
+    endpoints: {
+        wages: 'wages.json',
+        ventures: 'ventures.json',
+        topOccupations: 'top_occupations.json',
+        topSkills: 'top_skills.json',
+        courses: 'courses.json',
+        appData: 'app_data.json',
+        resGeneral: 'resources_general.json',
+        resEvidence: 'resources_evidence.json',
+        resDigital: 'resources_digital.json',
+        resAgri: 'resources_agri.json',
+        resEnergy: 'resources_energy.json',
+        scholarships: 'Scholarships.json'
+    }
+};
+
 // --- DATA MANAGER CLASS ---
 class DataManager {
     constructor() {
@@ -37,40 +56,37 @@ class DataManager {
             document.body.appendChild(spinner);
         }
 
+        // Map endpoints to fetch promises
+        const endpointKeys = Object.keys(API_CONFIG.endpoints);
+        const fetchPromises = endpointKeys.map(key => this.fetchData(API_CONFIG.endpoints[key]));
+
         // Use Promise.allSettled to prevent one failure from crashing the app
-        const results = await Promise.allSettled([
-            this.fetchData('wages.json'),
-            this.fetchData('ventures.json'),
-            this.fetchData('top_occupations.json'),
-            this.fetchData('top_skills.json'),
-            this.fetchData('courses.json'),
-            this.fetchData('app_data.json'),
-            this.fetchData('resources_general.json'),
-            this.fetchData('resources_evidence.json'),
-            this.fetchData('resources_digital.json'),
-            this.fetchData('resources_agri.json'),
-            this.fetchData('resources_energy.json'),
-            this.fetchData('Scholarships.json')
-        ]);
+        const results = await Promise.allSettled(fetchPromises);
+
+        // Create a map of results for safe access
+        const dataMap = {};
+        endpointKeys.forEach((key, index) => {
+            dataMap[key] = (results[index].status === 'fulfilled' && results[index].value) ? results[index].value : null;
+        });
 
         // Extract data safely
-        this.wages = (results[0].status === 'fulfilled' && results[0].value) ? results[0].value : [];
-        this.ventures = (results[1].status === 'fulfilled' && results[1].value) ? results[1].value : this.getFallbackVentures();
-        this.topOccupations = (results[2].status === 'fulfilled' && results[2].value) ? results[2].value : [];
-        this.topSkills = (results[3].status === 'fulfilled' && results[3].value) ? results[3].value : [];
-        this.courses = (results[4].status === 'fulfilled' && results[4].value) ? results[4].value : (typeof realCourses !== 'undefined' ? realCourses : []);
-        this.scholarships = (results[11].status === 'fulfilled' && results[11].value) ? results[11].value : this.getFallbackScholarships();
+        this.wages = dataMap.wages || [];
+        this.ventures = dataMap.ventures || this.getFallbackVentures();
+        this.topOccupations = dataMap.topOccupations || [];
+        this.topSkills = dataMap.topSkills || [];
+        this.courses = dataMap.courses || (typeof realCourses !== 'undefined' ? realCourses : []);
+        this.scholarships = dataMap.scholarships || this.getFallbackScholarships();
 
         // Load App Data (UI Config)
-        const appData = (results[5].status === 'fulfilled' && results[5].value) ? results[5].value : {};
+        const appData = dataMap.appData || {};
         if (appData) Object.assign(window, appData); // Expose config globally
 
         // Construct Digital Resources from split files
-        const generalRes = (results[6].status === 'fulfilled' && results[6].value) ? results[6].value : {};
-        const evidenceRes = (results[7].status === 'fulfilled' && results[7].value) ? results[7].value : [];
-        const digitalRes = (results[8].status === 'fulfilled' && results[8].value) ? results[8].value : {};
-        const agriRes = (results[9].status === 'fulfilled' && results[9].value) ? results[9].value : {};
-        const energyRes = (results[10].status === 'fulfilled' && results[10].value) ? results[10].value : {};
+        const generalRes = dataMap.resGeneral || {};
+        const evidenceRes = dataMap.resEvidence || [];
+        const digitalRes = dataMap.resDigital || {};
+        const agriRes = dataMap.resAgri || {};
+        const energyRes = dataMap.resEnergy || {};
 
         this.digitalResources = {
             ...generalRes,
@@ -99,7 +115,7 @@ class DataManager {
     }
 
     async fetchData(url) {
-        const cacheKey = `ai4eac_cache_${url}`;
+        const cacheKey = `ai4eac_cache_${url.replace(/[^a-zA-Z0-9]/g, '_')}`;
         const cached = localStorage.getItem(cacheKey);
         const cacheTime = localStorage.getItem(`${cacheKey}_time`);
         const now = Date.now();
@@ -117,9 +133,10 @@ class DataManager {
 
         try {
             // Increased timeout to 15s for slow connections
+            const fullUrl = `${API_CONFIG.baseUrl}${url}`;
             const controller = new AbortController();
             const id = setTimeout(() => controller.abort(), 15000);
-            const response = await fetch(url, { signal: controller.signal });
+            const response = await fetch(fullUrl, { signal: controller.signal });
             clearTimeout(id);
             if (!response.ok) throw new Error(`HTTP error ${response.status}`);
             const data = await response.json();
@@ -211,8 +228,8 @@ class DataManager {
                 isHot: (o.rank || o.Rank) <= 4,
                 id: o.masterOccId || o.Master_Occ_ID, // Keep ID for linking
                 why: o.whyInDemand || o.Why_In_Demand, // Capture Why in Demand
-                onetCode: o.onetCode, // Pass through O*NET
-                escoCode: o.escoCode  // Pass through ESCO
+                escoCode: o.escoCode,  // Pass through ESCO
+                nationalStandards: o.nationalStandards || [] // Pass through National Standards
             }));
         }
         return null; // Return null to fallback to baseSectorDetailData
@@ -734,6 +751,17 @@ function getOJAMetrics(roleTitle, country) {
                 if (t.gsa_member || t.women_focused || t.unesco_unevoc) {
                     tagsHtml += `<span class="text-[9px] font-bold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded border border-purple-100 flex items-center gap-1" title="Featured Partner Program"><i data-lucide="award" class="w-2.5 h-2.5"></i> Featured</span>`;
                 }
+                
+                // QA Framework Tags
+                if (t.qa_framework) {
+                    if (t.qa_framework.regulator_id) {
+                        tagsHtml += `<span class="text-[9px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200 flex items-center gap-1" title="Regulator ID: ${t.qa_framework.regulator_id}"><i data-lucide="file-badge" class="w-2.5 h-2.5"></i> Regulated</span>`;
+                    }
+                    if (t.qa_framework.practical_theory_ratio) {
+                        tagsHtml += `<span class="text-[9px] font-bold bg-orange-50 text-orange-700 px-1.5 py-0.5 rounded border border-orange-100 flex items-center gap-1" title="Practical to Theory Ratio"><i data-lucide="hammer" class="w-2.5 h-2.5"></i> ${t.qa_framework.practical_theory_ratio} Practical</span>`;
+                    }
+                }
+
 
                 if (t.outcomeData && t.outcomeData.available) {
                     // ... existing scorecard logic ...
@@ -3018,12 +3046,11 @@ function getOJAMetrics(roleTitle, country) {
             const baseOccs = baseSectorDetailData[activeSectorId] ? baseSectorDetailData[activeSectorId].occupations : [];
             const baseOcc = baseOccs.find(o => o.name === title);
             
-            const onet = (occData && occData.onetCode) ? occData.onetCode : (baseOcc ? baseOcc.onetCode : null);
             const esco = (occData && occData.escoCode) ? occData.escoCode : (baseOcc ? baseOcc.escoCode : null);
 
-            const codesHtml = (onet || esco) 
+            const codesHtml = esco 
                 ? `<span class="block mt-1 text-[10px] text-slate-400 font-mono opacity-80">
-                    ${esco ? `ESCO: ${esco}` : ''}
+                    ESCO: ${esco}
                    </span>` 
                 : '';
 
@@ -3044,6 +3071,29 @@ function getOJAMetrics(roleTitle, country) {
                         <p class="text-sm text-indigo-900/90 leading-relaxed">${demandInfo}</p>
                     </div>
                 `;
+            }
+
+            // --- NEW: National Standards Section ---
+            const standardsContainer = document.getElementById('modal-standards-section');
+            if (standardsContainer) {
+                const standards = occData && occData.nationalStandards && occData.nationalStandards.length > 0 
+                    ? occData.nationalStandards 
+                    : [];
+                
+                if (standards.length > 0) {
+                    const stdHtml = standards.map(s => `
+                        <div class="flex items-center justify-between p-2 bg-slate-50 border border-slate-100 rounded text-xs">
+                            <div>
+                                <div class="font-bold text-slate-700">${s.standard}</div>
+                                <div class="text-[10px] text-slate-500">${s.authority} (${s.country})</div>
+                            </div>
+                            ${s.link ? `<a href="${s.link}" target="_blank" class="text-indigo-600 hover:text-indigo-800"><i data-lucide="external-link" class="w-3 h-3"></i></a>` : ''}
+                        </div>
+                    `).join('');
+                    standardsContainer.innerHTML = `<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2 mt-4">National Competency Standards</h3><div class="space-y-2">${stdHtml}</div>`;
+                } else {
+                    standardsContainer.innerHTML = `<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2 mt-4">National Competency Standards</h3><div class="text-xs text-slate-400 italic">Not reported for this role.</div>`;
+                }
             }
 
             // Inject HTML description
@@ -3104,6 +3154,7 @@ function getOJAMetrics(roleTitle, country) {
                     </div>
                 </div>
             `;
+            // Note: Ensure <div id="modal-standards-section"></div> exists in your HTML modal structure, or append it dynamically if needed.
 
             // --- 3. Qualifications & Requirements (New Section 3) ---
             const qualData = (typeof roleQualifications !== 'undefined' && roleQualifications[title]) 
@@ -3138,6 +3189,7 @@ function getOJAMetrics(roleTitle, country) {
                             <div class="text-xs text-slate-700 font-medium">${qualData.experience}</div>
                         </div>
                     </div>
+                    <div id="modal-standards-section"></div>
                 </div>
             `;
 
