@@ -5802,42 +5802,66 @@ window.toggleCareerHub = function() {
             // --- REAL DATA: Employer Connect Configuration ---
             const connectData = {
                 agri: {
-                    partners: ["Twiga Foods", "One Acre Fund", "SunCulture", "Apollo Agriculture", "Kakuzi", "Victory Farms", "Komaza"],
+                    partners: [
+                        { name: "Twiga Foods", url: "https://twiga.com/" },
+                        { name: "One Acre Fund", url: "https://oneacrefund.org/" },
+                        { name: "SunCulture", url: "https://sunculture.com/" },
+                        { name: "Apollo Agriculture", url: "https://apolloagriculture.com/" },
+                        { name: "Kakuzi", url: "https://www.kakuzi.co.ke/" },
+                        { name: "Victory Farms", url: "https://www.victoryfarmskenya.com/" },
+                        { name: "Komaza", url: "https://komaza.com/" }
+                    ],
                     events: [
-                        { title: "Sankalp Africa Summit", date: "Feb 2026", type: "Nairobi" },
-                        { title: "Agribusiness Congress East Africa", date: "Jun 2026", type: "Regional" },
-                        { title: "EAFF Farmer's Field Days", date: "Quarterly", type: "In-Person" }
+                        { title: "Sankalp Africa Summit", date: "Feb 2026", type: "Nairobi", link: "https://sankalpforum.com/" },
+                        { title: "Agribusiness Congress East Africa", date: "Jun 2026", type: "Regional", link: "https://agriconference.co.ke/" },
+                        { title: "EAFF Farmer's Field Days", date: "Quarterly", type: "In-Person", link: "https://eaffu.org/" }
                     ],
                     alumni: [
-                        { name: "CGIAR Alumni Network", platform: "LinkedIn" },
-                        { name: "AWAK (Women in Ag)", platform: "Community" },
-                        { name: "YPARD (Young Professionals)", platform: "Global Network" }
+                        { name: "CGIAR Alumni Network", platform: "LinkedIn", link: "https://www.cgiar.org/" },
+                        { name: "AWAK (Women in Ag)", platform: "Community", link: "https://awak.co.ke/" },
+                        { name: "YPARD (Young Professionals)", platform: "Global Network", link: "https://ypard.net/" }
                     ]
                 },
                 energy: {
-                    partners: ["M-KOPA", "Sun King", "d.light", "Engie Energy Access", "KenGen", "Bboxx", "CrossBoundary"],
+                    partners: [
+                        { name: "M-KOPA", url: "https://m-kopa.com/" },
+                        { name: "Sun King", url: "https://sunking.com/" },
+                        { name: "d.light", url: "https://www.dlight.com/" },
+                        { name: "Engie Energy Access", url: "https://engie-energyaccess.com/" },
+                        { name: "KenGen", url: "https://www.kengen.co.ke/" },
+                        { name: "Bboxx", url: "https://www.bboxx.com/" },
+                        { name: "CrossBoundary", url: "https://www.crossboundary.com/" }
+                    ],
                     events: [
-                        { title: "Renewable Energy Forum Africa", date: "Oct 2025", type: "Virtual" },
-                        { title: "Solar Africa Expo", date: "May 2026", type: "Nairobi" },
-                        { title: "Future Energy East Africa", date: "Sep 2026", type: "Hybrid" }
+                        { title: "Renewable Energy Forum Africa", date: "Oct 2025", type: "Virtual", link: "https://refa.ametrade.com/" },
+                        { title: "Solar Africa Expo", date: "May 2026", type: "Nairobi", link: "https://www.solarafricaexpo.com/" },
+                        { title: "Future Energy East Africa", date: "Sep 2026", type: "Hybrid", link: "https://www.future-energy-eastafrica.com/" }
                     ],
                     alumni: [
-                        { name: "Women in Renewable Energy (WIRE)", platform: "Association" },
-                        { name: "AFSIA Members Network", platform: "Portal" },
-                        { name: "IEEE Power & Energy Society", platform: "Professional Body" }
+                        { name: "Women in Renewable Energy (WIRE)", platform: "Association", link: "https://wire-africa.org/" },
+                        { name: "AFSIA Members Network", platform: "Portal", link: "http://www.afsiasolar.com/" },
+                        { name: "IEEE Power & Energy Society", platform: "Professional Body", link: "https://www.ieee-pes.org/" }
                     ]
                 },
                 digital: {
-                    partners: ["Safaricom", "Microsoft ADC", "Equity Bank", "Andela", "Cellulant", "MarketForce", "Wasoko"],
+                    partners: [
+                        { name: "Safaricom", url: "https://www.safaricom.co.ke/" },
+                        { name: "Microsoft ADC", url: "https://www.microsoft.com/en-us/adc" },
+                        { name: "Equity Bank", url: "https://equitygroupholdings.com/" },
+                        { name: "Andela", url: "https://andela.com/" },
+                        { name: "Cellulant", url: "https://cellulant.io/" },
+                        { name: "MarketForce", url: "https://marketforce360.com/" },
+                        { name: "Wasoko", url: "https://wasoko.com/" }
+                    ],
                     events: [
-                        { title: "Africa Tech Summit", date: "Feb 2026", type: "Nairobi" },
-                        { title: "Nairobi Innovation Week", date: "Mar 2026", type: "Hybrid" },
-                        { title: "East Africa Com", date: "May 2026", type: "Virtual" }
+                        { title: "Africa Tech Summit", date: "Feb 2026", type: "Nairobi", link: "https://www.africatechsummit.com/" },
+                        { title: "Nairobi Innovation Week", date: "Mar 2026", type: "Hybrid", link: "https://niw.uonbi.ac.ke/" },
+                        { title: "East Africa Com", date: "May 2026", type: "Virtual", link: "https://tmt.knect365.com/eastafricacom/" }
                     ],
                     alumni: [
-                        { name: "ALX Fellowship", platform: "Portal" },
-                        { name: "Google Developer Groups", platform: "Community" },
-                        { name: "Women in Tech Africa", platform: "Network" }
+                        { name: "ALX Fellowship", platform: "Portal", link: "https://www.alxafrica.com/" },
+                        { name: "Google Developer Groups", platform: "Community", link: "https://developers.google.com/community/gdg" },
+                        { name: "Women in Tech Africa", platform: "Network", link: "https://www.womenintechafrica.com/" }
                     ]
                 }
             };
@@ -5851,8 +5875,8 @@ window.toggleCareerHub = function() {
                 // In a real app, this would filter a larger database. 
                 // For now, we keep the regional giants as they hire across borders.
                 // We can append a country specific one if known.
-                if (country === 'Rwanda' && sector === 'digital') partners = ["Irembo", "Bank of Kigali", ...partners];
-                if (country === 'Uganda' && sector === 'energy') partners = ["Umeme", ...partners];
+                if (country === 'Rwanda' && sector === 'digital') partners = [{ name: "Irembo", url: "https://irembo.gov.rw/" }, { name: "Bank of Kigali", url: "https://bk.rw/" }, ...partners];
+                if (country === 'Uganda' && sector === 'energy') partners = [{ name: "Umeme", url: "https://www.umeme.co.ug/" }, ...partners];
             }
             
             // Limit to 5 for display
@@ -5860,32 +5884,32 @@ window.toggleCareerHub = function() {
 
 
             const partnersHtml = partners.map(p => `
-                <div class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:border-pink-300 transition-colors group">
+                <a href="${p.url}" target="_blank" class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:border-pink-300 transition-colors group">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs group-hover:bg-pink-50 group-hover:text-pink-600 transition-colors">${p.substring(0,2).toUpperCase()}</div>
+                        <div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs group-hover:bg-pink-50 group-hover:text-pink-600 transition-colors">${p.name.substring(0,2).toUpperCase()}</div>
                         <div>
-                            <div class="text-xs font-bold text-slate-800">${p}</div>
+                            <div class="text-xs font-bold text-slate-800 group-hover:text-pink-700">${p.name}</div>
                             <div class="text-[10px] text-slate-500">Hiring Partner</div>
                         </div>
                     </div>
-                    <button class="text-[10px] font-bold text-pink-600 bg-pink-50 px-2 py-1 rounded hover:bg-pink-100 border border-pink-100">Connect</button>
-                </div>
+                    <span class="text-[10px] font-bold text-pink-600 bg-pink-50 px-2 py-1 rounded hover:bg-pink-100 border border-pink-100 flex items-center gap-1">Connect <i data-lucide="external-link" class="w-3 h-3"></i></span>
+                </a>
             `).join('');
 
             const eventsHtml = sectorData.events.map(e => {
                 const parts = e.date.split(' ');
                 const day = parts.length > 1 ? parts[1].replace(',','') : '';
                 return `
-                <div class="flex items-center gap-3 p-3 border border-slate-100 rounded-lg bg-slate-50">
+                <a href="${e.link || '#'}" target="_blank" class="flex items-center gap-3 p-3 border border-slate-100 rounded-lg bg-slate-50 hover:bg-white hover:border-pink-200 transition-colors group">
                     <div class="p-2 bg-white rounded shadow-sm text-center min-w-[50px]">
                         <div class="text-[9px] text-slate-400 uppercase font-bold">${parts[0]}</div>
                         <div class="text-sm font-bold text-slate-800">${day}</div>
                     </div>
                     <div>
-                        <div class="text-xs font-bold text-slate-800">${e.title}</div>
+                        <div class="text-xs font-bold text-slate-800 group-hover:text-pink-700">${e.title}</div>
                         <div class="text-[10px] text-slate-500">${e.type} • ${country === 'all' ? 'Regional' : country}</div>
                     </div>
-                </div>
+                </a>
             `}).join('');
 
             container.innerHTML = `
@@ -5919,7 +5943,7 @@ window.toggleCareerHub = function() {
                         <h4 class="text-xs font-bold text-indigo-800 uppercase tracking-wide mb-2">Alumni Networks</h4>
                         <p class="text-xs text-indigo-700 mb-3">Connect with graduates working in the field.</p>
                         <div class="flex flex-wrap gap-2">
-                            ${sectorData.alumni.map(a => `<button class="px-3 py-1.5 bg-white text-indigo-600 rounded text-[10px] font-bold shadow-sm border border-indigo-100 hover:bg-indigo-50 transition-colors">${a.name}</button>`).join('')}
+                            ${sectorData.alumni.map(a => `<a href="${a.link}" target="_blank" class="px-3 py-1.5 bg-white text-indigo-600 rounded text-[10px] font-bold shadow-sm border border-indigo-100 hover:bg-indigo-50 transition-colors flex items-center gap-1">${a.name} <i data-lucide="external-link" class="w-3 h-3"></i></a>`).join('')}
                         </div>
                     </div>
                 </div>
@@ -5935,10 +5959,10 @@ window.toggleCareerHub = function() {
             let allOps = [...(sectorData.jobs || [])];
             
             // Inject mocks for demonstration if they don't exist in data
-            if (!allOps.some(j => j.type === 'Internship')) allOps.push({ title: "Graduate Trainee", company: "Leading Sector Firm", type: "Internship", link: "#" });
-            if (!allOps.some(j => j.type === 'Freelance')) allOps.push({ title: "Technical Consultant", company: "Project Alpha", type: "Freelance", link: "#" });
-            if (!allOps.some(j => j.type === 'Tender')) allOps.push({ title: "RFP: Service Delivery", company: "Government Agency", type: "Tender", link: "#" });
-            if (!allOps.some(j => j.type === 'Volunteer')) allOps.push({ title: "Community Mentor", company: "Local Hub", type: "Volunteer", link: "#" });
+            if (!allOps.some(j => j.type === 'Internship')) allOps.push({ title: "Graduate Trainee", company: "Leading Sector Firm", type: "Internship", link: "https://www.linkedin.com/jobs/search/?keywords=Graduate%20Trainee" });
+            if (!allOps.some(j => j.type === 'Freelance')) allOps.push({ title: "Technical Consultant", company: "Project Alpha", type: "Freelance", link: "https://www.upwork.com/freelance-jobs/" });
+            if (!allOps.some(j => j.type === 'Tender')) allOps.push({ title: "RFP: Service Delivery", company: "Government Agency", type: "Tender", link: "https://tenders.go.ke/" });
+            if (!allOps.some(j => j.type === 'Volunteer')) allOps.push({ title: "Community Mentor", company: "Local Hub", type: "Volunteer", link: "https://www.volunteermatch.org/" });
 
             // 2. Filter Logic
             let filteredOps = allOps;
@@ -6017,7 +6041,7 @@ window.toggleCareerHub = function() {
         }
 
         // --- NEW: Render Application Kit ---
-        window.renderApplicationKit = function(type) {
+        window.renderApplicationKit = function(type, backAction = null) {
             const container = document.getElementById('career-hub-content');
             
             const kits = {
@@ -6029,20 +6053,44 @@ window.toggleCareerHub = function() {
             };
             const kit = kits[type] || kits['all'];
 
+            // Back Button Logic
+            const backBtnCode = backAction 
+                ? `onclick="${backAction}"`
+                : `onclick="showJobBoardView('${type}')"`;
+            
+            const backLabel = backAction ? "Back to Hub" : "Back to Opportunities";
+
+            // Tab Helper
+            const getBtnClass = (t) => type === t 
+                ? "bg-cyan-600 text-white shadow-sm" 
+                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50";
+
+            // Safe Back Action for recursion
+            const safeBackAction = backAction ? `'${backAction.replace(/'/g, "\\'")}'` : 'null';
+
             container.innerHTML = `
                 <div class="animate-fade-in space-y-5">
-                    <button onclick="showJobBoardView('${type}')" class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Opportunities</button>
+                    <button ${backBtnCode} class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> ${backLabel}</button>
                     
                     <div class="text-center">
                         <div class="w-12 h-12 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center mx-auto mb-3">
                             <i data-lucide="briefcase" class="w-6 h-6"></i>
                         </div>
-                        <h3 class="font-bold text-lg text-slate-900">${kit.title}</h3>
-                        <p class="text-xs text-slate-500">Everything you need to apply successfully.</p>
+                        <h3 class="font-bold text-lg text-slate-900">Application Kit</h3>
+                        <p class="text-xs text-slate-500">Select a persona to view tailored resources.</p>
+                    </div>
+
+                    <!-- Micro Tabs -->
+                    <div class="flex gap-2 mb-2 overflow-x-auto pb-1 shrink-0 justify-center">
+                        <button onclick="renderApplicationKit('all', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('all')}">General</button>
+                        <button onclick="renderApplicationKit('internship', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('internship')}">Internship</button>
+                        <button onclick="renderApplicationKit('freelance', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('freelance')}">Freelance</button>
+                        <button onclick="renderApplicationKit('tender', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('tender')}">Tender</button>
+                        <button onclick="renderApplicationKit('volunteer', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('volunteer')}">Volunteer</button>
                     </div>
 
                     <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                        <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase">Included Resources</div>
+                        <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase">${kit.title} Resources</div>
                         <div class="divide-y divide-slate-100">
                             ${kit.items.map(item => `
                                 <div class="p-3 flex items-center justify-between hover:bg-slate-50 transition-colors">
@@ -6325,7 +6373,7 @@ window.toggleCareerHub = function() {
 
         window.resetCareerHub = function() {
             document.getElementById('career-hub-content').innerHTML = `
-                <div class="space-y-4">
+                <div class="space-y-6">
                     <!-- Filters -->
                     <div class="bg-indigo-50/50 p-3 rounded-xl border border-indigo-100 grid grid-cols-2 gap-3">
                         <div>
@@ -6352,49 +6400,91 @@ window.toggleCareerHub = function() {
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
-                        <!-- 1. Market Intel -->
-                        <button onclick="showWorkforceDataView()" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-indigo-300 hover:bg-white hover:shadow-sm text-left transition-all group">
-                            <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg w-fit mb-3 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><i data-lucide="line-chart" class="w-5 h-5"></i></div>
-                            <h4 class="font-bold text-slate-800 text-sm">Market Intel</h4>
-                            <p class="text-xs text-slate-500 mt-1">Trends & Data</p>
-                        </button>
-                        
-                        <!-- 2. CV & Tools -->
-                        <button onclick="showCVResources()" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-purple-300 hover:bg-white hover:shadow-sm text-left transition-all group">
-                            <div class="p-2 bg-purple-100 text-purple-600 rounded-lg w-fit mb-3 group-hover:bg-purple-600 group-hover:text-white transition-colors"><i data-lucide="file-text" class="w-5 h-5"></i></div>
-                            <h4 class="font-bold text-slate-800 text-sm">CV & Tools</h4>
-                            <p class="text-xs text-slate-500 mt-1">Builder & Templates</p>
-                        </button>
-                        
-                        <!-- 3. Mentorship -->
-                        <button onclick="showMentorshipView()" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-sm text-left transition-all group">
-                            <div class="p-2 bg-blue-100 text-blue-600 rounded-lg w-fit mb-3 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="user-check" class="w-5 h-5"></i></div>
-                            <h4 class="font-bold text-slate-800 text-sm">Mentorship</h4>
-                            <p class="text-xs text-slate-500 mt-1">Communities & Networks</p>
-                        </button>
+                    <!-- Section 1: Opportunities (Primary Goal) -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center text-[10px]">1</span> Find Opportunities
+                        </h3>
+                        <div class="grid grid-cols-1 gap-3">
+                            <button onclick="showJobBoardView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-cyan-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-cyan-50 text-cyan-600 rounded-lg shrink-0 group-hover:bg-cyan-600 group-hover:text-white transition-colors"><i data-lucide="briefcase" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-cyan-700">Jobs Board</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Curated listings: Internships, Gigs & Contracts.</p>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-cyan-500"></i>
+                            </button>
+                            
+                            <button onclick="showEmployerConnectView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-pink-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-pink-50 text-pink-600 rounded-lg shrink-0 group-hover:bg-pink-600 group-hover:text-white transition-colors"><i data-lucide="handshake" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-pink-700">Employer Connect</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Direct links to hiring partners & career fairs.</p>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-pink-500"></i>
+                            </button>
+                        </div>
+                    </div>
 
-                        <!-- 4. Job Board -->
-                        <button onclick="showJobBoardView()" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-cyan-300 hover:bg-white hover:shadow-sm text-left transition-all group">
-                            <div class="p-2 bg-cyan-100 text-cyan-600 rounded-lg w-fit mb-3 group-hover:bg-cyan-600 group-hover:text-white transition-colors"><i data-lucide="briefcase" class="w-5 h-5"></i></div>
-                            <h4 class="font-bold text-slate-800 text-sm">Opportunities</h4>
-                            <h4 class="font-bold text-slate-800 text-sm">Applications Tools</h4>
-                            <p class="text-xs text-slate-500 mt-1">Jobs, Gigs & Tenders</p>
-                        </button>
-                        
-                        <!-- 5. Employer Connect -->
-                        <button onclick="showEmployerConnectView()" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-pink-300 hover:bg-white hover:shadow-sm text-left transition-all group">
-                            <div class="p-2 bg-pink-100 text-pink-600 rounded-lg w-fit mb-3 group-hover:bg-pink-600 group-hover:text-white transition-colors"><i data-lucide="handshake" class="w-5 h-5"></i></div>
-                            <h4 class="font-bold text-slate-800 text-sm">Employer Connect</h4>
-                            <p class="text-xs text-slate-500 mt-1">Fairs & Alumni</p>
-                        </button>
+                    <!-- Section 2: Preparation Toolkit -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-[10px]">2</span> Prep Toolkit
+                        </h3>
+                        <div class="grid grid-cols-1 gap-3">
+                            <button onclick="showCVResources()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-purple-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-purple-50 text-purple-600 rounded-lg shrink-0 group-hover:bg-purple-600 group-hover:text-white transition-colors"><i data-lucide="file-text" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-purple-700">CV Builder</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Templates & ATS tools.</p>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-purple-500"></i>
+                            </button>
 
-                        <!-- 6. AI Tools -->
-                        <button onclick="showAIToolsView()" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-indigo-300 hover:bg-white hover:shadow-sm text-left transition-all group">
-                            <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg w-fit mb-3 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><i data-lucide="cpu" class="w-5 h-5"></i></div>
-                            <h4 class="font-bold text-slate-800 text-sm">AI Tools</h4>
-                            <p class="text-xs text-slate-500 mt-1">Resume & Interview AI</p>
-                        </button>
+                            <button onclick="showAIToolsView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-indigo-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><i data-lucide="cpu" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-indigo-700">AI Coach</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Interview prep & feedback.</p>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-indigo-500"></i>
+                            </button>
+
+                            <button onclick="renderApplicationKit('all', 'resetCareerHub()')" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-cyan-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-cyan-50 text-cyan-600 rounded-lg shrink-0 group-hover:bg-cyan-600 group-hover:text-white transition-colors"><i data-lucide="briefcase" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-cyan-700">Application Kit</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Checklists, templates & guides.</p>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-cyan-500"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Section 3: Ecosystem Insights -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px]">3</span> Ecosystem
+                        </h3>
+                        <div class="grid grid-cols-1 gap-3">
+                            <button onclick="showMentorshipView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="users" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-blue-700">Mentorship</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Find mentors & peers.</p>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-blue-500"></i>
+                            </button>
+
+                            <button onclick="showWorkforceDataView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-slate-100 text-slate-600 rounded-lg shrink-0 group-hover:bg-slate-600 group-hover:text-white transition-colors"><i data-lucide="line-chart" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-slate-700">Market Data</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Trends & salary intel.</p>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-slate-500"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -6843,12 +6933,12 @@ window.toggleCareerHub = function() {
             if(!container) return;
 
             const resources = [
-                { title: "How to Write an ATS-Friendly CV", desc: "Optimize your resume to pass through automated screening systems.", icon: "file-text", link: "#" },
-                { title: "Mastering the STAR Method for Interviews", desc: "Structure your answers to behavioral questions effectively.", icon: "star", link: "#" },
-                { title: "Networking for Introverts", desc: "Strategies to build professional connections authentically.", icon: "users", link: "#" },
-                { title: "Salary Negotiation 101", desc: "Tips and scripts for discussing compensation.", icon: "banknote", link: "#" },
-                { title: "Building Your Personal Brand on LinkedIn", desc: "Optimize your profile to attract recruiters.", icon: "linkedin", link: "#" },
-                { title: "A Guide to Informational Interviews", desc: "Learn from professionals in your target field.", icon: "message-square", link: "#" }
+                { title: "How to Write an ATS-Friendly CV", desc: "Optimize your resume to pass through automated screening systems.", icon: "file-text", link: "https://www.jobscan.co/blog/ats-resume/" },
+                { title: "Mastering the STAR Method for Interviews", desc: "Structure your answers to behavioral questions effectively.", icon: "star", link: "https://www.thebalancecareers.com/what-is-the-star-interview-response-technique-2061629" },
+                { title: "Networking for Introverts", desc: "Strategies to build professional connections authentically.", icon: "users", link: "https://hbr.org/2016/08/an-introverts-guide-to-networking" },
+                { title: "Salary Negotiation 101", desc: "Tips and scripts for discussing compensation.", icon: "banknote", link: "https://www.glassdoor.com/blog/guide/how-to-negotiate-your-salary/" },
+                { title: "Building Your Personal Brand on LinkedIn", desc: "Optimize your profile to attract recruiters.", icon: "linkedin", link: "https://www.linkedin.com/business/marketing/blog/linkedin-ads/how-to-build-your-personal-brand-on-linkedin" },
+                { title: "A Guide to Informational Interviews", desc: "Learn from professionals in your target field.", icon: "message-square", link: "https://career.berkeley.edu/start-exploring/informational-interviews/" }
             ];
 
             const resourcesHtml = resources.map(r => `
