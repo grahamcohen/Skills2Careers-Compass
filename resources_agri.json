@@ -8,7 +8,8 @@
     { "name": "FAOSTAT", "desc": "Global agriculture/food statistics.", "link": "https://www.fao.org/faostat/en/" },
     { "name": "IFPRI", "desc": "Policy research on food systems.", "link": "https://www.ifpri.org/" },
     { "name": "FEWS NET", "desc": "Food security early warning data.", "link": "https://fews.net/" },
-    { "name": "ILO Green Jobs", "desc": "Evidence on green jobs in agriculture.", "link": "https://www.ilo.org/greenjobs" }
+    { "name": "ILO Green Jobs", "desc": "Evidence on green jobs in agriculture.", "link": "https://www.ilo.org/greenjobs" },
+    { "name": "Feed the Future", "desc": "Global food security initiative.", "link": "https://www.feedthefuture.gov/" }
   ],
   "communities": [
     { "name": "EAFF", "desc": "Eastern Africa Farmers Federation network.", "type": "Network", "link": "https://www.eaffu.org/" },

@@ -98,6 +98,7 @@ class DataManager {
 
         this.normalizeData();
         this.linkData();
+        this.injectResourceCourses();
 
         // Expose for backward compatibility
         window.digitalResources = this.digitalResources;
@@ -249,6 +250,90 @@ class DataManager {
         }
         
         return null; // Return null to fallback to baseSectorDetailData
+    }
+
+    injectResourceCourses() {
+        if (!this.digitalResources) return;
+        
+        const newCourses = [];
+        
+        const mapToCourse = (res, sector, country) => {
+            const desc = (res.desc || "").toLowerCase();
+            const title = (res.title || "").toLowerCase();
+            const type = (res.type || "").toLowerCase();
+            
+            // Heuristic to identify training/learning resources
+            const isTraining = type.includes('skill') || type.includes('education') || type.includes('bootcamp') || type.includes('training') || type.includes('academy') ||
+                               desc.includes('training') || desc.includes('course') || desc.includes('academy') || desc.includes('learning') || desc.includes('curriculum') ||
+                               title.includes('academy') || title.includes('learning') || title.includes('training');
+            
+            if (!isTraining) return null;
+
+            let courseType = 'Short Course';
+            if (type.includes('bootcamp') || desc.includes('bootcamp')) courseType = 'Bootcamp';
+            else if (type.includes('degree') || desc.includes('degree')) courseType = 'Degree';
+            else if (type.includes('ecosystem') || type.includes('community')) courseType = 'Platform';
+            else if (title.includes('academy') || desc.includes('academy')) courseType = 'Academy';
+
+            return {
+                id: `res_${Math.random().toString(36).substr(2, 9)}`,
+                name: res.title,
+                provider: res.title, 
+                type: courseType,
+                level: 'short',
+                duration: 'Self-paced',
+                difficulty: 'All Levels',
+                cost: 'Variable',
+                mode: 'Online',
+                sector: sector,
+                country: country,
+                skills: [], 
+                url: res.link,
+                description: res.desc,
+                isResource: true,
+                outcomeData: window.generateOutcomeScorecard ? window.generateOutcomeScorecard(res.title, courseType) : { available: false }
+            };
+        };
+
+        // 1. General Resources
+        if (this.digitalResources.regional_multipliers) {
+            this.digitalResources.regional_multipliers.forEach(r => {
+                const c = mapToCourse(r, 'all', 'all');
+                if(c) newCourses.push(c);
+            });
+        }
+        if (this.digitalResources.global_resources) {
+            this.digitalResources.global_resources.forEach(r => {
+                const c = mapToCourse(r, 'all', 'all');
+                if(c) newCourses.push(c);
+            });
+        }
+        
+        // 2. Country Resources (General)
+        if (this.digitalResources.country_resources) {
+            Object.entries(this.digitalResources.country_resources).forEach(([country, data]) => {
+                if(data.hubs) data.hubs.forEach(r => { const c = mapToCourse(r, 'all', country); if(c) newCourses.push(c); });
+                if(data.communities) data.communities.forEach(r => { const c = mapToCourse(r, 'all', country); if(c) newCourses.push(c); });
+            });
+        }
+
+        // 3. Sector Specific
+        ['agri', 'energy', 'digital'].forEach(sector => {
+            if (this.digitalResources[sector]) {
+                const sData = this.digitalResources[sector];
+                if (sData.entrepreneurship) {
+                    if(sData.entrepreneurship.incubators) sData.entrepreneurship.incubators.forEach(r => { const c = mapToCourse(r, sector, 'all'); if(c) newCourses.push(c); });
+                    if(sData.entrepreneurship.tools) sData.entrepreneurship.tools.forEach(r => { const c = mapToCourse(r, sector, 'all'); if(c) newCourses.push(c); });
+                }
+                if (sData.country_resources) {
+                    Object.entries(sData.country_resources).forEach(([country, cData]) => {
+                         if(cData.hubs) cData.hubs.forEach(r => { const c = mapToCourse(r, sector, country); if(c) newCourses.push(c); });
+                    });
+                }
+            }
+        });
+
+        this.courses = [...this.courses, ...newCourses];
     }
 
     getFallbackVentures() {
@@ -747,9 +832,6 @@ function getOJAMetrics(roleTitle, country) {
                 }
                 if (t.outcomeData.stackable) {
                     tagsHtml += `<span class="text-[9px] font-bold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100 flex items-center gap-1" title="Counts towards larger qualification"><i data-lucide="layers" class="w-2.5 h-2.5"></i> Stackable</span>`;
-                }
-                if (t.gsa_member || t.women_focused || t.unesco_unevoc) {
-                    tagsHtml += `<span class="text-[9px] font-bold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded border border-purple-100 flex items-center gap-1" title="Featured Partner Program"><i data-lucide="award" class="w-2.5 h-2.5"></i> Featured</span>`;
                 }
                 
                 // QA Framework Tags
@@ -1563,8 +1645,6 @@ function getOJAMetrics(roleTitle, country) {
                     starsHtml += `</div>`;
                 }
 
-                const isFeatured = t.gsa_member || t.women_focused;
-
                 let durColor = "text-slate-500";
                 if (sortType === 'quickest') {
                     const months = parseDuration(t.duration) || 99;
@@ -1579,7 +1659,6 @@ function getOJAMetrics(roleTitle, country) {
                             <div class="text-xs font-bold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors line-clamp-2 pr-1">${t.name}</div>
                             <div class="flex flex-col items-end gap-1 shrink-0">
                                 ${matchedGaps.length > 0 ? `<span class="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-1 py-0.5 rounded shrink-0">Match</span>` : ''}
-                                ${isFeatured ? `<span class="text-[9px] font-bold bg-purple-100 text-purple-700 px-1 py-0.5 rounded shrink-0" title="Featured Program">Featured</span>` : ''}
                             </div>
                         </div>
                         <div class="text-[10px] text-slate-600 mb-1.5 line-clamp-1">${t.provider}</div>
@@ -3404,6 +3483,24 @@ function getOJAMetrics(roleTitle, country) {
             }, 200);
         }
 
+        function closeAllDrawers(exceptId = null) {
+            const drawers = [
+                'unified-hub-modal', 
+                'career-hub-drawer', 
+                'training-hub-drawer', 
+                'sector-hub-drawer',
+                'community-hub-drawer'
+            ];
+            drawers.forEach(id => {
+                if (id !== exceptId) {
+                    const el = document.getElementById(id);
+                    if (el && !el.classList.contains('translate-x-full')) {
+                        el.classList.add('translate-x-full');
+                    }
+                }
+            });
+        }
+
         window.setGlobalCountry = function(country) {
             activeCountry = country;
             
@@ -3510,20 +3607,7 @@ function getOJAMetrics(roleTitle, country) {
 
         window.openUnifiedHub = function(startTab = 'pp-diagnostic', roleName = null, pathwayGoal = null) {
             // Close any open drawers to prevent overlap
-            const careerDrawer = document.getElementById('career-hub-drawer');
-            if (careerDrawer && !careerDrawer.classList.contains('translate-x-full')) {
-                careerDrawer.classList.add('translate-x-full');
-            }
-            const trainingDrawer = document.getElementById('training-hub-drawer');
-            if (trainingDrawer && !trainingDrawer.classList.contains('translate-x-full')) {
-                trainingDrawer.classList.add('translate-x-full');
-            }
-            
-            // Community drawer
-            const communityDrawer = document.getElementById('community-hub-drawer');
-            if (communityDrawer && !communityDrawer.classList.contains('translate-x-full')) {
-                communityDrawer.classList.add('translate-x-full');
-            }
+            closeAllDrawers('unified-hub-modal');
 
             const drawer = document.getElementById('unified-hub-modal');
             
@@ -4119,16 +4203,7 @@ function getOJAMetrics(roleTitle, country) {
 
 window.toggleTrainingHub = function() {
     // Close Unified Hub if open
-    const unifiedDrawer = document.getElementById('unified-hub-modal');
-    if (unifiedDrawer && !unifiedDrawer.classList.contains('translate-x-full')) {
-        unifiedDrawer.classList.add('translate-x-full');
-    }
-
-    // 1. Close the other drawer if it is open
-    const careerDrawer = document.getElementById('career-hub-drawer');
-    if (!careerDrawer.classList.contains('translate-x-full')) {
-        careerDrawer.classList.add('translate-x-full');
-    }
+    closeAllDrawers('training-hub-drawer');
 
     // 2. Toggle this drawer (Remove class to show, Add class to hide)
     const drawer = document.getElementById('training-hub-drawer');
@@ -4358,22 +4433,7 @@ window.showTrainingHubView = function(view) {
 }
 window.toggleCareerHub = function() {
     // Close Unified Hub if open
-    const unifiedDrawer = document.getElementById('unified-hub-modal');
-    if (unifiedDrawer && !unifiedDrawer.classList.contains('translate-x-full')) {
-        unifiedDrawer.classList.add('translate-x-full');
-    }
-
-    // 1. Close the other drawer if it is open
-    const trainingDrawer = document.getElementById('training-hub-drawer');
-    if (!trainingDrawer.classList.contains('translate-x-full')) {
-        trainingDrawer.classList.add('translate-x-full');
-    }
-    
-    // Close community drawer if open
-    const communityDrawer = document.getElementById('community-hub-drawer');
-    if (communityDrawer && !communityDrawer.classList.contains('translate-x-full')) {
-        communityDrawer.classList.add('translate-x-full');
-    }
+    closeAllDrawers('career-hub-drawer');
 
     // 2. Toggle this drawer
     const drawer = document.getElementById('career-hub-drawer');
@@ -5108,6 +5168,25 @@ window.toggleCareerHub = function() {
             let resourceKey = activeCountry;
             if (resourceKey === 'DRC' || resourceKey === 'Democratic Republic of Congo') resourceKey = 'DR Congo';
 
+            // --- NEW: Merge General Country Resources (Cross-Cutting) ---
+            // This pulls from resources_general.json via the root digitalResources object
+            if (dataManager.digitalResources.country_resources && dataManager.digitalResources.country_resources[resourceKey]) {
+                const genCr = dataManager.digitalResources.country_resources[resourceKey];
+                if (genCr.policy) {
+                    sectorData.lmi.push(...genCr.policy.map(p => ({ name: p.title, desc: p.desc, link: p.link, type: 'National Policy' })));
+                }
+                if (genCr.hubs) {
+                    sectorData.entrepreneurship.incubators.push(...genCr.hubs.map(h => ({ name: h.title, desc: h.desc, link: h.link })));
+                }
+                if (genCr.jobs) {
+                    sectorData.jobs.push(...genCr.jobs.map(j => ({ title: j.title, company: j.desc, type: "National", link: j.link })));
+                }
+                if (genCr.communities) {
+                    sectorData.communities.push(...genCr.communities.map(c => ({ name: c.title, desc: c.desc, link: c.link, type: "General Community" })));
+                }
+            }
+
+            // Inject Sector Specific Country Resources
             if (sourceData && sourceData.country_resources && sourceData.country_resources[resourceKey]) {
                 const cr = sourceData.country_resources[resourceKey];
                 if (cr.policy) {
@@ -5135,9 +5214,15 @@ window.toggleCareerHub = function() {
             if (dataManager.digitalResources.regional_multipliers) {
                 const regionalPolicy = dataManager.digitalResources.regional_multipliers.filter(r => r.type === 'Policy/Regulation');
                 const regionalEcosystem = dataManager.digitalResources.regional_multipliers.filter(r => r.type === 'Ecosystem');
+                const regionalFunding = dataManager.digitalResources.regional_multipliers.filter(r => r.type === 'Funding');
+                const regionalSkills = dataManager.digitalResources.regional_multipliers.filter(r => r.type === 'Skills');
                 
                 sectorData.lmi.push(...regionalPolicy.map(p => ({ name: p.title, desc: p.desc, link: p.link, type: 'Regional Policy', gsa_member: p.gsa_member })));
                 sectorData.communities.push(...regionalEcosystem.map(e => ({ name: e.title, desc: e.desc, type: "Regional Hub", link: e.link, gsa_member: e.gsa_member })));
+                
+                // Inject Funding & Skills
+                sectorData.entrepreneurship.funding.push(...regionalFunding.map(f => ({ name: f.title, desc: f.desc, link: f.link, gsa_member: f.gsa_member })));
+                sectorData.communities.push(...regionalSkills.map(s => ({ name: s.title, desc: s.desc, type: "Learning Community", link: s.link, gsa_member: s.gsa_member })));
             }
 
             // Inject relevant Global Resources
@@ -5146,11 +5231,17 @@ window.toggleCareerHub = function() {
                 const globalJobs = dataManager.digitalResources.global_resources.filter(r => r.type === 'Jobs');
                 const globalData = dataManager.digitalResources.global_resources.filter(r => r.type === 'Data/Research');
                 const globalMentors = dataManager.digitalResources.global_resources.filter(r => r.type === 'Ecosystem' && (r.title.includes('Mentor') || r.title.includes('ADPList')));
+                const globalCommunities = dataManager.digitalResources.global_resources.filter(r => r.type === 'Community');
+                const globalPolicy = dataManager.digitalResources.global_resources.filter(r => r.type === 'Policy/Regulation');
 
                 sectorData.entrepreneurship.funding.push(...globalFunding.map(f => ({ name: f.title, desc: f.desc, link: f.link, gsa_member: f.gsa_member })));
                 sectorData.jobs.push(...globalJobs.map(j => ({ title: j.title, company: j.desc, type: "Global", link: j.link, gsa_member: j.gsa_member })));
                 sectorData.lmi.push(...globalData.map(d => ({ name: d.title, desc: d.desc, link: d.link, type: 'Global Data', gsa_member: d.gsa_member })));
                 sectorData.communities.push(...globalMentors.map(m => ({ name: m.title, desc: m.desc, type: "Mentorship", link: m.link, gsa_member: m.gsa_member })));
+                
+                // Inject Global Communities & Policy
+                sectorData.communities.push(...globalCommunities.map(c => ({ name: c.title, desc: c.desc, type: "Global Community", link: c.link, gsa_member: c.gsa_member })));
+                sectorData.lmi.push(...globalPolicy.map(p => ({ name: p.title, desc: p.desc, link: p.link, type: 'Global Policy', gsa_member: p.gsa_member })));
             }
 
             // --- NEW: Inject National Mentorships ---
@@ -5708,22 +5799,65 @@ window.toggleCareerHub = function() {
             // Get Hiring Partners from Data (using existing overrides)
             const baseData = (typeof baseSectorDetailData !== 'undefined') ? baseSectorDetailData[sector] : {};
             const overrides = (typeof countryOverrides !== 'undefined' && countryOverrides[country] && countryOverrides[country][sector]) ? countryOverrides[country][sector] : {};
+            // --- REAL DATA: Employer Connect Configuration ---
+            const connectData = {
+                agri: {
+                    partners: ["Twiga Foods", "One Acre Fund", "SunCulture", "Apollo Agriculture", "Kakuzi", "Victory Farms", "Komaza"],
+                    events: [
+                        { title: "Sankalp Africa Summit", date: "Feb 2026", type: "Nairobi" },
+                        { title: "Agribusiness Congress East Africa", date: "Jun 2026", type: "Regional" },
+                        { title: "EAFF Farmer's Field Days", date: "Quarterly", type: "In-Person" }
+                    ],
+                    alumni: [
+                        { name: "CGIAR Alumni Network", platform: "LinkedIn" },
+                        { name: "AWAK (Women in Ag)", platform: "Community" },
+                        { name: "YPARD (Young Professionals)", platform: "Global Network" }
+                    ]
+                },
+                energy: {
+                    partners: ["M-KOPA", "Sun King", "d.light", "Engie Energy Access", "KenGen", "Bboxx", "CrossBoundary"],
+                    events: [
+                        { title: "Renewable Energy Forum Africa", date: "Oct 2025", type: "Virtual" },
+                        { title: "Solar Africa Expo", date: "May 2026", type: "Nairobi" },
+                        { title: "Future Energy East Africa", date: "Sep 2026", type: "Hybrid" }
+                    ],
+                    alumni: [
+                        { name: "Women in Renewable Energy (WIRE)", platform: "Association" },
+                        { name: "AFSIA Members Network", platform: "Portal" },
+                        { name: "IEEE Power & Energy Society", platform: "Professional Body" }
+                    ]
+                },
+                digital: {
+                    partners: ["Safaricom", "Microsoft ADC", "Equity Bank", "Andela", "Cellulant", "MarketForce", "Wasoko"],
+                    events: [
+                        { title: "Africa Tech Summit", date: "Feb 2026", type: "Nairobi" },
+                        { title: "Nairobi Innovation Week", date: "Mar 2026", type: "Hybrid" },
+                        { title: "East Africa Com", date: "May 2026", type: "Virtual" }
+                    ],
+                    alumni: [
+                        { name: "ALX Fellowship", platform: "Portal" },
+                        { name: "Google Developer Groups", platform: "Community" },
+                        { name: "Women in Tech Africa", platform: "Network" }
+                    ]
+                }
+            };
+
+            // Fallback to existing overrides if specific list is empty, otherwise use new data
+            const sectorData = connectData[sector] || connectData.digital;
             
-            const hiringString = overrides.hiring || (baseData.outlook ? baseData.outlook.hiring : "Leading Sector Firms");
-            const partners = hiringString.split(',').map(s => s.trim());
+            // Filter partners by country if possible (simple heuristic for prototype)
+            let partners = sectorData.partners;
+            if (country !== 'all') {
+                // In a real app, this would filter a larger database. 
+                // For now, we keep the regional giants as they hire across borders.
+                // We can append a country specific one if known.
+                if (country === 'Rwanda' && sector === 'digital') partners = ["Irembo", "Bank of Kigali", ...partners];
+                if (country === 'Uganda' && sector === 'energy') partners = ["Umeme", ...partners];
+            }
+            
+            // Limit to 5 for display
+            partners = partners.slice(0, 5);
 
-            // Mock Events Data
-            const events = [
-                { title: `Annual ${sector === 'agri' ? 'Agri' : sector === 'energy' ? 'Energy' : 'Tech'} Career Fair`, date: "Oct 15, 2025", type: "Virtual" },
-                { title: "East Africa Graduate Recruitment Drive", date: "Nov 02, 2025", type: "Hybrid" },
-                { title: "Industry Networking Night", date: "Monthly", type: "In-Person" }
-            ];
-
-            // Mock Alumni Groups
-            const alumni = [
-                { name: `${sector.charAt(0).toUpperCase() + sector.slice(1)} Professionals EA`, platform: "LinkedIn" },
-                { name: "University Alumni Network", platform: "Portal" }
-            ];
 
             const partnersHtml = partners.map(p => `
                 <div class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:border-pink-300 transition-colors group">
@@ -5738,7 +5872,7 @@ window.toggleCareerHub = function() {
                 </div>
             `).join('');
 
-            const eventsHtml = events.map(e => {
+            const eventsHtml = sectorData.events.map(e => {
                 const parts = e.date.split(' ');
                 const day = parts.length > 1 ? parts[1].replace(',','') : '';
                 return `
@@ -5784,8 +5918,8 @@ window.toggleCareerHub = function() {
                     <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
                         <h4 class="text-xs font-bold text-indigo-800 uppercase tracking-wide mb-2">Alumni Networks</h4>
                         <p class="text-xs text-indigo-700 mb-3">Connect with graduates working in the field.</p>
-                        <div class="flex gap-2">
-                            ${alumni.map(a => `<button class="px-3 py-1.5 bg-white text-indigo-600 rounded text-[10px] font-bold shadow-sm border border-indigo-100 hover:bg-indigo-50 transition-colors">${a.name}</button>`).join('')}
+                        <div class="flex flex-wrap gap-2">
+                            ${sectorData.alumni.map(a => `<button class="px-3 py-1.5 bg-white text-indigo-600 rounded text-[10px] font-bold shadow-sm border border-indigo-100 hover:bg-indigo-50 transition-colors">${a.name}</button>`).join('')}
                         </div>
                     </div>
                 </div>
@@ -6244,6 +6378,7 @@ window.toggleCareerHub = function() {
                         <button onclick="showJobBoardView()" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-cyan-300 hover:bg-white hover:shadow-sm text-left transition-all group">
                             <div class="p-2 bg-cyan-100 text-cyan-600 rounded-lg w-fit mb-3 group-hover:bg-cyan-600 group-hover:text-white transition-colors"><i data-lucide="briefcase" class="w-5 h-5"></i></div>
                             <h4 class="font-bold text-slate-800 text-sm">Opportunities</h4>
+                            <h4 class="font-bold text-slate-800 text-sm">Applications Tools</h4>
                             <p class="text-xs text-slate-500 mt-1">Jobs, Gigs & Tenders</p>
                         </button>
                         
@@ -6295,7 +6430,7 @@ window.toggleCareerHub = function() {
         }
 
         window.clearCourseFilters = function() {
-            const inputs = ['filter-search', 'filter-country', 'filter-sector', 'filter-skill', 'filter-duration', 'filter-mode', 'filter-cost', 'filter-type', 'filter-lang', 'filter-feature'];
+            const inputs = ['filter-search', 'filter-country', 'filter-skill', 'filter-duration', 'filter-mode', 'filter-cost', 'filter-type', 'filter-lang', 'filter-feature'];
             inputs.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = id === 'filter-search' ? '' : 'all';
@@ -6323,24 +6458,40 @@ window.toggleCareerHub = function() {
             const select = document.getElementById('filter-skill');
             if (!select) return;
             
-            const sector = activeSectorId;
+            // Check for local filter first, then global
+            const secFilter = document.getElementById('filter-sector');
+            const sector = secFilter ? secFilter.value : activeSectorId;
+            
             let skills = [];
 
             // Try DataManager first
-            const dynamicSkills = dataManager.getSkills(sector);
-            if (dynamicSkills && dynamicSkills.length > 0) {
-                skills = dynamicSkills;
-            } else if (typeof baseSectorDetailData !== 'undefined' && baseSectorDetailData[sector]) {
-                // Fallback to static data
-                skills = baseSectorDetailData[sector].skills;
+            if (sector === 'all') {
+                 skills = dataManager.topSkills || [];
+            } else {
+                 skills = dataManager.getSkills(sector) || [];
             }
 
-            // Sort alphabetically
-            skills.sort((a, b) => a.name.localeCompare(b.name));
+            // Fallback to static data if DataManager empty
+            if (skills.length === 0) {
+                 if (typeof baseSectorDetailData !== 'undefined') {
+                     if (sector === 'all') {
+                         Object.values(baseSectorDetailData).forEach(s => {
+                             if(s.skills) skills = [...skills, ...s.skills];
+                         });
+                     } else if (baseSectorDetailData[sector]) {
+                        skills = baseSectorDetailData[sector].skills;
+                     }
+                 }
+            }
+
+            // Deduplicate and Sort
+            const uniqueSkills = Array.from(new Set((skills || []).map(s => s.name || s.skill || s.Skill)))
+                .filter(n => n) // Filter undefined
+                .sort((a, b) => a.localeCompare(b));
             
             let html = `<option value="all">All Skills</option>`;
-            skills.forEach(s => {
-                html += `<option value="${s.name}">${s.name}</option>`;
+            uniqueSkills.forEach(name => {
+                html += `<option value="${name}">${name}</option>`;
             });
             
             select.innerHTML = html;
@@ -7248,7 +7399,7 @@ window.toggleCareerHub = function() {
                             </div>
                             <h3 class="text-xl font-bold text-slate-900">High Growth Sectors</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Explore fast growing sectors and access real-time market intelligence. Identify occupations and skills in demand, as well as entrepreneurship opportunities.</p>
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Discover fast-growing green and digital sectors across the East Africa region and see which jobs, skills, and business opportunities are rising fast — right now.</p>
                         <div class="mt-auto flex items-center gap-2 text-sm font-bold text-indigo-600 group-hover:gap-3 transition-all relative z-10">
                             Start Navigating <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
@@ -7265,7 +7416,7 @@ window.toggleCareerHub = function() {
                             </div>
                             <h3 class="text-xl font-bold text-slate-900">Skills & Training Hub</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Use tools to assess your fit for different occupations and careers, build a personalized training and learning pathway, or support your entrepreneurship journey.</p>
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Use tools to assess your fit for different occupations. Build a personalized skills training pathway based on your existing skills level, interests and goals.</p>
                         <div class="mt-auto flex items-center gap-2 text-sm font-bold text-emerald-600 group-hover:gap-3 transition-all relative z-10">
                             Find Training <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
@@ -7282,7 +7433,7 @@ window.toggleCareerHub = function() {
                             </div>
                             <h3 class="text-xl font-bold text-slate-900">Career & Community Tools</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Connect with guidance resources, mentors, and the wider Campus Africa community.</p>
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Access career guidance resources and connect with networks to increase your employability.</p>
                         <div class="mt-auto flex items-center gap-2 text-sm font-bold text-orange-600 group-hover:gap-3 transition-all relative z-10">
                             Access Tools <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
@@ -7354,6 +7505,7 @@ window.toggleCareerHub = function() {
         }
 
         window.toggleSectorHub = function() {
+            closeAllDrawers('sector-hub-drawer');
             const drawer = document.getElementById('sector-hub-drawer');
             if (drawer) {
                 drawer.classList.toggle('translate-x-full');

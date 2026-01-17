@@ -15,7 +15,17 @@
     { "title": "Zindi", "desc": "Data science & AI competitions in Africa.", "link": "https://zindi.africa/", "type": "Skills" },
     { "title": "ALX Africa", "desc": "Tech training and career acceleration.", "link": "https://www.alxafrica.com/", "type": "Skills" },
     { "title": "VC4A Startup Academy", "desc": "Free online courses for startup founders.", "link": "https://academy.vc4a.com/", "type": "Skills" },
-    { "title": "IUCEA", "desc": "Universities directory (regional visibility).", "link": "https://www.iucea.org/", "type": "Education" }
+    { "title": "IUCEA", "desc": "Universities directory (regional visibility).", "link": "https://www.iucea.org/", "type": "Education" },
+    { "title": "YALI RLC East Africa", "desc": "Leadership training & alumni network.", "link": "https://www.yalieastafrica.org/", "type": "Skills" },
+    { "title": "YouthConnekt", "desc": "Youth empowerment & opportunities.", "link": "https://www.youthconnekt.org/", "type": "Ecosystem" },
+    { "title": "Educate!", "desc": "Skills for youth employment.", "link": "https://www.experienceeducate.org/", "type": "Skills" },
+    { "title": "Helvetas", "desc": "Skills development & education.", "link": "https://www.helvetas.org/", "type": "Ecosystem" },
+    { "title": "Beta Mentor Africa", "desc": "Mentorship for African youth.", "link": "https://betamentor.africa/", "type": "Ecosystem" },
+    { "title": "DAI", "desc": "Global development company supporting various projects.", "link": "https://www.dai.com/", "type": "Funding" },
+    { "title": "East African Youth Mentorship Program (EARLPS)", "desc": "Regional mentorship initiative.", "link": "https://earlps.org/", "type": "Ecosystem" },
+    { "title": "Mastercard Foundation Alumni", "desc": "Network of scholars and alumni.", "link": "https://mastercardfdn.org/", "type": "Ecosystem" },
+    { "title": "BrighterMonday Learning", "desc": "Career development & upskilling courses.", "link": "https://www.brightermonday.co.ke/jobs/learning", "type": "Ecosystem" },
+    { "title": "Fuzu Learning", "desc": "Career coaching & online courses.", "link": "https://www.fuzu.com/learning", "type": "Skills" }
   ],
   "global_resources": [
     { "title": "ITU", "desc": "Telecom/ICT standards & policy.", "link": "https://www.itu.int/", "type": "Policy/Regulation", "gsa_member": true },
@@ -32,7 +42,12 @@
     { "title": "Stripe Atlas", "desc": "Company formation guides.", "link": "https://stripe.com/atlas", "type": "Ecosystem" },
     { "title": "ADPList", "desc": "Free mentorship platform.", "link": "https://adplist.org/", "type": "Ecosystem" },
     { "title": "MicroMentor", "desc": "Business mentoring by Mercy Corps.", "link": "https://micromentor.org/", "type": "Ecosystem" },
+    { "title": "CareerVillage", "desc": "Crowdsourced career advice.", "link": "https://www.careervillage.org/", "type": "Ecosystem" },
+    { "title": "AIESEC", "desc": "Youth leadership development.", "link": "https://aiesec.org/", "type": "Ecosystem" },
     { "title": "KPMG Mentoring", "desc": "Cohort-based professional mentoring.", "link": "https://home.kpmg/xx/en/home/insights/2022/03/unesco-and-kpmg-join-forces.html", "type": "Ecosystem", "gsa_member": true },
+    { "title": "Tony Elumelu Foundation", "desc": "Entrepreneurship funding & training.", "link": "https://www.tonyelumelufoundation.org/", "type": "Funding" },
+    { "title": "International Youth Foundation", "desc": "Youth employment programs.", "link": "https://www.iyfglobal.org/", "type": "Ecosystem" },
+    { "title": "Swiss SDC", "desc": "Development & cooperation agency.", "link": "https://www.eda.admin.ch/deza/en/home.html", "type": "Funding" },
     { "title": "Siemens Stiftung", "desc": "OER for STEM & green skills.", "link": "https://www.siemens-stiftung.org/projects/welearn/", "type": "Ecosystem", "gsa_member": true },
     { "title": "ReliefWeb Jobs", "desc": "Global humanitarian vacancies.", "link": "https://reliefweb.int/jobs", "type": "Jobs" },
     { "title": "Kaggle", "desc": "Data science community.", "link": "https://www.kaggle.com/", "type": "Community" },
@@ -57,5 +72,73 @@
     { "title": "ITU DataHub", "desc": "ICT statistics.", "link": "https://www.itu.int/en/ITU-D/Statistics/Pages/default.aspx", "type": "Data/Research" },
     { "title": "GSMA Mobile Economy", "desc": "Mobile industry data.", "link": "https://www.gsma.com/mobileeconomy/", "type": "Data/Research" },
     { "title": "UN Data", "desc": "Global statistics.", "link": "https://data.un.org/", "type": "Data/Research" }
-  ]
+  ],
+  "country_resources": {
+    "Kenya": {
+      "policy": [
+        { "title": "National Employment Authority", "desc": "Public employment services.", "link": "https://nea.go.ke/" }
+      ],
+      "jobs": [
+        { "title": "NEAIMS", "desc": "National Employment Authority Integrated System.", "link": "https://neaims.go.ke/" },
+        { "title": "KYEOP", "desc": "Kenya Youth Employment & Opportunities.", "link": "https://kyeop.go.ke/" }
+      ],
+      "hubs": [
+        { "title": "Generation Kenya", "desc": "Education to employment program.", "link": "https://generation.org/kenya" },
+        { "title": "Junior Achievement Kenya", "desc": "Youth entrepreneurship education.", "link": "https://jakenya.org/" }
+      ],
+      "communities": [
+        { "title": "Kenya Youth Mentorship Assoc.", "desc": "Youth mentorship network.", "link": "https://kyma.co.ke/" },
+        { "title": "Big Brothers Big Sisters", "desc": "Youth mentoring.", "link": "https://bbbskenya.org/" },
+        { "title": "USIU-Africa Alumni", "desc": "University alumni network.", "link": "https://www.usiu.ac.ke/alumni/" },
+        { "title": "Strathmore NorthStar", "desc": "Mentorship program.", "link": "https://strathmore.edu/" },
+        { "title": "Amref Int. Univ. Alumni", "desc": "Health and development alumni network.", "link": "https://amref.ac.ke/" },
+        { "title": "Chevening Alumni Kenya", "desc": "UK government scholarship alumni.", "link": "https://www.chevening.org/alumni/" }
+      ]
+    },
+    "Uganda": {
+      "policy": [
+        { "title": "MGLSD", "desc": "Ministry of Gender, Labour & Social Dev.", "link": "https://mglsd.go.ug/" }
+      ],
+      "communities": [
+        { "title": "Topowa Youth Mentoring", "desc": "Youth empowerment & mentorship.", "link": "https://www.topowayouth.org/" },
+        { "title": "Trailblazers Mentoring", "desc": "Girl child empowerment.", "link": "https://trailblazersuganda.org/" },
+        { "title": "LeadMinds Africa", "desc": "Leadership & mentorship.", "link": "https://leadmindsafrica.org/" },
+        { "title": "Chevening Alumni Uganda", "desc": "UK Govt scholarships alumni.", "link": "https://www.chevening.org/alumni/" },
+        { "title": "Peer to Peer Uganda", "desc": "Youth mentorship program.", "link": "https://peertopeerug.org/" }
+      ],
+      "hubs": [
+        { "title": "Ntawo Youth Skills Center", "desc": "Vocational skills training.", "link": "https://mglsd.go.ug/" }
+      ]
+    },
+    "Tanzania": {
+      "policy": [
+        { "title": "TaESA", "desc": "Tanzania Employment Services Agency.", "link": "https://www.taesa.go.tz/" }
+      ],
+      "communities": [
+        { "title": "Ignite Youth Future", "desc": "Youth empowerment NGO.", "link": "https://igniteyouthfuture.or.tz/" },
+        { "title": "TYHDO", "desc": "Youth health & development.", "link": "https://tyhdo.or.tz/" },
+        { "title": "CODEWA", "desc": "Community Development Watch.", "link": "https://codewa.or.tz/" },
+        { "title": "EASTC Alumni", "desc": "Statistical training centre alumni.", "link": "https://www.eastc.ac.tz/" },
+        { "title": "Tanzania Youth Foundation", "desc": "Youth empowerment organization.", "link": "#" }
+      ],
+      "hubs": [
+        { "title": "Skills for Employment (SET)", "desc": "Swiss contact project.", "link": "https://www.swisscontact.org/en/projects/set" },
+        { "title": "Helvetas YES Project", "desc": "Youth Employment through Skills Enhancement.", "link": "https://www.helvetas.org/en/tanzania/what-we-do/youth-employment" },
+        { "title": "Empower Academy", "desc": "Skills development & corporate training.", "link": "https://empower.co.tz/", "type": "Skills" }
+      ]
+    },
+    "Rwanda": {
+      "policy": [
+        { "title": "Rwanda Development Board", "desc": "Investment & career guidance.", "link": "https://rdb.rw/" }
+      ],
+      "jobs": [
+        { "title": "National Internship Portal", "desc": "Govt internship placement.", "link": "https://dhr.mifotra.gov.rw/" }
+      ],
+      "communities": [
+        { "title": "FAWE Rwanda", "desc": "Women educationalists.", "link": "https://www.fawerwa.org/" },
+        { "title": "Rise & STEM", "desc": "Women in STEM initiative.", "link": "https://risestem.org/" },
+        { "title": "OWSD Rwanda", "desc": "Women in Science.", "link": "https://owsd.net/" }
+      ]
+    }
+  }
 }

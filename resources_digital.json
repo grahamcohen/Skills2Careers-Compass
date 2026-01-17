@@ -20,6 +20,8 @@
         { "title": "iBizAfrica", "desc": "Strathmore University incubator.", "link": "http://www.ibizafrica.co.ke/" },
         { "title": "C4DLab", "desc": "University of Nairobi innovation lab.", "link": "http://c4dlab.ac.ke/" },
         { "title": "AfriLabs Kenya", "desc": "Directory of hubs.", "link": "https://new.afrilabs.com/hubs/?country=Kenya" },
+        { "title": "AkiraChix", "desc": "Tech training for women.", "link": "https://akirachix.com/" },
+        { "title": "codeHive", "desc": "AkiraChix coding bootcamp.", "link": "https://akirachix.com/codehive/" },
         { "title": "KICTANet", "desc": "ICT policy community.", "link": "https://www.kictanet.or.ke/" },
         { "title": "LakeHub", "desc": "Technology innovation hub in Kisumu.", "link": "https://lakehub.co.ke/" },
         { "title": "Swahilipot Hub", "desc": "Community hub in Mombasa.", "link": "https://swahilipothub.co.ke/" }
@@ -39,7 +41,8 @@
       ],
       "communities": [
         { "title": "AI Kenya", "desc": "Community for AI/ML practitioners.", "link": "https://kenya.ai/" },
-        { "title": "Nairobi Women in ML & DS", "desc": "Support for women in data fields.", "link": "https://www.wimlds.org/" }
+        { "title": "Nairobi Women in ML & DS", "desc": "Support for women in data fields.", "link": "https://www.wimlds.org/" },
+        { "title": "Women in Tech Kenya", "desc": "Networking for women in tech.", "link": "https://womenintech.co.ke/" }
       ]
     },
     "Uganda": {
@@ -138,15 +141,16 @@
       ],
       "jobs": [
         { "title": "Job in Rwanda", "desc": "Vacancies & recruitment.", "link": "https://www.jobinrwanda.com/" },
+        { "title": "Kora Job Portal", "desc": "Career guidance & job opportunities.", "link": "https://kora.rw/" },
         { "title": "Rwanda Recruitment Portal", "desc": "Public service jobs.", "link": "https://recruitmentportal.gov.rw/" },
-        { "title": "ReliefWeb Rwanda", "desc": "NGO/UN vacancies.", "link": "https://reliefweb.int/jobs?advanced-search=%28C198%29&list=Rwanda+Jobs" },
-        { "title": "Kora Job Portal", "desc": "Career guidance & job opportunities.", "link": "https://kora.rw/" }
+        { "title": "ReliefWeb Rwanda", "desc": "NGO/UN vacancies.", "link": "https://reliefweb.int/jobs?advanced-search=%28C198%29&list=Rwanda+Jobs" }
       ],
       "data": [
         { "title": "Rwanda LMIS", "desc": "Labour market trends.", "link": "https://www.lmis.rw/" }
       ],
       "communities": [
-        { "title": "Rwanda AI Community", "desc": "AI enthusiasts and professionals.", "link": "https://twitter.com/RwandaAI" }
+        { "title": "Rwanda AI Community", "desc": "AI enthusiasts and professionals.", "link": "https://twitter.com/RwandaAI" },
+        { "title": "Girls in ICT Rwanda", "desc": "Empowering women in STEM.", "link": "https://girlsinict.rw/" }
       ]
     },
     "Burundi": {
