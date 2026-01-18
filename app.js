@@ -5293,78 +5293,116 @@ window.toggleCareerHub = function() {
             return sectorData;
         };
 
-        window.showCommunitiesView = function(activeTab = 'cop') { 
+        window.showCommunitiesView = function(activeFilter = 'all') { 
             const sectorData = getSectorCareerResources(activeSectorId);
             const container = document.getElementById('career-hub-content');
-            // Filter for Communities of Practice (CoP)
-            const cops = (sectorData.communities || []).filter(c => c.name && !c.name.toLowerCase().includes('alumni'));
             
-            // Alumni Networks
+            // 1. Consolidate Data
+            let allItems = [...(sectorData.communities || [])];
+
+            // Add Alumni (Static Data)
             const alumniData = {
                 agri: [
-                    { name: "CGIAR Alumni Network", link: "https://www.cgiar.org/" },
-                    { name: "AWAK (Women in Ag)", link: "https://awak.co.ke/" },
-                    { name: "YPARD (Young Professionals)", link: "https://ypard.net/" }
+                    { name: "CGIAR Alumni Network", link: "https://www.cgiar.org/", type: "Alumni", desc: "Global network of agricultural researchers." },
+                    { name: "AWAK (Women in Ag)", link: "https://awak.co.ke/", type: "Alumni", desc: "Association of Women in Agriculture Kenya." },
+                    { name: "YPARD", link: "https://ypard.net/", type: "Alumni", desc: "Young Professionals for Agricultural Development." }
                 ],
                 energy: [
-                    { name: "Women in Renewable Energy (WIRE)", link: "https://wire-africa.org/" },
-                    { name: "AFSIA Members Network", link: "http://www.afsiasolar.com/" },
-                    { name: "IEEE Power & Energy Society", link: "https://www.ieee-pes.org/" }
+                    { name: "WIRE (Women in Renewable Energy)", link: "https://wire-africa.org/", type: "Alumni", desc: "Network for women in the energy sector." },
+                    { name: "AFSIA Members", link: "http://www.afsiasolar.com/", type: "Alumni", desc: "Solar industry association members." },
+                    { name: "IEEE PES", link: "https://www.ieee-pes.org/", type: "Alumni", desc: "Power & Energy Society professionals." }
                 ],
                 digital: [
-                    { name: "ALX Fellowship", link: "https://www.alxafrica.com/" },
-                    { name: "Google Developer Groups", link: "https://developers.google.com/community/gdg" },
-                    { name: "Women in Tech Africa", link: "https://www.womenintechafrica.com/" }
+                    { name: "ALX Fellowship", link: "https://www.alxafrica.com/", type: "Alumni", desc: "Community of ALX graduates." },
+                    { name: "Google Developer Groups", link: "https://developers.google.com/community/gdg", type: "Alumni", desc: "Local groups of developers interested in Google's developer technology." },
+                    { name: "Women in Tech Africa", link: "https://www.womenintechafrica.com/", type: "Alumni", desc: "Supporting women in technology across Africa." }
                 ]
             };
-            const alumni = alumniData[activeSectorId] || alumniData.digital;
+            const sectorAlumni = alumniData[activeSectorId] || alumniData.digital;
+            sectorAlumni.forEach(a => {
+                if (!allItems.some(i => i.name === a.name)) allItems.push(a);
+            });
 
-            const getBtnClass = (tab) => activeTab === tab 
-                ? "bg-blue-600 text-white shadow-sm" 
-                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50";
+            // Add Mock Events
+            const events = [
+                { name: "Africa Tech Summit", desc: "Nairobi • Feb 2025", type: "Event", link: "https://www.africatechsummit.com/", sector: 'digital' },
+                { name: "Sankalp Africa Summit", desc: "Nairobi • Feb 2025", type: "Event", link: "https://sankalpforum.com/", sector: 'agri' },
+                { name: "Solar Africa Expo", desc: "KICC • June 2025", type: "Event", link: "https://www.solarafricaexpo.com/", sector: 'energy' }
+            ].filter(e => e.sector === activeSectorId);
+             events.forEach(e => {
+                if (!allItems.some(i => i.name === e.name)) allItems.push(e);
+            });
 
-            let contentHtml = '';
-            
-            if (activeTab === 'cop') {
-                contentHtml = cops.length > 0 ? cops.map(c => `
-                    <a href="${c.link}" target="_blank" class="block p-3 border border-slate-200 rounded-lg bg-white hover:border-blue-300 hover:shadow-sm transition-all group">
-                        <div class="flex justify-between items-start mb-1">
-                            <div class="font-bold text-sm text-slate-800 group-hover:text-blue-700 flex items-center gap-1">
-                                ${c.name}
-                                ${c.gsa_member ? '<span class="text-[9px] bg-blue-100 text-blue-700 px-1 rounded border border-blue-200">UNESCO</span>' : ''}
-                            </div>
-                            <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-blue-500"></i>
-                        </div>
-                        <div class="text-xs text-slate-500 mb-2 line-clamp-2">${c.desc}</div>
-                        <span class="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded border border-slate-200">${c.type || 'Community'}</span>
-                    </a>
-                `).join('') : '<p class="text-sm text-slate-500 italic">No communities found.</p>';
-            } else {
-                contentHtml = alumni.length > 0 ? alumni.map(a => `
-                    <a href="${a.link}" target="_blank" class="block p-3 border border-slate-200 rounded-lg bg-white hover:border-blue-300 hover:shadow-sm transition-all group">
-                        <div class="flex justify-between items-center">
-                            <div class="font-bold text-sm text-slate-800 group-hover:text-blue-700 flex items-center gap-2">
-                                <i data-lucide="graduation-cap" class="w-4 h-4 text-slate-400"></i> ${a.name}
-                            </div>
-                            <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-blue-500"></i>
-                        </div>
-                    </a>
-                `).join('') : '<p class="text-sm text-slate-500 italic">No alumni networks found.</p>';
+            // 2. Categorization Logic
+            const getCategory = (item) => {
+                const t = (item.type || '').toLowerCase();
+                const n = (item.name || '').toLowerCase();
+                const d = (item.desc || '').toLowerCase();
+
+                if (t.includes('alumni') || n.includes('alumni') || n.includes('fellowship') || n.includes('graduates')) return 'Alumni';
+                if (t.includes('mentor') || n.includes('mentor') || d.includes('mentor') || t.includes('advice') || n.includes('coach')) return 'Mentorship';
+                if (t.includes('event') || t.includes('summit') || t.includes('conf') || t.includes('expo')) return 'Events';
+                return 'Networks'; // Default
+            };
+
+            const hasJobs = (item) => {
+                const text = ((item.desc || '') + (item.name || '')).toLowerCase();
+                return text.includes('job') || text.includes('career') || text.includes('hiring') || text.includes('vacancy') || text.includes('opportunity') || text.includes('placement');
+            };
+
+            // 3. Filter
+            let filteredItems = allItems;
+            if (activeFilter !== 'all') {
+                filteredItems = allItems.filter(item => getCategory(item) === activeFilter);
             }
 
+            // 4. Render
+            const getBtnClass = (filter) => activeFilter === filter 
+                ? "bg-slate-800 text-white shadow-sm" 
+                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50";
+
+            const itemsHtml = filteredItems.length > 0 ? filteredItems.map(c => {
+                const cat = getCategory(c);
+                const isJob = hasJobs(c);
+                let icon = 'users';
+                if (cat === 'Mentorship') icon = 'user-check';
+                if (cat === 'Events') icon = 'calendar';
+                if (cat === 'Alumni') icon = 'graduation-cap';
+
+                return `
+                    <a href="${c.link}" target="_blank" class="block p-3 border border-slate-200 rounded-lg bg-white hover:border-blue-300 hover:shadow-sm transition-all group relative">
+                        ${isJob ? '<div class="absolute top-2 right-2 px-1.5 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-bold rounded flex items-center gap-1"><i data-lucide="briefcase" class="w-2.5 h-2.5"></i> Jobs</div>' : ''}
+                        <div class="flex justify-between items-start mb-1 pr-16">
+                            <div class="font-bold text-sm text-slate-800 group-hover:text-blue-700 flex items-center gap-2">
+                                <div class="p-1.5 bg-slate-100 rounded text-slate-500"><i data-lucide="${icon}" class="w-3.5 h-3.5"></i></div>
+                                ${c.name}
+                            </div>
+                        </div>
+                        <div class="text-xs text-slate-500 mb-2 line-clamp-2 pl-8">${c.desc}</div>
+                        <div class="pl-8 flex gap-2">
+                            <span class="inline-block px-2 py-0.5 bg-slate-50 text-slate-500 text-[10px] font-bold rounded border border-slate-100">${cat}</span>
+                            ${c.gsa_member ? '<span class="text-[9px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100 font-bold">UNESCO</span>' : ''}
+                        </div>
+                    </a>
+                `;
+            }).join('') : '<p class="text-sm text-slate-500 italic text-center py-8">No communities found for this category.</p>';
+
             container.innerHTML = `
-                <div class="animate-fade-in">
+                <div class="animate-fade-in flex flex-col h-full">
                     <button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
                     
-                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-blue-500"></i> Communities</h3>
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-blue-500"></i> Communities & Networks</h3>
 
-                    <div class="flex gap-2 mb-4">
-                        <button onclick="showCommunitiesView('cop')" class="flex-1 py-2 rounded-lg text-xs font-bold transition-colors ${getBtnClass('cop')}">Communities of Practice</button>
-                        <button onclick="showCommunitiesView('alumni')" class="flex-1 py-2 rounded-lg text-xs font-bold transition-colors ${getBtnClass('alumni')}">Alumni Networks</button>
+                    <div class="flex gap-2 mb-4 overflow-x-auto pb-1 shrink-0 no-scrollbar">
+                        <button onclick="showCommunitiesView('all')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('all')}">All</button>
+                        <button onclick="showCommunitiesView('Networks')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('Networks')}">Networks</button>
+                        <button onclick="showCommunitiesView('Mentorship')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('Mentorship')}">Mentorship</button>
+                        <button onclick="showCommunitiesView('Alumni')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('Alumni')}">Alumni</button>
+                        <button onclick="showCommunitiesView('Events')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('Events')}">Events</button>
                     </div>
 
-                    <div class="space-y-3">
-                        ${contentHtml}
+                    <div class="space-y-3 overflow-y-auto pr-1 pb-4">
+                        ${itemsHtml}
                     </div>
                 </div>
             `;
