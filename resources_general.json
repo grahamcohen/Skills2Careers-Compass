@@ -25,7 +25,12 @@
     { "title": "East African Youth Mentorship Program (EARLPS)", "desc": "Regional mentorship initiative.", "link": "https://earlps.org/", "type": "Ecosystem" },
     { "title": "Mastercard Foundation Alumni", "desc": "Network of scholars and alumni.", "link": "https://mastercardfdn.org/", "type": "Ecosystem" },
     { "title": "BrighterMonday Learning", "desc": "Career development & upskilling courses.", "link": "https://www.brightermonday.co.ke/jobs/learning", "type": "Ecosystem" },
-    { "title": "Fuzu Learning", "desc": "Career coaching & online courses.", "link": "https://www.fuzu.com/learning", "type": "Skills" }
+    { "title": "Fuzu Learning", "desc": "Career coaching & online courses.", "link": "https://www.fuzu.com/learning", "type": "Skills" },
+    { "title": "ASPYEE (AUDA-NEPAD)", "desc": "Continental skills & employment knowledge platform.", "link": "https://aspyee.org/", "type": "Ecosystem" },
+    { "title": "UNDP timbuktoo", "desc": "Pan-African innovation financing facility.", "link": "https://timbuktoo.africa/", "type": "Funding" },
+    { "title": "IYBA (Investing in Young Businesses in Africa)", "desc": "EU Team Europe support for young entrepreneurs.", "link": "https://international-partnerships.ec.europa.eu/policies/programming/projects/investing-young-businesses-africa-iyba_en", "type": "Funding" },
+    { "title": "YBI Africa Collaborative", "desc": "Youth entrepreneurship support network.", "link": "https://www.youthbusiness.org/", "type": "Ecosystem" },
+    { "title": "YAS! (UNDP + Accenture)", "desc": "Portal for African entrepreneurs (resources & funding).", "link": "https://www.yas.org.ng/", "type": "Ecosystem" }
   ],
   "global_resources": [
     { "title": "ITU", "desc": "Telecom/ICT standards & policy.", "link": "https://www.itu.int/", "type": "Policy/Regulation", "gsa_member": true },
@@ -71,20 +76,28 @@
     { "title": "World Bank Data", "desc": "Market indicators & stats.", "link": "https://data.worldbank.org/", "type": "Data/Research" },
     { "title": "ITU DataHub", "desc": "ICT statistics.", "link": "https://www.itu.int/en/ITU-D/Statistics/Pages/default.aspx", "type": "Data/Research" },
     { "title": "GSMA Mobile Economy", "desc": "Mobile industry data.", "link": "https://www.gsma.com/mobileeconomy/", "type": "Data/Research" },
-    { "title": "UN Data", "desc": "Global statistics.", "link": "https://data.un.org/", "type": "Data/Research" }
+    { "title": "UN Data", "desc": "Global statistics.", "link": "https://data.un.org/", "type": "Data/Research" },
+    { "title": "YouthForesight", "desc": "Knowledge platform by GenU & Decent Jobs for Youth.", "link": "https://www.youthforesight.org/", "type": "Data/Research" },
+    { "title": "Decent Jobs for Youth", "desc": "Global alliance for youth employment.", "link": "https://www.decentjobsforyouth.org/", "type": "Ecosystem" },
+    { "title": "S4YE Knowledge Repository", "desc": "World Bank youth employment tools.", "link": "https://www.s4ye.org/", "type": "Data/Research" },
+    { "title": "ILO SIYB", "desc": "Start and Improve Your Business training.", "link": "https://www.ilo.org/empent/areas/start-and-improve-your-business/lang--en/index.htm", "type": "Skills" },
+    { "title": "Passport to Success", "desc": "IYF life skills curriculum.", "link": "https://passporttosuccess.org/", "type": "Skills" }
   ],
   "country_resources": {
     "Kenya": {
       "policy": [
-        { "title": "National Employment Authority", "desc": "Public employment services.", "link": "https://nea.go.ke/" }
+        { "title": "National Employment Authority", "desc": "Public employment services.", "link": "https://nea.go.ke/" },
+        { "title": "KLMIS", "desc": "Kenya Labour Market Information System.", "link": "https://www.labourmarket.go.ke/" }
       ],
       "jobs": [
         { "title": "NEAIMS", "desc": "National Employment Authority Integrated System.", "link": "https://neaims.go.ke/" },
-        { "title": "KYEOP", "desc": "Kenya Youth Employment & Opportunities.", "link": "https://kyeop.go.ke/" }
+        { "title": "KYEOP", "desc": "Kenya Youth Employment & Opportunities.", "link": "https://kyeop.go.ke/" },
+        { "title": "NCPWD Career Portal", "desc": "Opportunities for persons with disabilities.", "link": "https://fuzu.com/ncpwd" }
       ],
       "hubs": [
         { "title": "Generation Kenya", "desc": "Education to employment program.", "link": "https://generation.org/kenya" },
-        { "title": "Junior Achievement Kenya", "desc": "Youth entrepreneurship education.", "link": "https://jakenya.org/" }
+        { "title": "Junior Achievement Kenya", "desc": "Youth entrepreneurship education.", "link": "https://jakenya.org/" },
+        { "title": "Kenya Skills Hub", "desc": "Post-training & skills development portal.", "link": "https://posttraining.go.ke/" }
       ],
       "communities": [
         { "title": "Kenya Youth Mentorship Assoc.", "desc": "Youth mentorship network.", "link": "https://kyma.co.ke/" },
@@ -92,7 +105,8 @@
         { "title": "USIU-Africa Alumni", "desc": "University alumni network.", "link": "https://www.usiu.ac.ke/alumni/" },
         { "title": "Strathmore NorthStar", "desc": "Mentorship program.", "link": "https://strathmore.edu/" },
         { "title": "Amref Int. Univ. Alumni", "desc": "Health and development alumni network.", "link": "https://amref.ac.ke/" },
-        { "title": "Chevening Alumni Kenya", "desc": "UK government scholarship alumni.", "link": "https://www.chevening.org/alumni/" }
+        { "title": "Chevening Alumni Kenya", "desc": "UK government scholarship alumni.", "link": "https://www.chevening.org/alumni/" },
+        { "title": "KUCCPS Career Guidance", "desc": "Placement & career guidance resources.", "link": "https://students.kuccps.net/" }
       ]
     },
     "Uganda": {
@@ -114,12 +128,16 @@
       "policy": [
         { "title": "TaESA", "desc": "Tanzania Employment Services Agency.", "link": "https://www.taesa.go.tz/" }
       ],
+      "jobs": [
+        { "title": "Ajira Portal (PSRS)", "desc": "Public Service Recruitment Secretariat.", "link": "https://portal.ajira.go.tz/" }
+      ],
       "communities": [
         { "title": "Ignite Youth Future", "desc": "Youth empowerment NGO.", "link": "https://igniteyouthfuture.or.tz/" },
         { "title": "TYHDO", "desc": "Youth health & development.", "link": "https://tyhdo.or.tz/" },
         { "title": "CODEWA", "desc": "Community Development Watch.", "link": "https://codewa.or.tz/" },
         { "title": "EASTC Alumni", "desc": "Statistical training centre alumni.", "link": "https://www.eastc.ac.tz/" },
-        { "title": "Tanzania Youth Foundation", "desc": "Youth empowerment organization.", "link": "#" }
+        { "title": "Tanzania Youth Foundation", "desc": "Youth empowerment organization.", "link": "#" },
+        { "title": "Opportunity Career Org (OCO)", "desc": "Career guidance for youth.", "link": "https://www.oco.or.tz/" }
       ],
       "hubs": [
         { "title": "Skills for Employment (SET)", "desc": "Swiss contact project.", "link": "https://www.swisscontact.org/en/projects/set" },
@@ -132,7 +150,14 @@
         { "title": "Rwanda Development Board", "desc": "Investment & career guidance.", "link": "https://rdb.rw/" }
       ],
       "jobs": [
-        { "title": "National Internship Portal", "desc": "Govt internship placement.", "link": "https://dhr.mifotra.gov.rw/" }
+        { "title": "National Internship Portal", "desc": "Govt internship placement.", "link": "https://dhr.mifotra.gov.rw/" },
+        { "title": "Kora Job Portal", "desc": "RDB employment & internship portal.", "link": "https://kora.rw/" },
+        { "title": "YOP Rwanda", "desc": "Youth Opportunities Platform.", "link": "https://www.yop.rw/" }
+      ],
+      "hubs": [
+        { "title": "Akazi Kanoze Access", "desc": "Employability skills & links to work.", "link": "https://akazikanoze.org/" },
+        { "title": "Harambee Rwanda", "desc": "Youth employment accelerator.", "link": "https://www.harambee.rw/" },
+        { "title": "YEGO Centers", "desc": "Youth Empowerment for Global Opportunity.", "link": "https://www.nyc.gov.rw/" }
       ],
       "communities": [
         { "title": "FAWE Rwanda", "desc": "Women educationalists.", "link": "https://www.fawerwa.org/" },

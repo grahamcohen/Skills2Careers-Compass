@@ -851,10 +851,16 @@ function getOJAMetrics(roleTitle, country) {
                         `<i data-lucide="star" class="w-3 h-3 ${i < t.outcomeData.stars ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300'}"></i>`
                     ).join('');
 
+                    const sampleSize = (t.outcomeData.evidence && t.outcomeData.evidence.sample) ? t.outcomeData.evidence.sample : 'N/A';
+
                     scorecardHtml = `
                         <div class="mt-3 bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
                             <div class="bg-indigo-50 px-3 py-1.5 border-b border-indigo-100 flex justify-between items-center">
                                 <span class="text-[10px] font-bold text-indigo-800 uppercase tracking-wide">Provider Outcome Scorecard</span>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] font-bold text-indigo-800 uppercase tracking-wide">Provider Outcome Scorecard</span>
+                                    <i data-lucide="info" class="w-3 h-3 text-indigo-400 cursor-help" title="Source: ${t.outcomeData.methodology} &#10;Sample: ${sampleSize}"></i>
+                                </div>
                                 <div class="flex gap-0.5" title="Evidence Strength: ${t.outcomeData.stars}/5">${stars}</div>
                             </div>
                             <div class="p-3">
@@ -862,14 +868,17 @@ function getOJAMetrics(roleTitle, country) {
                                     <div>
                                         <div class="text-[9px] text-slate-500 uppercase">Completion</div>
                                         <div class="text-xs font-bold text-slate-800">${t.outcomeData.evidence.completion}</div>
+                                        <div class="text-xs font-bold text-slate-800">${t.outcomeData.evidence ? t.outcomeData.evidence.completion : 'N/A'}</div>
                                     </div>
                                     <div class="border-x border-slate-100">
                                         <div class="text-[9px] text-slate-500 uppercase">Time-to-Job</div>
                                         <div class="text-xs font-bold text-slate-800">${t.outcomeData.evidence.timeToJob}</div>
+                                        <div class="text-xs font-bold text-slate-800">${t.outcomeData.evidence ? t.outcomeData.evidence.timeToJob : 'N/A'}</div>
                                     </div>
                                     <div>
                                         <div class="text-[9px] text-slate-500 uppercase">Sample</div>
                                         <div class="text-xs font-bold text-slate-800">${t.outcomeData.evidence.sample}</div>
+                                        <div class="text-xs font-bold text-slate-800">${t.outcomeData.evidence ? t.outcomeData.evidence.sample : 'N/A'}</div>
                                     </div>
                                 </div>
                                 <div class="flex justify-between items-center pt-2 border-t border-slate-100">
