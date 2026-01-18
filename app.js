@@ -1471,7 +1471,7 @@ function getOJAMetrics(roleTitle, country) {
                     <div>
                         <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                             <span class="w-5 h-5 rounded-full bg-${theme}-100 text-${theme}-600 flex items-center justify-center text-xs">4</span> 
-                            Essential Ecosystem Resources
+                            Read up on the Ecosystem
                         </h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             ${resourceItems}
@@ -1481,7 +1481,7 @@ function getOJAMetrics(roleTitle, country) {
             }
 
             const headerTitle = `${pathwayFocus} Pathway`;
-            const headerDesc = "A recommended learning and experience path for this role.";
+            const headerDesc = "A recommended skilling and learning experience path for this role.";
 
             container.innerHTML = `
                 <div class="space-y-6 animate-fade-in pb-4">
@@ -1502,7 +1502,7 @@ function getOJAMetrics(roleTitle, country) {
                         <div class="flex justify-between items-end mb-3">
                             <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                                 <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs">1</span> 
-                                Bridge Knowledge Gaps
+                                Bridge Skills and Knowledge Gaps
                             </h4>
                             <div class="flex gap-1 bg-slate-100 p-0.5 rounded-lg">
                                 <button onclick="renderPathwayCourseGrid('match')" class="pathway-sort-btn px-2 py-1 text-[10px] font-bold rounded-md transition-colors bg-white text-slate-600 border border-slate-200 shadow-sm" data-sort="match">Best Match</button>
@@ -1514,11 +1514,11 @@ function getOJAMetrics(roleTitle, country) {
                         </div>
                     </div>
 
-                    <!-- Step 2: Apply your technical knowledge -->
+                    <!-- Step 2: Boost your Employability -->
                     <div>
                          <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                             <span class="w-5 h-5 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs">2</span> 
-                            Apply your technical knowledge (${roleName})
+                            Boost your Employability (${roleName})
                         </h4>
                         <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                             <div class="divide-y divide-slate-100">
@@ -1526,8 +1526,8 @@ function getOJAMetrics(roleTitle, country) {
                                     <div class="flex items-start gap-3">
                                         <div class="p-2 bg-indigo-50 text-indigo-600 rounded shrink-0"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
                                         <div>
-                                            <div class="text-xs font-bold text-indigo-700 mb-0.5">Build a Portfolio</div>
-                                            <div class="text-xs text-slate-600">Compile "what I did + evidence" on GitHub, Behance, or LinkedIn.</div>
+                                            <div class="text-xs font-bold text-indigo-700 mb-0.5">Build evidence</div>
+                                            <div class="text-xs text-slate-600">Compile "what I did + evidence" on GitHub, Behance or LinkedIn.</div>
                                         </div>
                                     </div>
                                     <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-indigo-500"></i>
@@ -1571,7 +1571,7 @@ function getOJAMetrics(roleTitle, country) {
                     <div>
                         <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-3">
                             <span class="w-5 h-5 rounded-full bg-${theme}-100 text-${theme}-600 flex items-center justify-center text-xs">${empSectionNum}</span> 
-                            Employability Skills 
+                            Get Work Ready! 
                         </h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             ${proofHtml}
@@ -1822,7 +1822,7 @@ function getOJAMetrics(roleTitle, country) {
                             <div>
                                 <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                                     <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">3</span> 
-                                    Employability Skills
+                                    Interpersonal and Soft Skills
                                 </h3>
                                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
                                     ${layerAInputs}
@@ -2618,7 +2618,7 @@ function getOJAMetrics(roleTitle, country) {
                                     <span class="text-xs font-bold text-blue-800">Immersion</span>
                                 </div>
                                 <p class="text-[10px] text-blue-700 leading-relaxed mb-2">The fastest way to pivot is to speak the language. Join sector-specific events.</p>
-                                <button onclick="closeModal('unified-hub-modal'); document.getElementById('community-hub-drawer').classList.remove('translate-x-full'); showCommunityView();" class="text-[9px] font-bold bg-white text-blue-600 px-2 py-1 rounded border border-blue-200 hover:bg-blue-50 w-full">Find Events</button>
+                                <button onclick="closeModal('unified-hub-modal'); document.getElementById('career-hub-drawer').classList.remove('translate-x-full'); showCommunitiesView();" class="text-[9px] font-bold bg-white text-blue-600 px-2 py-1 rounded border border-blue-200 hover:bg-blue-50 w-full">Find Events</button>
                             </div>
                         </div>
                         <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
@@ -2700,7 +2700,7 @@ function getOJAMetrics(roleTitle, country) {
                 `;
             }
 
-            // --- SECTION C: TRAINING (Bridge Knowledge Gaps) ---
+            // --- SECTION C: TRAINING (Bridge Skills and Knowledge Gaps) ---
             const catalogue = getMasterTrainingCatalogue('all', sector, activeCountry);
             let courses = [];
             
@@ -2849,7 +2849,7 @@ function getOJAMetrics(roleTitle, country) {
                     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3">
-                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">C</span> Bridge Knowledge Gaps</h3>
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">C</span> Bridge Skills and Knowledge Gaps</h3>
                             <div class="flex gap-2">
                                 <select onchange="updatePathwayConstraint('mode', this.value)" class="text-[10px] border-slate-200 rounded bg-slate-50 text-slate-600 focus:ring-0 py-1 pl-2 pr-6 cursor-pointer hover:bg-slate-100">
                                     <option value="Any" ${!pathwayState.constraints.mode || pathwayState.constraints.mode === 'Any' ? 'selected' : ''}>Any Mode</option>
@@ -2883,7 +2883,7 @@ function getOJAMetrics(roleTitle, country) {
                     <!-- E. Ecosystem -->
                     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-slate-400"></div>
-                        <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-4"><span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold">E</span> Essential Ecosystem Resources</h3>
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-4"><span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold">E</span> Read up on the Ecosystem</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             ${ecoHtml}
                         </div>
@@ -2894,8 +2894,8 @@ function getOJAMetrics(roleTitle, country) {
         }
 
         // --- NEW: Career Readiness Scorecard ---
-        window.renderReadinessScorecard = function() {
-            const container = document.getElementById('pp-practice-content');
+        window.renderReadinessScorecard = function(targetId = 'pp-practice-content', backAction = 'renderPathwayStep3()') {
+            const container = document.getElementById(targetId);
             if(!container) return;
 
             const sections = [
@@ -2916,7 +2916,7 @@ function getOJAMetrics(roleTitle, country) {
             container.innerHTML = `
                 <div class="max-w-3xl mx-auto py-4 animate-fade-in">
                     <div class="mb-6 flex justify-between items-center">
-                        <button onclick="renderPathwayStep3()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Roadmap</button>
+                        <button onclick="${backAction}" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
                         <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">Readiness Audit</div>
                     </div>
                     
@@ -5293,202 +5293,134 @@ window.toggleCareerHub = function() {
             return sectorData;
         };
 
-        window.showMentorshipView = function() { 
+        window.showCommunitiesView = function(activeTab = 'cop') { 
             const sectorData = getSectorCareerResources(activeSectorId);
             const container = document.getElementById('career-hub-content');
+            // Filter for Communities of Practice (CoP)
+            const cops = (sectorData.communities || []).filter(c => c.name && !c.name.toLowerCase().includes('alumni'));
             
-            // Get Skills for Dropdown
-            const skills = dataManager.getSkills(activeSectorId) || [];
-            const skillOptions = skills.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+            // Alumni Networks
+            const alumniData = {
+                agri: [
+                    { name: "CGIAR Alumni Network", link: "https://www.cgiar.org/" },
+                    { name: "AWAK (Women in Ag)", link: "https://awak.co.ke/" },
+                    { name: "YPARD (Young Professionals)", link: "https://ypard.net/" }
+                ],
+                energy: [
+                    { name: "Women in Renewable Energy (WIRE)", link: "https://wire-africa.org/" },
+                    { name: "AFSIA Members Network", link: "http://www.afsiasolar.com/" },
+                    { name: "IEEE Power & Energy Society", link: "https://www.ieee-pes.org/" }
+                ],
+                digital: [
+                    { name: "ALX Fellowship", link: "https://www.alxafrica.com/" },
+                    { name: "Google Developer Groups", link: "https://developers.google.com/community/gdg" },
+                    { name: "Women in Tech Africa", link: "https://www.womenintechafrica.com/" }
+                ]
+            };
+            const alumni = alumniData[activeSectorId] || alumniData.digital;
 
-            // Filter for mentorship platforms and relevant communities
-            const mentorPlatforms = (sectorData.communities || []).filter(c => 
-                c.type === 'Mentorship' || 
-                c.name.toLowerCase().includes('mentor') ||
-                (c.desc && c.desc.toLowerCase().includes('mentor'))
-            );
+            const getBtnClass = (tab) => activeTab === tab 
+                ? "bg-blue-600 text-white shadow-sm" 
+                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50";
 
-            const mentorsHtml = mentorPlatforms.map(c => `
-                <a href="${c.link}" target="_blank" class="block p-3 border border-slate-200 rounded-lg bg-white hover:border-blue-300 hover:shadow-sm transition-all group">
-                    <div class="flex justify-between items-start mb-1">
-                        <div class="font-bold text-sm text-slate-800 group-hover:text-blue-700 flex items-center gap-1">
-                            ${c.name}
-                            ${c.gsa_member ? '<span class="text-[9px] bg-blue-100 text-blue-700 px-1 rounded border border-blue-200">UNESCO</span>' : ''}
+            let contentHtml = '';
+            
+            if (activeTab === 'cop') {
+                contentHtml = cops.length > 0 ? cops.map(c => `
+                    <a href="${c.link}" target="_blank" class="block p-3 border border-slate-200 rounded-lg bg-white hover:border-blue-300 hover:shadow-sm transition-all group">
+                        <div class="flex justify-between items-start mb-1">
+                            <div class="font-bold text-sm text-slate-800 group-hover:text-blue-700 flex items-center gap-1">
+                                ${c.name}
+                                ${c.gsa_member ? '<span class="text-[9px] bg-blue-100 text-blue-700 px-1 rounded border border-blue-200">UNESCO</span>' : ''}
+                            </div>
+                            <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-blue-500"></i>
                         </div>
-                        <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-blue-500"></i>
-                    </div>
-                    <div class="text-xs text-slate-500 mb-2 line-clamp-2">${c.desc}</div>
-                    <span class="inline-block px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded border border-blue-100">${c.type || 'Platform'}</span>
-                </a>
-            `).join('');
+                        <div class="text-xs text-slate-500 mb-2 line-clamp-2">${c.desc}</div>
+                        <span class="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded border border-slate-200">${c.type || 'Community'}</span>
+                    </a>
+                `).join('') : '<p class="text-sm text-slate-500 italic">No communities found.</p>';
+            } else {
+                contentHtml = alumni.length > 0 ? alumni.map(a => `
+                    <a href="${a.link}" target="_blank" class="block p-3 border border-slate-200 rounded-lg bg-white hover:border-blue-300 hover:shadow-sm transition-all group">
+                        <div class="flex justify-between items-center">
+                            <div class="font-bold text-sm text-slate-800 group-hover:text-blue-700 flex items-center gap-2">
+                                <i data-lucide="graduation-cap" class="w-4 h-4 text-slate-400"></i> ${a.name}
+                            </div>
+                            <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-blue-500"></i>
+                        </div>
+                    </a>
+                `).join('') : '<p class="text-sm text-slate-500 italic">No alumni networks found.</p>';
+            }
 
             container.innerHTML = `
                 <div class="animate-fade-in">
                     <button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
                     
-                    <!-- Mentor Match Feature -->
-                    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-5 text-white shadow-md mb-6">
-                        <div class="flex items-start gap-3 mb-4">
-                            <div class="p-2 bg-white/20 rounded-lg"><i data-lucide="sparkles" class="w-5 h-5 text-yellow-300"></i></div>
-                            <div>
-                                <h3 class="font-bold text-lg">Find Your Perfect Mentor</h3>
-                                <p class="text-xs text-blue-100">Get matched with verified networks based on your skills.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-white/10 p-3 rounded-lg border border-white/20">
-                            <label class="block text-[10px] font-bold text-blue-100 uppercase mb-1">I want to improve in:</label>
-                            <div class="flex gap-2">
-                                <select id="mentor-skill-select" class="w-full text-xs text-slate-800 rounded-lg border-0 focus:ring-2 focus:ring-blue-300 py-2">
-                                    <option value="" disabled selected>Select a skill...</option>
-                                    ${skillOptions}
-                                </select>
-                                <button onclick="runMentorMatch()" class="bg-white text-blue-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-50 transition-colors shadow-sm">Match</button>
-                            </div>
-                        </div>
-                        
-                        <div id="mentor-match-result" class="hidden mt-4 pt-4 border-t border-white/20 animate-fade-in">
-                            <!-- Result injected here -->
-                        </div>
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-blue-500"></i> Communities</h3>
+
+                    <div class="flex gap-2 mb-4">
+                        <button onclick="showCommunitiesView('cop')" class="flex-1 py-2 rounded-lg text-xs font-bold transition-colors ${getBtnClass('cop')}">Communities of Practice</button>
+                        <button onclick="showCommunitiesView('alumni')" class="flex-1 py-2 rounded-lg text-xs font-bold transition-colors ${getBtnClass('alumni')}">Alumni Networks</button>
                     </div>
 
-                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="list" class="w-5 h-5 text-blue-500"></i> All Mentorship Platforms</h3>
                     <div class="space-y-3">
-                        ${mentorsHtml.length > 0 ? mentorsHtml : '<p class="text-sm text-slate-500 italic">No specific mentorship platforms found. Check general communities.</p>'}
+                        ${contentHtml}
                     </div>
                 </div>
             `;
             if(window.lucide) lucide.createIcons();
         }
 
-        window.runMentorMatch = function() {
-            const skill = document.getElementById('mentor-skill-select').value;
-            const resultDiv = document.getElementById('mentor-match-result');
-            
-            if (!skill) return;
-
-            let recommended = { name: "ADPList", link: "https://adplist.org/", desc: "Global mentorship community." };
-            
-            if (activeSectorId === 'agri') {
-                recommended = { name: "AWAK (Women in Ag)", link: "https://awak.co.ke/", desc: "Mentorship for women in agribusiness." };
-                if (activeCountry === 'Uganda') recommended = { name: "Women in Technology Uganda", link: "https://witug.org/", desc: "Tech & Agri-tech mentorship." };
-            } else if (activeSectorId === 'energy') {
-                recommended = { name: "GWNET", link: "https://www.globalwomennet.org/", desc: "Global Women's Network for Energy Transition." };
-                if (activeCountry === 'Kenya') recommended = { name: "Women in Renewable Energy (WIRE)", link: "https://wire-africa.org/", desc: "Mentorship & apprenticeship links." };
-            } else {
-                if (skill.toLowerCase().includes('design')) recommended = { name: "ADPList", link: "https://adplist.org/", desc: "Find Design mentors." };
-                else if (skill.toLowerCase().includes('code') || skill.toLowerCase().includes('dev')) recommended = { name: "Andela Learning Community", link: "https://andela.com/learning-community/", desc: "Developer mentorship." };
-                else recommended = { name: "MicroMentor", link: "https://www.micromentor.org/", desc: "Free business mentorship." };
-            }
-
-            resultDiv.innerHTML = `
-                <div class="text-xs font-bold text-blue-100 mb-2">Top Recommendation for ${skill}:</div>
-                <a href="${recommended.link}" target="_blank" class="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-blue-50 transition-colors group">
-                    <div class="p-2 bg-blue-100 text-blue-600 rounded-full"><i data-lucide="check-circle" class="w-4 h-4"></i></div>
-                    <div class="flex-1">
-                        <div class="font-bold text-sm text-slate-800 group-hover:text-blue-700 flex items-center gap-1">
-                            ${recommended.name} <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i>
-                        </div>
-                        <div class="text-xs text-slate-500">${recommended.desc}</div>
-                    </div>
-                </a>
-            `;
-            resultDiv.classList.remove('hidden');
-            if(window.lucide) lucide.createIcons();
-        }
-
-        window.showWorkforceDataView = function() {
+        window.showMarketIntelView = function(activeTab = 'sector') {
             const sectorData = getSectorCareerResources(activeSectorId);
+            const container = document.getElementById('career-hub-content');
             
-            // FIX: If in Regional view, explicitly pull in all National LMIS links so they aren't hidden
-            if (activeCountry === 'all' && dataManager.digitalResources && dataManager.digitalResources.country_resources) {
-                const cr = dataManager.digitalResources.country_resources;
-                Object.keys(cr).forEach(country => {
-                    if (cr[country].data) {
-                        cr[country].data.forEach(d => {
-                            // Add to LMI list if not already there
-                            if (!sectorData.lmi.some(l => l.name === d.title)) {
-                                sectorData.lmi.push({ name: d.title, desc: `${country}: ${d.desc}`, link: d.link, type: 'National Data' });
-                            }
-                        });
-                    }
+            const lmi = sectorData.lmi || [];
+            
+            let filteredLmi = [];
+            if (activeTab === 'sector') {
+                filteredLmi = lmi.filter(l => {
+                    const t = (l.type || '').toLowerCase();
+                    return !t.includes('global') && !t.includes('regional');
+                });
+            } else {
+                filteredLmi = lmi.filter(l => {
+                    const t = (l.type || '').toLowerCase();
+                    return t.includes('global') || t.includes('regional');
                 });
             }
 
-            const container = document.getElementById('career-hub-content');
-            
-            // Group resources by type for better display
-            const groupedLMI = (sectorData.lmi || []).reduce((acc, item) => {
-                const type = item.type || 'General';
-                if (!acc[type]) acc[type] = [];
-                acc[type].push(item);
-                return acc;
-            }, {});
+            const getBtnClass = (tab) => activeTab === tab 
+                ? "bg-slate-800 text-white shadow-sm" 
+                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50";
 
-            const lmiHtml = Object.entries(groupedLMI).map(([type, items]) => `
-                <div>
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">${type.replace(/_/g, ' ')}</h4>
-                    <div class="space-y-2">
-                        ${items.map(l => `
-                            <a href="${l.link}" target="_blank" class="block p-3 border border-indigo-100 bg-indigo-50/30 rounded-lg hover:bg-indigo-50 group">
-                                <div class="font-bold text-sm text-indigo-900 group-hover:text-indigo-700 flex justify-between items-center">
-                                    <span class="flex items-center gap-1">
-                                        ${l.name}
-                                        ${l.gsa_member ? '<span class="text-[9px] bg-blue-100 text-blue-700 px-1 rounded border border-blue-200">UNESCO</span>' : ''}
-                                    </span>
-                                    <i data-lucide="external-link" class="w-3 h-3 text-indigo-400"></i>
-                                </div>
-                                <div class="text-xs text-indigo-700/80 mt-0.5">${l.desc}</div>
-                            </a>
-                        `).join('')}
+            const contentHtml = filteredLmi.length > 0 ? filteredLmi.map(l => `
+                <a href="${l.link}" target="_blank" class="block p-3 border border-slate-200 rounded-lg bg-white hover:border-slate-400 hover:shadow-sm transition-all group">
+                    <div class="flex justify-between items-start mb-1">
+                        <div class="font-bold text-sm text-slate-800 group-hover:text-slate-900 flex items-center gap-1">
+                            ${l.name}
+                            ${l.gsa_member ? '<span class="text-[9px] bg-blue-100 text-blue-700 px-1 rounded border border-blue-200">UNESCO</span>' : ''}
+                        </div>
+                        <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-slate-500"></i>
                     </div>
-                </div>
-            `).join('');
-
-            // Static Evidence Content (Merged from openEvidenceModal)
-            const evidenceHtml = `
-                <div class="mt-6 pt-6 border-t border-slate-200">
-                    <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide mb-3">Verified Data Sources</h3>
-                    <div class="grid grid-cols-1 gap-3">
-                        <a href="https://ilostat.ilo.org" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
-                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">ILOSTAT <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
-                            <div class="text-xs text-slate-500 mt-1">Global reference for comparable labour indicators.</div>
-                        </a>
-                        <a href="https://www.eac.int" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
-                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">EAC Secretariat <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
-                            <div class="text-xs text-slate-500 mt-1">Regional labour policy & Manpower Survey.</div>
-                        </a>
-                        <a href="https://unevoc.unesco.org/home/Global+Skills+Tracker" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
-                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">UNESCO Global Skills Tracker <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
-                            <div class="text-xs text-slate-500 mt-1">Labour market insights on skills demand.</div>
-                        </a>
-                        <a href="https://economicgraph.linkedin.com/workforce-data?selectedFilter=view-all%2Fby-year" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
-                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">LinkedIn Economic Graph <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
-                            <div class="text-xs text-slate-500 mt-1">Interactive workforce trends & skills insights.</div>
-                        </a>
-                        <a href="https://data.worldbank.org" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
-                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">World Bank Data <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
-                            <div class="text-xs text-slate-500 mt-1">Harmonized macro indicators.</div>
-                        </a>
-                        <a href="https://esco.ec.europa.eu/en" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
-                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">ESCO (EU Skills/Occupations) <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
-                            <div class="text-xs text-slate-500 mt-1">Standard terminology for skills and jobs.</div>
-                        </a>
-                        <a href="https://www.onetonline.org/" target="_blank" class="block p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-slate-50 transition-colors group bg-white">
-                            <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700 flex items-center gap-2">O*NET OnLine <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i></div>
-                            <div class="text-xs text-slate-500 mt-1">Occupational information and skills framework.</div>
-                        </a>
-                    </div>
-                </div>
-            `;
+                    <div class="text-xs text-slate-500 mb-2">${l.desc}</div>
+                    <span class="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded border border-slate-200">${l.type || 'Report'}</span>
+                </a>
+            `).join('') : '<p class="text-sm text-slate-500 italic">No reports found for this category.</p>';
 
             container.innerHTML = `
                 <div class="animate-fade-in">
                     <button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
-                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="database" class="w-5 h-5 text-indigo-500"></i> Workforce Data</h3>
-                    <div class="space-y-4">
-                        ${lmiHtml || '<p class="text-sm text-slate-500 italic">No market intelligence resources found for this sector.</p>'}
-                        ${evidenceHtml}
+                    
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="line-chart" class="w-5 h-5 text-slate-600"></i> Market Intelligence</h3>
+
+                    <div class="flex gap-2 mb-4">
+                        <button onclick="showMarketIntelView('sector')" class="flex-1 py-2 rounded-lg text-xs font-bold transition-colors ${getBtnClass('sector')}">Sector Specific</button>
+                        <button onclick="showMarketIntelView('global')" class="flex-1 py-2 rounded-lg text-xs font-bold transition-colors ${getBtnClass('global')}">Regional & Global</button>
+                    </div>
+
+                    <div class="space-y-3">
+                        ${contentHtml}
                     </div>
                 </div>
             `;
@@ -5845,7 +5777,7 @@ window.toggleCareerHub = function() {
                 },
                 digital: {
                     partners: [
-                        { name: "Safaricom", url: "https://www.safaricom.co.ke/" },
+                        { name: "Safaricom", url: "https://www.youtube.com/watch?v=ZrLzUNCjE_g" },
                         { name: "Microsoft ADC", url: "https://www.microsoft.com/en-us/adc" },
                         { name: "Equity Bank", url: "https://equitygroupholdings.com/" },
                         { name: "Andela", url: "https://andela.com/" },
@@ -5918,7 +5850,7 @@ window.toggleCareerHub = function() {
                     
                     <div>
                         <h3 class="font-bold text-lg text-slate-900 mb-1 flex items-center gap-2"><i data-lucide="handshake" class="w-5 h-5 text-pink-600"></i> Employer Connect</h3>
-                        <p class="text-xs text-slate-500">Direct links to industry partners, fairs, and alumni.</p>
+                        <p class="text-xs text-slate-500">Direct links to industry partners and career fairs.</p>
                     </div>
 
                     <!-- 1. WIL / Hiring Partners -->
@@ -5935,15 +5867,6 @@ window.toggleCareerHub = function() {
                         <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-2">Upcoming Career Fairs</h4>
                         <div class="space-y-2">
                             ${eventsHtml}
-                        </div>
-                    </div>
-
-                    <!-- 3. Alumni -->
-                    <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
-                        <h4 class="text-xs font-bold text-indigo-800 uppercase tracking-wide mb-2">Alumni Networks</h4>
-                        <p class="text-xs text-indigo-700 mb-3">Connect with graduates working in the field.</p>
-                        <div class="flex flex-wrap gap-2">
-                            ${sectorData.alumni.map(a => `<a href="${a.link}" target="_blank" class="px-3 py-1.5 bg-white text-indigo-600 rounded text-[10px] font-bold shadow-sm border border-indigo-100 hover:bg-indigo-50 transition-colors flex items-center gap-1">${a.name} <i data-lucide="external-link" class="w-3 h-3"></i></a>`).join('')}
                         </div>
                     </div>
                 </div>
@@ -6011,22 +5934,6 @@ window.toggleCareerHub = function() {
                         <button onclick="showJobBoardView('freelance')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('freelance')}">Freelance</button>
                         <button onclick="showJobBoardView('tender')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('tender')}">Tenders</button>
                         <button onclick="showJobBoardView('volunteer')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('volunteer')}">Volunteer</button>
-                    </div>
-
-                    <!-- Application Kit Card -->
-                    <div class="mb-4 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl p-4 text-white shadow-md shrink-0">
-                        <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-bold text-sm flex items-center gap-2"><i data-lucide="${activeKit.icon}" class="w-4 h-4 text-cyan-400"></i> ${activeKit.title}</h4>
-                            <span class="text-[9px] bg-white/10 px-2 py-0.5 rounded uppercase tracking-wider">Ready-to-Use</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-300 mb-3">
-                            <div>• ${activeKit.cv}</div>
-                            <div>• ${activeKit.check}</div>
-                            <div class="col-span-2">• Screening: ${activeKit.test}</div>
-                        </div>
-                        <button onclick="renderApplicationKit('${filter}')" class="w-full py-2 bg-white text-slate-900 font-bold rounded-lg text-xs hover:bg-cyan-50 transition-colors flex items-center justify-center gap-2">
-                            <i data-lucide="download" class="w-3 h-3"></i> View Application Kit
-                        </button>
                     </div>
 
                     <div class="space-y-3 overflow-y-auto pr-1 pb-4">
@@ -6410,7 +6317,7 @@ window.toggleCareerHub = function() {
                                 <div class="p-3 bg-cyan-50 text-cyan-600 rounded-lg shrink-0 group-hover:bg-cyan-600 group-hover:text-white transition-colors"><i data-lucide="briefcase" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
                                     <h4 class="font-bold text-slate-800 text-sm group-hover:text-cyan-700">Jobs Board</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Curated listings: Internships, Gigs & Contracts.</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">A sample of job boards.</p>
                                 </div>
                                 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-cyan-500"></i>
                             </button>
@@ -6419,7 +6326,7 @@ window.toggleCareerHub = function() {
                                 <div class="p-3 bg-pink-50 text-pink-600 rounded-lg shrink-0 group-hover:bg-pink-600 group-hover:text-white transition-colors"><i data-lucide="handshake" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
                                     <h4 class="font-bold text-slate-800 text-sm group-hover:text-pink-700">Employer Connect</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Direct links to hiring partners & career fairs.</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">Links to platforms for finding internships, job placements & career fairs.</p>
                                 </div>
                                 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-pink-500"></i>
                             </button>
@@ -6450,6 +6357,15 @@ window.toggleCareerHub = function() {
                                 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-indigo-500"></i>
                             </button>
 
+                            <button onclick="renderReadinessScorecard('career-hub-content', 'resetCareerHub()')" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-emerald-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><i data-lucide="clipboard-list" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-emerald-700">Career Readiness Toolkit</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Audit your assets & strategy.</p>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-emerald-500"></i>
+                            </button>
+
                             <button onclick="renderApplicationKit('all', 'resetCareerHub()')" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-cyan-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
                                 <div class="p-3 bg-cyan-50 text-cyan-600 rounded-lg shrink-0 group-hover:bg-cyan-600 group-hover:text-white transition-colors"><i data-lucide="briefcase" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
@@ -6461,26 +6377,34 @@ window.toggleCareerHub = function() {
                         </div>
                     </div>
                     
-                    <!-- Section 3: Ecosystem Insights -->
+                    <!-- Section 3: Communities -->
                     <div>
                         <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2">
-                            <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px]">3</span> Ecosystem
+                            <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px]">3</span> Communities
                         </h3>
                         <div class="grid grid-cols-1 gap-3">
-                            <button onclick="showMentorshipView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                            <button onclick="showCommunitiesView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
                                 <div class="p-3 bg-blue-50 text-blue-600 rounded-lg shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="users" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-blue-700">Mentorship</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Find mentors & peers.</p>
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-blue-700">Communities & Alumni</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Communities of Practice & Alumni Networks.</p>
                                 </div>
                                 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-blue-500"></i>
                             </button>
+                        </div>
+                    </div>
 
-                            <button onclick="showWorkforceDataView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                    <!-- Section 4: Market Intel -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[10px]">4</span> Market Intel
+                        </h3>
+                        <div class="grid grid-cols-1 gap-3">
+                            <button onclick="showMarketIntelView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
                                 <div class="p-3 bg-slate-100 text-slate-600 rounded-lg shrink-0 group-hover:bg-slate-600 group-hover:text-white transition-colors"><i data-lucide="line-chart" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-slate-700">Market Data</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Trends & salary intel.</p>
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-slate-700">Market Intelligence</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Sector reports & global trends.</p>
                                 </div>
                                 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-slate-500"></i>
                             </button>
