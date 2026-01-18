@@ -1471,7 +1471,7 @@ function getOJAMetrics(roleTitle, country) {
                     <div>
                         <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                             <span class="w-5 h-5 rounded-full bg-${theme}-100 text-${theme}-600 flex items-center justify-center text-xs">4</span> 
-                            Read up on the Ecosystem
+                            Explore the Ecosystem
                         </h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             ${resourceItems}
