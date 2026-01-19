@@ -6101,11 +6101,11 @@ window.toggleCareerHub = function() {
             }
 
             const styles = {
-                learner: { active: "border-indigo-200 bg-indigo-50 text-indigo-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white text-slate-500 hover:text-indigo-600 hover:border-indigo-300" },
-                entrepreneur: { active: "border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white text-slate-500 hover:text-fuchsia-600 hover:border-fuchsia-300" },
-                counsellor: { active: "border-amber-200 bg-amber-50 text-amber-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white text-slate-500 hover:text-amber-600 hover:border-amber-300" },
-                provider: { active: "border-emerald-200 bg-emerald-50 text-emerald-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white text-slate-500 hover:text-emerald-600 hover:border-emerald-300" },
-                policy: { active: "border-cyan-200 bg-cyan-50 text-cyan-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white text-slate-500 hover:text-cyan-600 hover:border-cyan-300" }
+                learner: { active: "border-indigo-200 bg-white/60 backdrop-blur-sm text-indigo-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white/30 backdrop-blur-sm text-slate-500 hover:text-indigo-600 hover:border-indigo-300" },
+                entrepreneur: { active: "border-fuchsia-200 bg-white/60 backdrop-blur-sm text-fuchsia-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white/30 backdrop-blur-sm text-slate-500 hover:text-fuchsia-600 hover:border-fuchsia-300" },
+                counsellor: { active: "border-amber-200 bg-white/60 backdrop-blur-sm text-amber-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white/30 backdrop-blur-sm text-slate-500 hover:text-amber-600 hover:border-amber-300" },
+                provider: { active: "border-emerald-200 bg-white/60 backdrop-blur-sm text-emerald-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white/30 backdrop-blur-sm text-slate-500 hover:text-emerald-600 hover:border-emerald-300" },
+                policy: { active: "border-cyan-200 bg-white/60 backdrop-blur-sm text-cyan-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white/30 backdrop-blur-sm text-slate-500 hover:text-cyan-600 hover:border-cyan-300" }
             };
 
             ['learner', 'entrepreneur', 'counsellor', 'provider', 'policy'].forEach(k => {
@@ -7484,18 +7484,18 @@ window.toggleCareerHub = function() {
                     </button>
 
                     <!-- Block 3: Career & Community Tools -->
-                    <button onclick="toggleCareerHub()" class="flex flex-col text-left h-full bg-orange-50 border border-orange-200 rounded-2xl p-6 hover:border-orange-400 hover:shadow-lg transition-all group relative overflow-hidden">
+                    <button onclick="toggleCareerHub()" class="flex flex-col text-left h-full bg-purple-50 border border-purple-200 rounded-2xl p-6 hover:border-purple-400 hover:shadow-lg transition-all group relative overflow-hidden">
                         <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-15 transition-opacity">
-                            <i data-lucide="users" class="w-32 h-32 text-orange-900/20"></i>
+                            <i data-lucide="users" class="w-32 h-32 text-purple-900/20"></i>
                         </div>
                         <div class="flex items-center gap-4 mb-5 relative z-10">
-                            <div class="w-12 h-12 bg-white text-orange-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
+                            <div class="w-12 h-12 bg-white text-purple-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                                 <i data-lucide="handshake" class="w-6 h-6"></i>
                             </div>
                             <h3 class="text-xl font-bold text-slate-900">Career & Community Tools</h3>
                         </div>
                         <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Access career guidance resources and connect with networks to increase your employability.</p>
-                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-orange-600 group-hover:gap-3 transition-all relative z-10">
+                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-purple-600 group-hover:gap-3 transition-all relative z-10">
                             Access Tools <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
                     </button>
