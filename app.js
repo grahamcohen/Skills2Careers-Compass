@@ -6030,7 +6030,7 @@ window.toggleCareerHub = function() {
                         <div class="w-12 h-12 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center mx-auto mb-3">
                             <i data-lucide="briefcase" class="w-6 h-6"></i>
                         </div>
-                        <h3 class="font-bold text-lg text-slate-900">Application Kit</h3>
+                        <h3 class="font-bold text-lg text-slate-900">Applications Kit</h3>
                         <p class="text-xs text-slate-500">Select a persona to view tailored resources.</p>
                     </div>
 
@@ -6404,22 +6404,22 @@ window.toggleCareerHub = function() {
                                 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-indigo-500"></i>
                             </button>
 
-                            <button onclick="renderReadinessScorecard('career-hub-content', 'resetCareerHub()')" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-emerald-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
-                                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><i data-lucide="clipboard-list" class="w-6 h-6"></i></div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-emerald-700">Career Readiness Toolkit</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Audit your assets & strategy.</p>
-                                </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-emerald-500"></i>
-                            </button>
-
                             <button onclick="renderApplicationKit('all', 'resetCareerHub()')" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-cyan-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
                                 <div class="p-3 bg-cyan-50 text-cyan-600 rounded-lg shrink-0 group-hover:bg-cyan-600 group-hover:text-white transition-colors"><i data-lucide="briefcase" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
                                     <h4 class="font-bold text-slate-800 text-sm group-hover:text-cyan-700">Application Kit</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Checklists, templates & guides.</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">Templates & guides.</p>
                                 </div>
                                 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-cyan-500"></i>
+                            </button>
+                            
+                            <button onclick="renderReadinessScorecard('career-hub-content', 'resetCareerHub()')" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-emerald-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><i data-lucide="clipboard-list" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-emerald-700">Applications Checklist</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Audit your assets & strategy.</p>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-emerald-500"></i>
                             </button>
                         </div>
                     </div>
@@ -7450,8 +7450,8 @@ window.toggleCareerHub = function() {
             container.innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
                     <!-- Block 1: High Growth Sectors -->
-                    <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-indigo-50 border border-indigo-200 rounded-2xl p-6 hover:border-indigo-400 hover:shadow-lg transition-all group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-15 transition-opacity">
+                        <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-indigo-50/80 border border-indigo-200 rounded-2xl p-6 hover:border-indigo-400 hover:shadow-lg transition-all group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-40 group-hover:opacity-50 transition-opacity">
                             <i data-lucide="map" class="w-32 h-32 text-indigo-900/20"></i>
                         </div>
                         <div class="flex items-center gap-4 mb-5 relative z-10">
@@ -7467,25 +7467,25 @@ window.toggleCareerHub = function() {
                     </button>
 
                     <!-- Block 2: Skills & Training Hub -->
-                    <button onclick="openUnifiedHub()" class="flex flex-col text-left h-full bg-emerald-50 border border-emerald-200 rounded-2xl p-6 hover:border-emerald-400 hover:shadow-lg transition-all group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-15 transition-opacity">
-                            <i data-lucide="book-open" class="w-32 h-32 text-emerald-900/20"></i>
+                        <button onclick="openUnifiedHub()" class="flex flex-col text-left h-full bg-blue-50/80 border border-blue-200 rounded-2xl p-6 hover:border-blue-400 hover:shadow-lg transition-all group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-40 group-hover:opacity-50 transition-opacity">
+                            <i data-lucide="book-open" class="w-32 h-32 text-blue-900/20"></i>
                         </div>
                         <div class="flex items-center gap-4 mb-5 relative z-10">
-                            <div class="w-12 h-12 bg-white text-emerald-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
+                            <div class="w-12 h-12 bg-white text-blue-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                                 <i data-lucide="graduation-cap" class="w-6 h-6"></i>
                             </div>
                             <h3 class="text-xl font-bold text-slate-900">Skills & Training Hub</h3>
                         </div>
                         <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Use tools to assess your fit for different occupations. Build a personalized skills training pathway based on your existing skills level, interests and goals.</p>
-                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-emerald-600 group-hover:gap-3 transition-all relative z-10">
+                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-blue-600 group-hover:gap-3 transition-all relative z-10">
                             Find Training <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
                     </button>
 
                     <!-- Block 3: Career & Community Tools -->
-                    <button onclick="toggleCareerHub()" class="flex flex-col text-left h-full bg-purple-50 border border-purple-200 rounded-2xl p-6 hover:border-purple-400 hover:shadow-lg transition-all group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-15 transition-opacity">
+                        <button onclick="toggleCareerHub()" class="flex flex-col text-left h-full bg-purple-50/80 border border-purple-200 rounded-2xl p-6 hover:border-purple-400 hover:shadow-lg transition-all group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-40 group-hover:opacity-50 transition-opacity">
                             <i data-lucide="users" class="w-32 h-32 text-purple-900/20"></i>
                         </div>
                         <div class="flex items-center gap-4 mb-5 relative z-10">
