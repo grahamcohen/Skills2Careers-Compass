@@ -1141,27 +1141,22 @@ function getOJAMetrics(roleTitle, country) {
             // Identify Strengths & Gaps for Narrative
             // 4. Narrative Generation
             const strengths = allSkillsData.filter(s => s.score >= 4).map(s => s.skill);
-            const gaps = allSkillsData.filter(s => s.score < 4).map(s => s.skill);
             const allGaps = [...techGaps, ...empGaps];
 
             let synthesisText = '';
             // Use tier/percent to drive the main narrative for consistency
             if (percent > 85) {
                 synthesisText = `Excellent work! You demonstrate high proficiency across key areas for this role.`;
-                if (gaps.length > 0) synthesisText += ` Consider polishing <strong>${gaps.slice(0, 2).join(', ')}</strong> to reach expert level.`;
                 if (allGaps.length > 0) synthesisText += ` Consider polishing <strong>${allGaps.slice(0, 2).join(', ')}</strong> to reach expert level.`;
                 else synthesisText += ` Focus on portfolio building and networking.`;
             } else if (percent > 65) {
                 synthesisText = `You have a solid foundation.`;
                 if (strengths.length > 0) synthesisText += ` You are strong in <strong>${strengths.slice(0, 2).join(', ')}</strong>.`;
-                if (gaps.length > 0) synthesisText += ` To become fully job-ready, focus on strengthening <strong>${gaps.slice(0, 3).join(', ')}</strong>.`;
                 if (allGaps.length > 0) synthesisText += ` To become fully job-ready, focus on strengthening <strong>${allGaps.slice(0, 3).join(', ')}</strong>.`;
             } else if (percent > 40) {
                 synthesisText = `You are making good progress but have some key gaps.`;
-                if (gaps.length > 0) synthesisText += ` Prioritize training in <strong>${gaps.slice(0, 3).join(', ')}</strong> to build your profile.`;
                 if (allGaps.length > 0) synthesisText += ` Prioritize training in <strong>${allGaps.slice(0, 3).join(', ')}</strong> to build your profile.`;
             } else {
-                synthesisText = `You are at the beginning of your journey. Focus on foundational training in <strong>${gaps.slice(0, 3).join(', ')}</strong>.`;
                 synthesisText = `You are at the beginning of your journey. Focus on foundational training in <strong>${allGaps.slice(0, 3).join(', ')}</strong>.`;
             }
 
@@ -5957,7 +5952,7 @@ window.toggleCareerHub = function() {
 
             // 3. Kit Configuration per Type
             const kits = {
-                'all': { title: "General Job Application Kit", icon: "briefcase", cv: "Standard Professional CV", check: "LinkedIn Updated, References Ready", test: "General Aptitude" },
+                'all': { title: "General Job Applications Kit", icon: "briefcase", cv: "Standard Professional CV", check: "LinkedIn Updated, References Ready", test: "General Aptitude" },
                 'internship': { title: "Internship Starter Kit", icon: "graduation-cap", cv: "Academic/Project-based CV", check: "Transcript, Cover Letter", test: "Basic Logic / Personality" },
                 'freelance': { title: "Freelancer Toolkit", icon: "laptop", cv: "Portfolio/Case Studies", check: "Rate Card, Contract Template", test: "Skill Assessment (e.g. Coding)" },
                 'tender': { title: "Founder Tender Kit", icon: "file-text", cv: "Company Profile / Capability Statement", check: "Tax Compliance, Registration Certs", test: "Technical Proposal Evaluation" },
@@ -5994,16 +5989,16 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
-        // --- NEW: Render Application Kit ---
+        // --- NEW: Render Applications Kit ---
         window.renderApplicationKit = function(type, backAction = null) {
             const container = document.getElementById('career-hub-content');
             
             const kits = {
-                'all': { title: "General Job Application Kit", items: ["Master CV Template", "Cover Letter Guide", "LinkedIn Checklist", "Common Interview Qs"] },
+                'all': { title: "General Job Applications Kit", items: ["Master CV Template", "Cover Letter Guide", "LinkedIn Checklist", "Common Interview Qs"] },
                 'internship': { title: "Internship Starter Kit", items: ["No-Experience Resume Template", "University Transcript Guide", "Internship Cover Letter", "Behavioral Interview Prep"] },
                 'freelance': { title: "Freelancer Toolkit", items: ["Service Rate Card Template", "Client Contract Draft", "Portfolio Website Checklist", "Proposal Email Script"] },
                 'tender': { title: "Founder Tender Kit", items: ["Capability Statement Template", "Tax Compliance Checklist", "Technical Proposal Structure", "Financial Proposal Sheet"] },
-                'volunteer': { title: "Volunteer Application Kit", items: ["Motivation Statement Template", "Availability Schedule", "Soft Skills Checklist", "Values Alignment Prep"] }
+                'volunteer': { title: "Volunteer Applications Kit", items: ["Motivation Statement Template", "Availability Schedule", "Soft Skills Checklist", "Values Alignment Prep"] }
             };
             const kit = kits[type] || kits['all'];
 
@@ -6407,7 +6402,7 @@ window.toggleCareerHub = function() {
                             <button onclick="renderApplicationKit('all', 'resetCareerHub()')" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-cyan-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
                                 <div class="p-3 bg-cyan-50 text-cyan-600 rounded-lg shrink-0 group-hover:bg-cyan-600 group-hover:text-white transition-colors"><i data-lucide="briefcase" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-cyan-700">Application Kit</h4>
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-cyan-700">Applications Kit</h4>
                                     <p class="text-xs text-slate-500 mt-0.5">Templates & guides.</p>
                                 </div>
                                 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-cyan-500"></i>
@@ -7526,7 +7521,7 @@ window.toggleCareerHub = function() {
                         <div>
                             <h3 class="text-base font-bold text-slate-800 mb-1">Navigate High Growth Sectors</h3>
                             <p class="text-xs text-slate-500 leading-relaxed">
-                                Select a sector and region to access real-time labor market data and investment trends. Open tabs for details on occupations and skills in demand, as well as emerging entrepreneurship opportunities.
+                                Select a sector and country to access real-time labor market data and investment trends. Open tabs for details on occupations and skills in demand, as well as emerging entrepreneurship opportunities.
                              </p>
                         </div>
                         
