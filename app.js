@@ -7450,7 +7450,7 @@ window.toggleCareerHub = function() {
             container.innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
                     <!-- Block 1: High Growth Sectors -->
-                        <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-indigo-50/80 border border-indigo-200 rounded-2xl p-6 hover:border-indigo-400 hover:shadow-lg transition-all group relative overflow-hidden">
+                        <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-teal-50/80 border border-teal-200 rounded-2xl p-6 hover:border-teal-400 hover:shadow-lg transition-all group relative overflow-hidden">
                         <div class="absolute top-0 right-0 p-6 opacity-40 group-hover:opacity-50 transition-opacity">
                             <i data-lucide="map" class="w-32 h-32 text-indigo-900/20"></i>
                         </div>
