@@ -6087,7 +6087,7 @@ window.toggleCareerHub = function() {
                     text: "Identify high-potential venture niches, access eco-system resources, and build your capability roadmap.",
                 },
                 counsellor: {
-                    text: "Access labor market intelligence to guide students towards high-growth career paths.",
+                    text: "Access labour market intelligence to guide students towards high-growth career paths.",
                 },
                 provider: {
                     text: "Align your curriculum with real-time market demand and skills gaps.",
@@ -7532,7 +7532,7 @@ window.toggleCareerHub = function() {
                         <div>
                             <h3 class="text-base font-bold text-slate-800 mb-1">Navigate High Growth Sectors</h3>
                             <p class="text-xs text-slate-500 leading-relaxed">
-                                Select a sector and country to access real-time labor market data and investment trends. Open tabs for details on occupations and skills in demand, as well as emerging entrepreneurship opportunities.
+                                Select a sector and country to access real-time labour market data and investment trends. Open tabs for details on occupations and skills in demand, as well as emerging entrepreneurship opportunities.
                              </p>
                         </div>
                         
