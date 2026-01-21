@@ -348,188 +348,7 @@ class DataManager {
     }
 
     getFallbackScholarships() {
-        return [
-            {
-                "id": "aid_001",
-                "name": "Mastercard Foundation Scholars Program",
-                "provider": "Mastercard Foundation",
-                "type": "Scholarship",
-                "coverage": "Full (Tuition + Stipend)",
-                "country": "Regional",
-                "target": "Undergraduate / Master's",
-                "deadline": "Varies by University",
-                "link": "https://mastercardfdn.org/all/scholars/",
-                "desc": "Comprehensive support for academically talented young leaders from economically disadvantaged backgrounds."
-            },
-            {
-                "id": "aid_002",
-                "name": "HELB Undergraduate Loan",
-                "provider": "Government of Kenya",
-                "type": "Loan",
-                "coverage": "Partial (Tuition + Upkeep)",
-                "country": "Kenya",
-                "target": "Undergraduate (Public/Private)",
-                "deadline": "Annual (August)",
-                "link": "https://www.helb.co.ke/",
-                "desc": "Low-interest government loans for Kenyan students in recognized universities and TVETs."
-            },
-            {
-                "id": "aid_003",
-                "name": "HESLB Loan",
-                "provider": "Higher Education Students' Loans Board",
-                "type": "Loan",
-                "coverage": "Partial (Tuition + Meals)",
-                "country": "Tanzania",
-                "target": "Undergraduate",
-                "deadline": "Annual (July-Sept)",
-                "link": "https://www.heslb.go.tz/",
-                "desc": "Loans for needy Tanzanian students admitted to accredited higher education institutions."
-            },
-            {
-                "id": "aid_004",
-                "name": "HESFB Loan Scheme",
-                "provider": "Higher Education Students Financing Board",
-                "type": "Loan",
-                "coverage": "Tuition Fees",
-                "country": "Uganda",
-                "target": "Undergraduate / Diploma",
-                "deadline": "Annual (July)",
-                "link": "https://www.hesfb.go.ug/",
-                "desc": "Loans for Ugandan students pursuing STEM programs and persons with disabilities."
-            },
-            {
-                "id": "aid_005",
-                "name": "Ashinaga Africa Initiative",
-                "provider": "Ashinaga",
-                "type": "Scholarship",
-                "coverage": "Full (International)",
-                "country": "Regional",
-                "target": "Undergraduate",
-                "deadline": "Annual (January)",
-                "link": "https://en.ashinaga.org/apply/aai/",
-                "desc": "Academic leadership program for orphaned students to study abroad and return to contribute to Sub-Saharan Africa."
-            },
-            {
-                "id": "aid_006",
-                "name": "Equity Wings to Fly / Elimu",
-                "provider": "Equity Group Foundation",
-                "type": "Scholarship",
-                "coverage": "Full (Secondary + Uni Support)",
-                "country": "Kenya",
-                "target": "Secondary / TVET / Uni",
-                "deadline": "Annual (December)",
-                "link": "https://equitygroupfoundation.com/wings-to-fly/",
-                "desc": "Comprehensive secondary school scholarship and leadership training for academically promising but financially challenged students."
-            },
-            {
-                "id": "aid_007",
-                "name": "BRD Student Loan (MinEduc)",
-                "provider": "Development Bank of Rwanda",
-                "type": "Loan",
-                "coverage": "Tuition + Living Allowance",
-                "country": "Rwanda",
-                "target": "Undergraduate",
-                "deadline": "Annual",
-                "link": "https://www.brd.rw/brd/education-financing/",
-                "desc": "Government-backed student loans for Rwandan students in public and private higher learning institutions."
-            },
-            {
-                "id": "aid_008",
-                "name": "IUCEA-Kyung Dong Scholarship",
-                "provider": "IUCEA",
-                "type": "Scholarship",
-                "coverage": "Partial (Tuition)",
-                "country": "Regional",
-                "target": "Undergraduate",
-                "deadline": "Annual (March)",
-                "link": "https://www.iucea.org/",
-                "desc": "Scholarships for students from EAC partner states to study at Kyung Dong University in South Korea."
-            },
-            {
-                "id": "aid_009",
-                "name": "Windle International Scholarship",
-                "provider": "Windle International",
-                "type": "Scholarship",
-                "coverage": "Full",
-                "country": "Regional (Refugee Focus)",
-                "target": "Undergraduate / Master's",
-                "deadline": "Varies",
-                "link": "https://windle.org/",
-                "desc": "Education opportunities for refugees and conflict-affected communities in East Africa."
-            },
-            {
-                "id": "aid_010",
-                "name": "KCB Foundation Tujiajiri",
-                "provider": "KCB Foundation",
-                "type": "Grant / Training",
-                "coverage": "Vocational Training",
-                "country": "Kenya",
-                "target": "TVET / Youth",
-                "deadline": "Rolling",
-                "link": "https://kcbgroup.com/foundation/tujiajiri/",
-                "desc": "Vocational skills training and mentorship for youth to establish their own businesses."
-            },
-            {
-                "id": "aid_011",
-                "name": "DAAD In-Country/In-Region",
-                "provider": "DAAD",
-                "type": "Scholarship",
-                "coverage": "Full (Tuition + Stipend)",
-                "country": "Regional",
-                "target": "Master's / PhD",
-                "deadline": "Varies",
-                "link": "https://www.daad.or.ke/en/",
-                "desc": "Support for postgraduate studies at selected partner universities within the East African region."
-            },
-            {
-                "id": "aid_012",
-                "name": "Madhvani Foundation Scholarship",
-                "provider": "Madhvani Foundation",
-                "type": "Scholarship",
-                "coverage": "Tuition Fees",
-                "country": "Uganda",
-                "target": "Undergraduate",
-                "deadline": "Annual (April)",
-                "link": "https://www.madhvanifoundation.com/",
-                "desc": "Scholarships for Ugandan university students demonstrating financial need and academic merit."
-            },
-            {
-                "id": "aid_013",
-                "name": "Excellentia Program",
-                "provider": "Denise Nyakeru Tshisekedi Foundation",
-                "type": "Scholarship",
-                "coverage": "Full",
-                "country": "DR Congo",
-                "target": "Undergraduate",
-                "deadline": "Annual",
-                "link": "https://fondationdnt.org/excellentia/",
-                "desc": "Promoting academic excellence by awarding scholarships to top-performing state exam graduates in DRC."
-            },
-            {
-                "id": "aid_014",
-                "name": "Iftin Foundation Education Fund",
-                "provider": "Iftin Foundation",
-                "type": "Grant",
-                "coverage": "Partial",
-                "country": "Somalia",
-                "target": "Youth / TVET",
-                "deadline": "Rolling",
-                "link": "https://iftinfoundation.org/",
-                "desc": "Support for skills development and education for youth in Somalia."
-            },
-            {
-                "id": "aid_015",
-                "name": "EAC Scholarship Programme",
-                "provider": "EAC / KfW",
-                "type": "Scholarship",
-                "coverage": "Full",
-                "country": "Regional",
-                "target": "Master's",
-                "deadline": "Bi-annual",
-                "link": "https://www.eac.int/",
-                "desc": "Scholarships for Master's students in Mathematics, Engineering, Informatics, Science, Technology and Business Science."
-            }
-        ];
+        return (typeof fallbackScholarships !== 'undefined') ? fallbackScholarships : [];
     }
 }
 
@@ -3552,6 +3371,15 @@ function getOJAMetrics(roleTitle, country) {
                 }
             }
 
+            // Update Financial Aid Filter (Sync)
+            const financeFilter = document.getElementById('pp-finance-filter-country');
+            if (financeFilter && financeFilter.value !== country) {
+                financeFilter.value = country;
+                if (!document.getElementById('pp-finance').classList.contains('hidden')) {
+                    renderFinancialAidTab();
+                }
+            }
+
             updateTrainingProviders();
             renderOccupationsView();
             
@@ -3763,7 +3591,7 @@ function getOJAMetrics(roleTitle, country) {
                 } else if (viewId === 'pp-launchpad') {
                     renderLaunchpadTab();
                 } else if (viewId === 'pp-finance') {
-                    renderUnifiedFinancialAid();
+                    renderFinancialAidTab();
                 } else if (viewId === 'pp-resources') {
                     renderResourceLibrary();
                 }
@@ -6824,66 +6652,30 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
-        // --- NEW: Render Unified Financial Aid (Skills Hub) ---
-        window.renderUnifiedFinancialAid = function() {
+        // --- NEW: Render Financial Aid Tab (Replaces UnifiedFinancialAid) ---
+        window.renderFinancialAidTab = function() {
             const container = document.getElementById('pp-finance');
             if(!container) return;
 
-            // Render Layout if empty
-            if(container.innerHTML.trim() === '') {
-                container.innerHTML = `
-                    <div class="bg-purple-50 rounded-xl p-4 border border-purple-100 flex items-start gap-3">
-                        <div class="p-2 bg-purple-100 text-purple-600 rounded-lg shrink-0"><i data-lucide="banknote" class="w-5 h-5"></i></div>
-                        <div>
-                            <h3 class="font-bold text-purple-900 text-sm">Scholarships & Loans</h3>
-                            <p class="text-xs text-purple-700 mt-1">Find financial support for your education across East Africa. Filter by country or aid type.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-                        <div class="flex flex-col sm:flex-row gap-3 mb-4">
-                            <div class="flex-1">
-                                <label class="block text-xs font-bold text-slate-500 mb-1">Type</label>
-                                <select id="pp-finance-filter-type" onchange="updateUnifiedAidList()" class="w-full text-xs border border-slate-300 rounded-lg px-2 py-2 focus:ring-purple-500">
-                                    <option value="all">All Types</option>
-                                    <option value="Scholarship">Scholarship</option>
-                                    <option value="Loan">Loan</option>
-                                    <option value="Grant">Grant</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div id="pp-finance-list" class="space-y-3"></div>
-                    </div>
-                `;
-            }
+            // Capture current filter state if elements exist
+            const countrySelect = document.getElementById('pp-finance-filter-country');
+            const typeSelect = document.getElementById('pp-finance-filter-type');
             
-            updateUnifiedAidList();
-            if(window.lucide) lucide.createIcons();
-        }
+            // Default to activeCountry if no user selection, or if rebuilding
+            let selectedCountry = countrySelect ? countrySelect.value : activeCountry;
+            let selectedType = typeSelect ? typeSelect.value : 'all';
 
-        window.updateUnifiedAidList = function() {
-            const container = document.getElementById('pp-finance-list');
-            if (!container) return;
-
-            const countryFilter = document.getElementById('pp-finance-filter-country') ? document.getElementById('pp-finance-filter-country').value : activeCountry;
-            const typeFilter = document.getElementById('pp-finance-filter-type').value;
-
-            let items = dataManager.scholarships || [];
-
-            // Filter
-            items = items.filter(item => {
-                const matchCountry = countryFilter === 'all' || item.country === 'Regional' || item.country === countryFilter;
-                const matchType = typeFilter === 'all' || item.type.includes(typeFilter);
+            const scholarships = dataManager.scholarships || [];
+            
+            // Filter Logic
+            const filtered = scholarships.filter(s => {
+                const matchCountry = selectedCountry === 'all' || s.country === 'Regional' || s.country === selectedCountry;
+                const matchType = selectedType === 'all' || s.type === selectedType;
                 return matchCountry && matchType;
             });
 
-            if (items.length === 0) {
-                container.innerHTML = `<div class="text-xs text-slate-500 italic text-center py-4">No financial aid opportunities found for these filters.</div>`;
-                return;
-            }
-
-            container.innerHTML = items.map(item => `
-                <div class="p-4 bg-white border border-slate-100 rounded-lg hover:border-purple-300 transition-all shadow-sm group">
+            const itemsHtml = filtered.length > 0 ? filtered.map(item => `
+                <div class="p-4 bg-white border border-slate-200 rounded-xl hover:border-purple-300 transition-all shadow-sm group">
                     <div class="flex justify-between items-start mb-2">
                         <div>
                             <div class="text-xs font-bold text-purple-600 uppercase tracking-wide mb-0.5">${item.provider}</div>
@@ -6900,7 +6692,60 @@ window.toggleCareerHub = function() {
                         <a href="${item.link}" target="_blank" class="text-xs font-bold text-purple-600 hover:underline flex items-center gap-1">Apply <i data-lucide="external-link" class="w-3 h-3"></i></a>
                     </div>
                 </div>
-            `).join('');
+            `).join('') : `<div class="text-center py-12 text-slate-400 text-sm italic bg-slate-50 rounded-xl border border-dashed border-slate-200">No financial aid opportunities found for ${selectedCountry} matching these filters.</div>`;
+
+            container.innerHTML = `
+                <div class="animate-fade-in space-y-6">
+                    <!-- Header -->
+                    <div class="bg-purple-50 rounded-xl p-5 border border-purple-100 flex items-start gap-4">
+                        <div class="p-3 bg-purple-100 text-purple-600 rounded-xl shrink-0 shadow-sm"><i data-lucide="banknote" class="w-6 h-6"></i></div>
+                        <div>
+                            <h3 class="font-bold text-purple-900 text-lg">Scholarships & Financial Aid</h3>
+                            <p class="text-sm text-purple-700 mt-1 leading-relaxed">Find funding opportunities for your education and career development across East Africa.</p>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Location</label>
+                                <div class="relative">
+                                    <select id="pp-finance-filter-country" onchange="renderFinancialAidTab()" class="w-full text-sm font-semibold text-slate-700 border-slate-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 py-2.5 pl-3 pr-8 appearance-none bg-slate-50 hover:bg-white transition-colors cursor-pointer">
+                                        <option value="all" ${selectedCountry === 'all' ? 'selected' : ''}>Regional & All</option>
+                                        <option value="Kenya" ${selectedCountry === 'Kenya' ? 'selected' : ''}>Kenya</option>
+                                        <option value="Uganda" ${selectedCountry === 'Uganda' ? 'selected' : ''}>Uganda</option>
+                                        <option value="Tanzania" ${selectedCountry === 'Tanzania' ? 'selected' : ''}>Tanzania</option>
+                                        <option value="Rwanda" ${selectedCountry === 'Rwanda' ? 'selected' : ''}>Rwanda</option>
+                                        <option value="Burundi" ${selectedCountry === 'Burundi' ? 'selected' : ''}>Burundi</option>
+                                        <option value="South Sudan" ${selectedCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
+                                        <option value="DRC" ${selectedCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
+                                        <option value="Somalia" ${selectedCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Aid Type</label>
+                                <div class="relative">
+                                    <select id="pp-finance-filter-type" onchange="renderFinancialAidTab()" class="w-full text-sm font-semibold text-slate-700 border-slate-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 py-2.5 pl-3 pr-8 appearance-none bg-slate-50 hover:bg-white transition-colors cursor-pointer">
+                                        <option value="all" ${selectedType === 'all' ? 'selected' : ''}>All Types</option>
+                                        <option value="Scholarship" ${selectedType === 'Scholarship' ? 'selected' : ''}>Scholarship</option>
+                                        <option value="Loan" ${selectedType === 'Loan' ? 'selected' : ''}>Loan</option>
+                                        <option value="Grant" ${selectedType === 'Grant' ? 'selected' : ''}>Grant</option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- List -->
+                        <div class="space-y-4">
+                            ${itemsHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
             
             if(window.lucide) lucide.createIcons();
         }
