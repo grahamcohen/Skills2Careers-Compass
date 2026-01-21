@@ -1345,7 +1345,7 @@ function getOJAMetrics(roleTitle, country) {
                         </h4>
                         <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                             <div class="divide-y divide-slate-100">
-                                <a href="https://www.behance.net/search/projects/east%20africa" target="_blank" class="p-3 hover:bg-slate-50 transition-colors group flex items-center justify-between">
+                                <a href="https://www.behance.net/blog/portfolio-that-gets-you-hired" target="_blank" class="p-3 hover:bg-slate-50 transition-colors group flex items-center justify-between">
                                     <div class="flex items-start gap-3">
                                         <div class="p-2 bg-indigo-50 text-indigo-600 rounded shrink-0"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
                                         <div>
