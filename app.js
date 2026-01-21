@@ -637,6 +637,25 @@ function getOJAMetrics(roleTitle, country) {
         
         // --- RENDER FUNCTIONS ---
         
+        function sortCoursesByPriority(courses, country) {
+            return courses.sort((a, b) => {
+                // 1. Country Priority
+                if (country !== 'all') {
+                    const aIsLocal = a.country === country;
+                    const bIsLocal = b.country === country;
+                    if (aIsLocal && !bIsLocal) return -1;
+                    if (!aIsLocal && bIsLocal) return 1;
+                }
+
+                // 2. Accreditation/Certification Priority
+                const isCert = (c) => c.outcomeData?.accreditation === 'Accredited' || (c.type && /degree|diploma|certificate|license/i.test(c.type));
+                if (isCert(a) && !isCert(b)) return -1;
+                if (!isCert(a) && isCert(b)) return 1;
+
+                return a.name.localeCompare(b.name);
+            });
+        }
+
         function formatTrainingList(trainingList) {
             if(!trainingList || trainingList.length === 0) return '<div class="text-xs text-slate-500 p-4 text-center italic">No specific courses found for this filter.</div>';
             
@@ -1105,6 +1124,7 @@ function getOJAMetrics(roleTitle, country) {
                     return 0;
                 });
             };
+            const sortByLocation = (list) => sortCoursesByPriority(list, activeCountry);
             catalogue.short = sortByLocation(catalogue.short);
             catalogue.med = sortByLocation(catalogue.med);
             catalogue.long = sortByLocation(catalogue.long);
@@ -1150,6 +1170,11 @@ function getOJAMetrics(roleTitle, country) {
                         const bIsLocal = b.country === activeCountry;
                         if (aIsLocal && !bIsLocal) return -1;
                         if (!aIsLocal && bIsLocal) return 1;
+                        const res = sortCoursesByPriority([a, b], activeCountry);
+                        // sortCoursesByPriority returns -1 if a < b (a comes first)
+                        // Here we are inside a sort function, so we return the result directly
+                        // However, we need to be careful not to flip the logic if matches are equal
+                        return res;
                     }
                     return 0;
                 });
@@ -1422,6 +1447,7 @@ function getOJAMetrics(roleTitle, country) {
             const container = document.getElementById('pathway-course-grid');
             if (!container || !pathwayState.recommendedCourses) return;
 
+            // Ensure courses are sorted by priority initially if 'match' is selected
             let courses = [...pathwayState.recommendedCourses];
             const techGaps = pathwayState.techGaps || [];
 
@@ -6229,6 +6255,15 @@ window.toggleCareerHub = function() {
                                 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-purple-500"></i>
                             </button>
 
+                            <button onclick="renderCVScanner()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-teal-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-teal-50 text-teal-600 rounded-lg shrink-0 group-hover:bg-teal-600 group-hover:text-white transition-colors"><i data-lucide="scan-line" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-teal-700">CV Scanner</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Match CV to job skills.</p>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-teal-500"></i>
+                            </button>
+
                             <button onclick="showAIToolsView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-indigo-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
                                 <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><i data-lucide="cpu" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
@@ -6491,6 +6526,7 @@ window.toggleCareerHub = function() {
                 if (!aIsGlobal && !bIsGlobal) return a.country.localeCompare(b.country);
                 return a.name.localeCompare(b.name);
             });
+            sortCoursesByPriority(filtered, countryFilter);
 
             filtered.forEach(c => {
                 // Outcome Data Logic
@@ -6842,6 +6878,9 @@ window.toggleCareerHub = function() {
 
                 return matchCountry && matchSector && matchLang && matchMode && matchType && matchBudget;
             });
+
+            // Apply Priority Sorting
+            sortCoursesByPriority(filtered, countryFilter);
 
             container.innerHTML = formatTrainingList(filtered);
             if(window.lucide) lucide.createIcons();
