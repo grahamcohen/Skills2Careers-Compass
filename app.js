@@ -151,13 +151,8 @@ class DataManager {
             
             return data;
         } catch (e) {
-            if (retries > 0) {
-                console.warn(`Retrying ${url} (${retries} attempts left)...`);
-                return await this.fetchData(url, retries - 1);
-            } else {
-                console.warn(`Could not load ${url}:`, e);
-                return null;
-            }
+            console.warn(`Could not load ${url}:`, e);
+            return null;
         }
     }
 
