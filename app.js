@@ -1993,7 +1993,6 @@ function getOJAMetrics(roleTitle, country) {
             if(!container) return;
 
             // Load questions from app_data.json (via window.assessmentConfig)
-            const config = window.assessmentConfig || { riasec: [] };
             const config = window.assessmentConfig || { 
                 riasec: [
                     { code: "R", question: "I like to work with tools, machinery, or hands-on tasks." },
@@ -4575,7 +4574,6 @@ window.toggleCareerHub = function() {
             let cardHoverBg = `hover:bg-${themeColor}-50`;
             let cardHoverBorder = `hover:border-${themeColor}-200`;
 
-            if (data.growth.skillsDemand === 'Growing' || data.growth.skillsDemand === 'High' || data.growth.skillsDemand === 'Critical') {
             const demandStatus = (data.growth.skillsDemand || "").toLowerCase();
             if (demandStatus.includes('grow') || demandStatus.includes('high') || demandStatus.includes('critical')) {
                 demandColorClass = "text-emerald-600";
