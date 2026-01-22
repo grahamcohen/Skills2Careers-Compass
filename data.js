@@ -1843,8 +1843,9 @@ const pivotAuditSections = [
 
 // --- 43. Application Kits Config (Job Board) ---
 const applicationKitsConfig = {
-    'all': { title: "General Job Application Kit", icon: "briefcase", cv: "Standard Professional CV", check: "LinkedIn Updated, References Ready", test: "General Aptitude" },
+    'all': { title: "General Job Applications Kit", icon: "briefcase", cv: "Standard Professional CV", check: "LinkedIn Updated, References Ready", test: "General Aptitude" },
     'internship': { title: "Internship Starter Kit", icon: "graduation-cap", cv: "Academic/Project-based CV", check: "Transcript, Cover Letter", test: "Basic Logic / Personality" },
+    'placement': { title: "Work Placement Kit", icon: "id-card", cv: "Placement CV / Bio-data", check: "Placement Letter, Insurance Form", test: "Work Readiness Assessment" },
     'freelance': { title: "Freelancer Toolkit", icon: "laptop", cv: "Portfolio/Case Studies", check: "Rate Card, Contract Template", test: "Skill Assessment (e.g. Coding)" },
     'tender': { title: "Founder Tender Kit", icon: "file-text", cv: "Company Profile / Capability Statement", check: "Tax Compliance, Registration Certs", test: "Technical Proposal Evaluation" },
     'volunteer': { title: "Volunteer Kit", icon: "heart", cv: "Skills-based Resume", check: "Availability Schedule, Motivation Statement", test: "Values Alignment" }
@@ -1852,11 +1853,12 @@ const applicationKitsConfig = {
 
 // --- 44. Application Kits Resources (Download) ---
 const applicationKitsResources = {
-    'all': { title: "General Job Application Kit", items: ["Master CV Template", "Cover Letter Guide", "LinkedIn Checklist", "Common Interview Qs"] },
-    'internship': { title: "Internship Starter Kit", items: ["No-Experience Resume Template", "University Transcript Guide", "Internship Cover Letter", "Behavioral Interview Prep"] },
-    'freelance': { title: "Freelancer Toolkit", items: ["Service Rate Card Template", "Client Contract Draft", "Portfolio Website Checklist", "Proposal Email Script"] },
-    'tender': { title: "Founder Tender Kit", items: ["Capability Statement Template", "Tax Compliance Checklist", "Technical Proposal Structure", "Financial Proposal Sheet"] },
-    'volunteer': { title: "Volunteer Application Kit", items: ["Motivation Statement Template", "Availability Schedule", "Soft Skills Checklist", "Values Alignment Prep"] }
+    'all': { title: "General Job Applications Kit", items: ["Master CV Template (ATS-Optimized)", "Cover Letter Guide & Examples", "LinkedIn Profile Optimization Checklist", "Common Interview Questions & STAR Answers", "Salary Negotiation Script"] },
+    'internship': { title: "Internship Starter Kit", items: ["Student/Graduate Resume Template", "University Recommendation Letter Request", "Internship Cover Letter (No Experience)", "Learning Agreement Template", "Internship Report Guidelines"] },
+    'placement': { title: "Work Placement Kit", items: ["Placement Application Letter", "Daily Work Logbook Template", "Supervisor Evaluation Form", "Placement Report Structure", "Workplace Safety Checklist"] },
+    'freelance': { title: "Freelancer Toolkit", items: ["Freelance Service Rate Card", "Client Contract & SOW Template", "Portfolio Website Checklist", "Cold Pitch Email Templates", "Invoice & Payment Tracker"] },
+    'tender': { title: "Founder Tender Kit", items: ["Company Profile / Capability Statement", "Tax Compliance Checklist (KRA/TRA/URA)", "Technical Proposal Structure", "Financial Proposal Budget Sheet", "Pre-qualification Questionnaire Guide"] },
+    'volunteer': { title: "Volunteer Applications Kit", items: ["Skills-Based Volunteer Resume", "Motivation Statement / Personal Essay", "Availability & Commitment Schedule", "Soft Skills Self-Assessment", "Volunteer Code of Conduct Preview"] }
 };
 
 // --- 45. Hero Persona Content ---
