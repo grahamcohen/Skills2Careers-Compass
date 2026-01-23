@@ -5097,14 +5097,20 @@ window.toggleCareerHub = function() {
                 const globalFunding = dataManager.digitalResources.global_resources.filter(r => r.type === 'Funding');
                 const globalJobs = dataManager.digitalResources.global_resources.filter(r => r.type === 'Jobs');
                 const globalData = dataManager.digitalResources.global_resources.filter(r => r.type === 'Data/Research');
-                const globalMentors = dataManager.digitalResources.global_resources.filter(r => r.type === 'Ecosystem' && (r.title.includes('Mentor') || r.title.includes('ADPList')));
+                const globalEcosystem = dataManager.digitalResources.global_resources.filter(r => r.type === 'Ecosystem');
                 const globalCommunities = dataManager.digitalResources.global_resources.filter(r => r.type === 'Community');
                 const globalPolicy = dataManager.digitalResources.global_resources.filter(r => r.type === 'Policy/Regulation');
 
                 sectorData.entrepreneurship.funding.push(...globalFunding.map(f => ({ name: f.title, desc: f.desc, link: f.link, gsa_member: f.gsa_member })));
                 sectorData.jobs.push(...globalJobs.map(j => ({ title: j.title, company: j.desc, type: "Global", link: j.link, gsa_member: j.gsa_member })));
                 sectorData.lmi.push(...globalData.map(d => ({ name: d.title, desc: d.desc, link: d.link, type: 'Global Data', gsa_member: d.gsa_member })));
-                sectorData.communities.push(...globalMentors.map(m => ({ name: m.title, desc: m.desc, type: "Mentorship", link: m.link, gsa_member: m.gsa_member })));
+                sectorData.communities.push(...globalEcosystem.map(m => ({ 
+                    name: m.title, 
+                    desc: m.desc, 
+                    type: (m.title.includes('Mentor') || m.title.includes('ADPList')) ? "Mentorship" : "Global Ecosystem", 
+                    link: m.link, 
+                    gsa_member: m.gsa_member 
+                })));
                 
                 // Inject Global Communities & Policy
                 sectorData.communities.push(...globalCommunities.map(c => ({ name: c.title, desc: c.desc, type: "Global Community", link: c.link, gsa_member: c.gsa_member })));
@@ -5206,8 +5212,8 @@ window.toggleCareerHub = function() {
                 const n = (item.name || '').toLowerCase();
                 const d = (item.desc || '').toLowerCase();
 
-                if (t.includes('alumni') || n.includes('alumni') || n.includes('fellowship') || n.includes('graduates')) return 'Alumni';
-                if (t.includes('mentor') || n.includes('mentor') || d.includes('mentor') || t.includes('advice') || n.includes('coach')) return 'Mentorship';
+                if (t.includes('alumni') || n.includes('alumni') || n.includes('fellowship') || n.includes('graduates') || d.includes('alumni')) return 'Alumni';
+                if (t.includes('mentor') || n.includes('mentor') || d.includes('mentor') || t.includes('advice') || n.includes('coach') || d.includes('coach')) return 'Mentorship';
                 if (t.includes('event') || t.includes('summit') || t.includes('conf') || t.includes('expo')) return 'Events';
                 return 'Networks'; // Default
             };
@@ -7052,7 +7058,7 @@ window.toggleCareerHub = function() {
                         </div>
                     </div>
 
-                    <!-- 2. Pitch Calendar & Directory -->
+                    <!-- 2. Resource Directory -->
                     <div>
                         <div class="flex justify-between items-end mb-4">
                             <div>

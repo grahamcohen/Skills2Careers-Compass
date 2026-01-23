@@ -54,6 +54,7 @@
     { "title": "MicroMentor", "desc": "Business mentoring by Mercy Corps.", "link": "https://micromentor.org/", "type": "Ecosystem" },
     { "title": "CareerVillage", "desc": "Crowdsourced career advice.", "link": "https://www.careervillage.org/", "type": "Ecosystem" },
     { "title": "AIESEC", "desc": "Youth leadership development.", "link": "https://aiesec.org/", "type": "Ecosystem" },
+    { "title": "AIESEC", "desc": "Youth leadership development and peer coaching.", "link": "https://aiesec.org/", "type": "Ecosystem" },
     { "title": "KPMG Mentoring", "desc": "Cohort-based professional mentoring.", "link": "https://home.kpmg/xx/en/home/insights/2022/03/unesco-and-kpmg-join-forces.html", "type": "Ecosystem", "gsa_member": true },
     { "title": "Tony Elumelu Foundation", "desc": "Entrepreneurship funding & training.", "link": "https://www.tonyelumelufoundation.org/", "type": "Funding" },
     { "title": "International Youth Foundation", "desc": "Youth employment programs.", "link": "https://www.iyfglobal.org/", "type": "Ecosystem" },

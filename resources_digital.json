@@ -20,12 +20,12 @@
         { "title": "iBizAfrica", "desc": "Strathmore University incubator.", "link": "http://www.ibizafrica.co.ke/" },
         { "title": "C4DLab", "desc": "University of Nairobi innovation lab.", "link": "http://c4dlab.ac.ke/" },
         { "title": "AfriLabs Kenya", "desc": "Directory of hubs.", "link": "https://new.afrilabs.com/hubs/?country=Kenya" },
-        { "title": "AkiraChix", "desc": "Tech training for women.", "link": "https://akirachix.com/" },
+        { "title": "AkiraChix", "desc": "Tech training & mentorship for women.", "link": "https://akirachix.com/" },
         { "title": "codeHive", "desc": "AkiraChix coding bootcamp.", "link": "https://akirachix.com/codehive/" },
         { "title": "KICTANet", "desc": "ICT policy community.", "link": "https://www.kictanet.or.ke/" },
         { "title": "LakeHub", "desc": "Technology innovation hub in Kisumu.", "link": "https://lakehub.co.ke/" },
         { "title": "Swahilipot Hub", "desc": "Community hub in Mombasa.", "link": "https://swahilipothub.co.ke/" },
-        { "title": "Pwani Teknowgalz", "desc": "STEM & digital skills for women.", "link": "https://pwaniteknowgalz.org/" }
+        { "title": "Pwani Teknowgalz", "desc": "STEM, digital skills & mentorship for women.", "link": "https://pwaniteknowgalz.org/" }
       ],
       "jobs": [
         { "title": "Ajira Digital Program", "desc": "Digital skills & online work.", "link": "https://ajiradigital.go.ke/" },
@@ -43,8 +43,8 @@
       "communities": [
         { "title": "AI Kenya", "desc": "Community for AI/ML practitioners.", "link": "https://kenya.ai/" },
         { "title": "Nairobi Women in ML & DS", "desc": "Support for women in data fields.", "link": "https://www.wimlds.org/" },
-        { "title": "Women in Tech Kenya", "desc": "Networking for women in tech.", "link": "https://womenintech.co.ke/" },
-        { "title": "Technovation Girls Kenya", "desc": "Tech entrepreneurship clubs.", "link": "https://technovationchallenge.org/" }
+        { "title": "Women in Tech Kenya", "desc": "Networking & mentorship for women in tech.", "link": "https://womenintech.co.ke/" },
+        { "title": "Technovation Girls Kenya", "desc": "Mentor-guided tech entrepreneurship clubs.", "link": "https://technovationchallenge.org/" }
       ]
     },
     "Uganda": {
@@ -82,7 +82,7 @@
       "communities": [
         { "title": "Data Science Uganda", "desc": "Data science meetups & training.", "link": "https://twitter.com/DataScienceUG" },
         { "title": "PyData Kampala", "desc": "Python & data community.", "link": "https://www.meetup.com/PyData-Kampala/" },
-        { "title": "WITU", "desc": "Women in Technology Uganda.", "link": "https://witu.org/" }
+        { "title": "WITU", "desc": "Women in Technology Uganda (Mentorship & Skills).", "link": "https://witu.org/" }
       ]
     },
     "Tanzania": {
@@ -120,7 +120,7 @@
       "communities": [
         { "title": "Tanzania AI Community (CoP)", "desc": "Community of Practice fostering AI growth.", "link": "https://twitter.com/TanzaniaAI" },
         { "title": "PyData Dar es Salaam", "desc": "Python & Data Science community.", "link": "https://www.meetup.com/PyData-Dar-es-Salaam/" },
-        { "title": "She Codes for Change", "desc": "Girls in tech & digital skills.", "link": "https://shecodesforchange.org/" }
+        { "title": "She Codes for Change", "desc": "Girls in tech, digital skills & mentorship.", "link": "https://shecodesforchange.org/" }
       ]
     },
     "Rwanda": {
@@ -155,7 +155,7 @@
       ],
       "communities": [
         { "title": "Rwanda AI Community", "desc": "AI enthusiasts and professionals.", "link": "https://twitter.com/RwandaAI" },
-        { "title": "Girls in ICT Rwanda", "desc": "Empowering women in STEM.", "link": "https://girlsinict.rw/" }
+        { "title": "Girls in ICT Rwanda", "desc": "Empowering women in STEM through mentorship.", "link": "https://girlsinict.rw/" }
       ]
     },
     "Burundi": {
