@@ -24,7 +24,8 @@
         { "title": "codeHive", "desc": "AkiraChix coding bootcamp.", "link": "https://akirachix.com/codehive/" },
         { "title": "KICTANet", "desc": "ICT policy community.", "link": "https://www.kictanet.or.ke/" },
         { "title": "LakeHub", "desc": "Technology innovation hub in Kisumu.", "link": "https://lakehub.co.ke/" },
-        { "title": "Swahilipot Hub", "desc": "Community hub in Mombasa.", "link": "https://swahilipothub.co.ke/" }
+        { "title": "Swahilipot Hub", "desc": "Community hub in Mombasa.", "link": "https://swahilipothub.co.ke/" },
+        { "title": "Pwani Teknowgalz", "desc": "STEM & digital skills for women.", "link": "https://pwaniteknowgalz.org/" }
       ],
       "jobs": [
         { "title": "Ajira Digital Program", "desc": "Digital skills & online work.", "link": "https://ajiradigital.go.ke/" },
@@ -42,7 +43,8 @@
       "communities": [
         { "title": "AI Kenya", "desc": "Community for AI/ML practitioners.", "link": "https://kenya.ai/" },
         { "title": "Nairobi Women in ML & DS", "desc": "Support for women in data fields.", "link": "https://www.wimlds.org/" },
-        { "title": "Women in Tech Kenya", "desc": "Networking for women in tech.", "link": "https://womenintech.co.ke/" }
+        { "title": "Women in Tech Kenya", "desc": "Networking for women in tech.", "link": "https://womenintech.co.ke/" },
+        { "title": "Technovation Girls Kenya", "desc": "Tech entrepreneurship clubs.", "link": "https://technovationchallenge.org/" }
       ]
     },
     "Uganda": {
@@ -61,7 +63,8 @@
         { "title": "Hive Colab", "desc": "Co-working & programmes.", "link": "https://www.hivecolab.com/" },
         { "title": "Makerere Innovation and Incubation Centre (MIIC)", "desc": "University-based incubator.", "link": "https://miic.mak.ac.ug/" },
         { "title": "Stanbic Business Incubator", "desc": "SME capacity building.", "link": "https://stanbicbusinessincubator.co.ug/" },
-        { "title": "AfriLabs Uganda", "desc": "Directory of hubs.", "link": "https://new.afrilabs.com/hubs/?country=Uganda" }
+        { "title": "AfriLabs Uganda", "desc": "Directory of hubs.", "link": "https://new.afrilabs.com/hubs/?country=Uganda" },
+        { "title": "Standard Chartered Futuremakers", "desc": "Women in Tech incubator.", "link": "https://www.sc.com/ug/sustainability/futuremakers/" }
       ],
       "jobs": [
         { "title": "BrighterMonday Uganda", "desc": "Job vacancies.", "link": "https://www.brightermonday.co.ug/" },
@@ -78,7 +81,8 @@
       ],
       "communities": [
         { "title": "Data Science Uganda", "desc": "Data science meetups & training.", "link": "https://twitter.com/DataScienceUG" },
-        { "title": "PyData Kampala", "desc": "Python & data community.", "link": "https://www.meetup.com/PyData-Kampala/" }
+        { "title": "PyData Kampala", "desc": "Python & data community.", "link": "https://www.meetup.com/PyData-Kampala/" },
+        { "title": "WITU", "desc": "Women in Technology Uganda.", "link": "https://witu.org/" }
       ]
     },
     "Tanzania": {
@@ -115,7 +119,8 @@
       ],
       "communities": [
         { "title": "Tanzania AI Community (CoP)", "desc": "Community of Practice fostering AI growth.", "link": "https://twitter.com/TanzaniaAI" },
-        { "title": "PyData Dar es Salaam", "desc": "Python & Data Science community.", "link": "https://www.meetup.com/PyData-Dar-es-Salaam/" }
+        { "title": "PyData Dar es Salaam", "desc": "Python & Data Science community.", "link": "https://www.meetup.com/PyData-Dar-es-Salaam/" },
+        { "title": "She Codes for Change", "desc": "Girls in tech & digital skills.", "link": "https://shecodesforchange.org/" }
       ]
     },
     "Rwanda": {

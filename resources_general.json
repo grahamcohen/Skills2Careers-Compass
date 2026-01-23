@@ -30,7 +30,12 @@
     { "title": "UNDP timbuktoo", "desc": "Pan-African innovation financing facility.", "link": "https://timbuktoo.africa/", "type": "Funding" },
     { "title": "IYBA (Investing in Young Businesses in Africa)", "desc": "EU Team Europe support for young entrepreneurs.", "link": "https://international-partnerships.ec.europa.eu/policies/programming/projects/investing-young-businesses-africa-iyba_en", "type": "Funding" },
     { "title": "YBI Africa Collaborative", "desc": "Youth entrepreneurship support network.", "link": "https://www.youthbusiness.org/", "type": "Ecosystem" },
-    { "title": "YAS! (UNDP + Accenture)", "desc": "Portal for African entrepreneurs (resources & funding).", "link": "https://www.yas.org.ng/", "type": "Ecosystem" }
+    { "title": "YAS! (UNDP + Accenture)", "desc": "Portal for African entrepreneurs (resources & funding).", "link": "https://www.yas.org.ng/", "type": "Ecosystem" },
+    { "title": "Enactus", "desc": "Social enterprise & entrepreneurship network.", "link": "https://enactus.org/", "type": "Ecosystem" },
+    { "title": "Anzisha Prize", "desc": "Venture building fellowship for young entrepreneurs.", "link": "https://anzishaprize.org/", "type": "Funding" },
+    { "title": "Orange Corners", "desc": "Incubation & entrepreneurship support.", "link": "https://www.orangecorners.com/", "type": "Ecosystem" },
+    { "title": "WITIA", "desc": "Women in Technology in Africa.", "link": "https://witia.org/", "type": "Ecosystem" },
+    { "title": "Smart Africa Women & Girls", "desc": "ICT mentorship platform.", "link": "https://smartafrica.org/", "type": "Skills" }
   ],
   "global_resources": [
     { "title": "ITU", "desc": "Telecom/ICT standards & policy.", "link": "https://www.itu.int/", "type": "Policy/Regulation", "gsa_member": true },
@@ -81,7 +86,9 @@
     { "title": "Decent Jobs for Youth", "desc": "Global alliance for youth employment.", "link": "https://www.decentjobsforyouth.org/", "type": "Ecosystem" },
     { "title": "S4YE Knowledge Repository", "desc": "World Bank youth employment tools.", "link": "https://www.s4ye.org/", "type": "Data/Research" },
     { "title": "ILO SIYB", "desc": "Start and Improve Your Business training.", "link": "https://www.ilo.org/empent/areas/start-and-improve-your-business/lang--en/index.htm", "type": "Skills" },
-    { "title": "Passport to Success", "desc": "IYF life skills curriculum.", "link": "https://passporttosuccess.org/", "type": "Skills" }
+    { "title": "Passport to Success", "desc": "IYF life skills curriculum.", "link": "https://passporttosuccess.org/", "type": "Skills" },
+    { "title": "Hult Prize", "desc": "Student entrepreneurship competition.", "link": "https://www.hultprize.org/", "type": "Funding" },
+    { "title": "TechWomen", "desc": "Mentorship for women in STEM.", "link": "https://www.techwomen.org/", "type": "Ecosystem" }
   ],
   "country_resources": {
     "Kenya": {
@@ -97,7 +104,9 @@
       "hubs": [
         { "title": "Generation Kenya", "desc": "Education to employment program.", "link": "https://generation.org/kenya" },
         { "title": "Junior Achievement Kenya", "desc": "Youth entrepreneurship education.", "link": "https://jakenya.org/" },
-        { "title": "Kenya Skills Hub", "desc": "Post-training & skills development portal.", "link": "https://posttraining.go.ke/" }
+        { "title": "Kenya Skills Hub", "desc": "Post-training & skills development portal.", "link": "https://posttraining.go.ke/" },
+        { "title": "Ustawi Africa", "desc": "Entrepreneurship & employability training.", "link": "https://ustawiafrica.org/" },
+        { "title": "KeNIA", "desc": "Kenya National Innovation Agency mentorship.", "link": "https://www.innovationagency.go.ke/" }
       ],
       "communities": [
         { "title": "Kenya Youth Mentorship Assoc.", "desc": "Youth mentorship network.", "link": "https://kyma.co.ke/" },
@@ -106,7 +115,8 @@
         { "title": "Strathmore NorthStar", "desc": "Mentorship program.", "link": "https://strathmore.edu/" },
         { "title": "Amref Int. Univ. Alumni", "desc": "Health and development alumni network.", "link": "https://amref.ac.ke/" },
         { "title": "Chevening Alumni Kenya", "desc": "UK government scholarship alumni.", "link": "https://www.chevening.org/alumni/" },
-        { "title": "KUCCPS Career Guidance", "desc": "Placement & career guidance resources.", "link": "https://students.kuccps.net/" }
+        { "title": "KUCCPS Career Guidance", "desc": "Placement & career guidance resources.", "link": "https://students.kuccps.net/" },
+        { "title": "Women in STEAM Initiative", "desc": "Mentorship & clubs for girls.", "link": "https://womeninsteam.co.ke/" }
       ]
     },
     "Uganda": {
@@ -118,7 +128,9 @@
         { "title": "Trailblazers Mentoring", "desc": "Girl child empowerment.", "link": "https://trailblazersuganda.org/" },
         { "title": "LeadMinds Africa", "desc": "Leadership & mentorship.", "link": "https://leadmindsafrica.org/" },
         { "title": "Chevening Alumni Uganda", "desc": "UK Govt scholarships alumni.", "link": "https://www.chevening.org/alumni/" },
-        { "title": "Peer to Peer Uganda", "desc": "Youth mentorship program.", "link": "https://peertopeerug.org/" }
+        { "title": "Peer to Peer Uganda", "desc": "Youth mentorship program.", "link": "https://peertopeerug.org/" },
+        { "title": "YALI Uganda", "desc": "Leadership & alumni network.", "link": "https://yaliuganda.org/" },
+        { "title": "Makerere SPH Mentorship", "desc": "Public health & research mentorship.", "link": "https://sph.mak.ac.ug/" }
       ],
       "hubs": [
         { "title": "Ntawo Youth Skills Center", "desc": "Vocational skills training.", "link": "https://mglsd.go.ug/" }
@@ -137,7 +149,9 @@
         { "title": "CODEWA", "desc": "Community Development Watch.", "link": "https://codewa.or.tz/" },
         { "title": "EASTC Alumni", "desc": "Statistical training centre alumni.", "link": "https://www.eastc.ac.tz/" },
         { "title": "Tanzania Youth Foundation", "desc": "Youth empowerment organization.", "link": "#" },
-        { "title": "Opportunity Career Org (OCO)", "desc": "Career guidance for youth.", "link": "https://www.oco.or.tz/" }
+        { "title": "Opportunity Career Org (OCO)", "desc": "Career guidance for youth.", "link": "https://www.oco.or.tz/" },
+        { "title": "Read Tanzania", "desc": "Alumni mentoring project.", "link": "https://readtanzania.or.tz/" },
+        { "title": "COSA-TZ", "desc": "Alumni leadership community.", "link": "https://cosatz.org/" }
       ],
       "hubs": [
         { "title": "Skills for Employment (SET)", "desc": "Swiss contact project.", "link": "https://www.swisscontact.org/en/projects/set" },
@@ -162,7 +176,37 @@
       "communities": [
         { "title": "FAWE Rwanda", "desc": "Women educationalists.", "link": "https://www.fawerwa.org/" },
         { "title": "Rise & STEM", "desc": "Women in STEM initiative.", "link": "https://risestem.org/" },
-        { "title": "OWSD Rwanda", "desc": "Women in Science.", "link": "https://owsd.net/" }
+        { "title": "OWSD Rwanda", "desc": "Women in Science.", "link": "https://owsd.net/" },
+        { "title": "University of Rwanda Mentorship", "desc": "Alumni-linked career support.", "link": "https://ur.ac.rw/" },
+        { "title": "MCF Alumni Rwanda", "desc": "Mastercard Foundation network.", "link": "https://mastercardfdn.org/" }
+      ]
+    },
+    "Somalia": {
+      "communities": [
+        { "title": "Hope University Alumni", "desc": "Student mentorship program.", "link": "https://hope.edu.so/" },
+        { "title": "Mogadishu University Jiheeye", "desc": "Graduate transition mentorship.", "link": "https://mu.edu.so/" },
+        { "title": "Somali Scholars Mentorship", "desc": "Student support & scholarships.", "link": "https://somalischolars.com/" }
+      ]
+    },
+    "South Sudan": {
+      "communities": [
+        { "title": "BUSSSA Mentorship", "desc": "Student association support.", "link": "https://www.facebook.com/BUSSSA/" }
+      ]
+    },
+    "Burundi": {
+      "communities": [
+        { "title": "AMEBE", "desc": "Youth leadership & entrepreneurship.", "link": "https://amebe.org/" }
+      ],
+      "hubs": [
+        { "title": "IOM Burundi", "desc": "Skills & employability programmes.", "link": "https://burundi.iom.int/" }
+      ]
+    },
+    "DR Congo": {
+      "communities": [
+        { "title": "Alumni UNIKIN", "desc": "University mentoring programme.", "link": "https://unikin.ac.cd/" }
+      ],
+      "hubs": [
+        { "title": "Orange Corners DRC", "desc": "Entrepreneurship support.", "link": "https://www.orangecorners.com/country/drc/" }
       ]
     }
   }
