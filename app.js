@@ -4919,7 +4919,7 @@ window.toggleCareerHub = function() {
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                            <div class="flex items-center gap-2 mb-1"><i data-lucide="file-text" class="w-4 h-4 text-indigo-500"></i><span class="text-[10px] font-bold text-slate-500 uppercase">Licensing</span></div>
+                            <div class="flex items-center gap-2 mb-1"><i data-lucide="file-text" class="w-4 h-4 text-indigo-500"></i><span class="text-[10px] font-bold text-slate-500 uppercase">Licensing ${activeCountry !== 'all' ? `(${activeCountry})` : ''}</span></div>
                             <div class="text-xs text-slate-700 font-medium">${regulations}</div>
                         </div>
                         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
@@ -6854,30 +6854,64 @@ window.toggleCareerHub = function() {
             const tc = themeConfig.color;
             const title = sector === 'agri' ? 'Agritech' : sector === 'energy' ? 'Renewable Energy' : 'Digital Economy';
 
-            // --- 1. Venture Playbook Data ---
-            const playbooks = {
+            // --- 1. Venture Playbook Data (Contextualized) ---
+            const playbookData = {
                 agri: {
-                    reg: "KEPHIS (Seeds), PCPB (Chemicals), County Business Permit",
-                    economics: "Yield/Acre vs Input Cost",
-                    pricing: "Commission on Produce (5-10%) or Input Margin",
-                    gtm: "Farmer Co-ops, Aggregators, USSD/SMS Blasts"
+                    default: {
+                        reg: "National Seed/Chemical Agency, Local Business Permit",
+                        economics: "Yield/Acre vs Input Cost",
+                        pricing: "Commission on Produce (5-10%) or Input Margin",
+                        gtm: "Farmer Co-ops, Aggregators, USSD/SMS Blasts"
+                    },
+                    Kenya: { reg: "KEPHIS (Seeds), PCPB (Chemicals), County Business Permit" },
+                    Rwanda: { reg: "RICA (Inspection), RDB Business Registration" },
+                    Uganda: { reg: "MAAIF Certification, UNBS Standards" },
+                    Tanzania: { reg: "TOSCI (Seeds), TPRI (Pesticides), BRELA" },
+                    Burundi: { reg: "ISABU (Seeds), Minagrie Authorization" },
+                    'South Sudan': { reg: "Min. of Agriculture & Food Security Registration" },
+                    DRC: { reg: "ONAPAC (Export Crops), IPAPEL Inspection" },
+                    Somalia: { reg: "MoAI Certification, Local Municipality Permit" }
                 },
                 energy: {
-                    reg: "EPRA Solar License (T1/T2), ERC Class C1",
-                    economics: "Hardware Payback Period (PAYG)",
-                    pricing: "Deposit (15%) + Daily Rate (KES 50)",
-                    gtm: "Door-to-door Agents, SACCO Partnerships"
+                    default: {
+                        reg: "Energy Regulator License, Standard Business Permit",
+                        economics: "Hardware Payback Period (PAYG)",
+                        pricing: "Deposit (15%) + Daily Rate",
+                        gtm: "Door-to-door Agents, SACCO Partnerships"
+                    },
+                    Kenya: { reg: "EPRA Solar License (T1/T2), NCA (Construction)" },
+                    Rwanda: { reg: "RURA License, RDB Registration" },
+                    Uganda: { reg: "ERA Installation Permit, UNBS" },
+                    Tanzania: { reg: "EWURA License, BRELA" },
+                    Burundi: { reg: "AREEN (Regulator), REGIDESO Grid Code" },
+                    'South Sudan': { reg: "Min. of Energy & Dams, SSEC Guidelines" },
+                    DRC: { reg: "ARE (Regulation), ANSER (Off-grid Agency)" },
+                    Somalia: { reg: "Min. of Energy & Water Resources, ESP Compliance" }
                 },
                 digital: {
-                    reg: "Data Protection (ODPC), Copyright/IP",
-                    economics: "CAC < LTV (3:1 Ratio)",
-                    pricing: "Freemium, Tiered Subscription (SaaS)",
-                    gtm: "SEO/Content, LinkedIn B2B, App Stores"
+                    default: {
+                        reg: "Data Protection Authority, Copyright/IP Office",
+                        economics: "CAC < LTV (3:1 Ratio)",
+                        pricing: "Freemium, Tiered Subscription (SaaS)",
+                        gtm: "SEO/Content, LinkedIn B2B, App Stores"
+                    },
+                    Kenya: { reg: "ODPC (Data Protection), ICT Authority" },
+                    Rwanda: { reg: "RISA, Data Protection Office (NCSA)" },
+                    Uganda: { reg: "NITA-U, PDPO (Data Privacy)" },
+                    Tanzania: { reg: "TCRA, e-Government Authority" },
+                    Burundi: { reg: "ARCT (Regulation), SETIC" },
+                    'South Sudan': { reg: "NCA (National Communication Authority)" },
+                    DRC: { reg: "ARPTC (Regulation), ADN (Digital Agency)" },
+                    Somalia: { reg: "NCA (Communications), Min. of Comm. & Tech" }
                 }
             };
-            const pb = playbooks[sector] || playbooks.digital;
 
-            // --- 2. Pitch Calendar & Directory Logic ---
+            const sectorPlaybook = playbookData[sector] || playbookData.digital;
+            const basePb = sectorPlaybook.default;
+            const countryPb = sectorPlaybook[activeCountry] || {};
+            const pb = { ...basePb, ...countryPb };
+
+            // --- 2. Directory of Resources Logic ---
             // Merge Incubators and Funding for a unified list
             let opportunities = [
                 ...(data.incubators || []).map(i => ({ ...i, type: 'Incubator', deadline: 'Rolling' })),
@@ -6931,6 +6965,7 @@ window.toggleCareerHub = function() {
                         <div>
                             <div class="flex items-center gap-2 mb-2">
                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-white text-${tc}-700 border border-${tc}-200 shadow-sm">${title} Sector</span>
+                                ${activeCountry !== 'all' ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-white text-slate-600 border border-slate-200 shadow-sm"><i data-lucide="map-pin" class="w-3 h-3 inline mr-1"></i> ${activeCountry}</span>` : ''}
                             </div>
                             <h3 class="font-bold text-xl text-slate-900 flex items-center gap-2">
                                 <i data-lucide="rocket" class="w-6 h-6 text-orange-600"></i> Founder's Launchpad
@@ -6993,9 +7028,9 @@ window.toggleCareerHub = function() {
                         <div class="flex justify-between items-end mb-4">
                             <div>
                                 <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
-                                    <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i> Pitch Calendar & Directory
+                                    <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i> Directory of Start-up resources
                                 </h4>
-                                <p class="text-xs text-slate-500 mt-1">Incubators, funders, and competitions with deadlines.</p>
+                                <p class="text-xs text-slate-500 mt-1">Incubators, financing and competitions.</p>
                             </div>
                             <div class="relative hidden sm:block">
                                 <i data-lucide="search" class="absolute left-2.5 top-1.5 w-3.5 h-3.5 text-slate-400"></i>
