@@ -10,6 +10,7 @@ let digitalResources = null; // Store loaded Digital/Sector resources
 let pathwayState = { goal: null, constraints: {} }; // Store Pathway Builder state
 let myPlan = { roles: new Set(), skills: new Set(), courses: new Set() }; // New My Plan State
 let favoriteVentures = new Set(); // Store favorite ventures
+let hubNavigationStack = []; // Navigation history for Unified Hub
 
 // --- CONFIGURATION ---
 const API_CONFIG = {
@@ -3449,9 +3450,17 @@ function getOJAMetrics(roleTitle, country) {
             if(specificRequest && typeof window.renderPATHWAYContent === 'function') {
                 window.renderPATHWAYContent(roleName, pathwayGoal);
             }
-
             drawer.classList.remove('translate-x-full');
             
+            // RESUME LOGIC: Check if we are just re-opening without specific intent
+            const isDefaultRequest = (startTab === 'pp-diagnostic' && !roleName && !pathwayGoal);
+            const activeView = document.querySelector('.pp-view-content:not(.hidden)');
+            
+            if (isDefaultRequest && activeView) {
+                // Resume current view (do not reset)
+                return;
+            }
+
             if (startTab === 'pp-diagnostic' && !roleName) {
                 // Default open: Show Dashboard
                 renderSkillsHubDashboard();
@@ -3468,6 +3477,7 @@ function getOJAMetrics(roleTitle, country) {
         }
 
         window.renderSkillsHubDashboard = function() {
+            hubNavigationStack = []; // Clear history when returning to dashboard
             const container = document.getElementById('skills-hub-home');
             if(!container) return;
             
@@ -3553,11 +3563,20 @@ function getOJAMetrics(roleTitle, country) {
             if(window.lucide) lucide.createIcons();
         }
 
-        window.openSkillsView = function(viewId, preserveState = false) {
+        window.openSkillsView = function(viewId, preserveState = false, addToStack = true) {
             // Hide dashboard
             const dashboard = document.getElementById('skills-hub-home');
+            const wasDashboardVisible = dashboard && !dashboard.classList.contains('hidden');
             if(dashboard) dashboard.classList.add('hidden');
             
+            // Manage Navigation Stack
+            if (addToStack) {
+                const currentView = document.querySelector('.pp-view-content:not(.hidden)');
+                if (currentView && currentView.id !== viewId) {
+                    hubNavigationStack.push(currentView.id);
+                }
+            }
+
             // Hide all views
             document.querySelectorAll('.pp-view-content').forEach(el => el.classList.add('hidden'));
             
@@ -3573,7 +3592,7 @@ function getOJAMetrics(roleTitle, country) {
                     nav.className = 'pp-back-nav mb-4';
                     target.insertBefore(nav, target.firstChild);
                 }
-                nav.innerHTML = `<button onclick="renderSkillsHubDashboard()" class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 font-medium"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>`;
+                nav.innerHTML = `<button onclick="navigateBackInHub()" class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 font-medium"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>`;
                 
                 // Trigger specific render logic if needed
                 if(viewId === 'pp-diagnostic') {
@@ -3596,6 +3615,16 @@ function getOJAMetrics(roleTitle, country) {
                 if(container) container.scrollTop = 0;
 
                 if(window.lucide) lucide.createIcons();
+            }
+        }
+
+        window.navigateBackInHub = function() {
+            if (hubNavigationStack.length > 0) {
+                const prevViewId = hubNavigationStack.pop();
+                // Return to previous view, preserving its state, and NOT adding to stack (since we are popping)
+                openSkillsView(prevViewId, true, false);
+            } else {
+                renderSkillsHubDashboard();
             }
         }
 
