@@ -5875,6 +5875,8 @@ window.toggleCareerHub = function() {
 
                     <div class="flex gap-2 mb-4 overflow-x-auto pb-1 shrink-0">
                         <button onclick="showJobBoardView('all')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('all')}">All</button>
+                        <button onclick="showJobBoardView('global')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('global')}">Global</button>
+                        <button onclick="showJobBoardView('platform')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('platform')}">Platforms</button>
                         <button onclick="showJobBoardView('internship')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('internship')}">Internships</button>
                         <button onclick="showJobBoardView('placement')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('placement')}">Placement</button>
                         <button onclick="showJobBoardView('freelance')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('freelance')}">Freelance</button>
