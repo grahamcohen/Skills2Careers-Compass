@@ -382,6 +382,15 @@
                                     <option value="paid">Paid / Subscription</option>
                                 </select>
                             </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Sort Results</label>
+                                <select id="filter-sort" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="default">Relevance (Location)</option>
+                                    <option value="duration_asc">Duration (Shortest)</option>
+                                    <option value="cost_asc">Cost (Lowest)</option>
+                                    <option value="rating_desc">Rating (Highest)</option>
+                                </select>
+                            </div>
                         </div>
                         
                         <div id="extra-course-filters" class="hidden grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">

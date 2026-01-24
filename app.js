@@ -5063,6 +5063,7 @@ window.toggleCareerHub = function() {
             if (!sectorData.entrepreneurship.incubators) sectorData.entrepreneurship.incubators = [];
             if (!sectorData.entrepreneurship.funding) sectorData.entrepreneurship.funding = [];
             if (!sectorData.entrepreneurship.tools) sectorData.entrepreneurship.tools = [];
+            if (!sectorData.entrepreneurship.competitions) sectorData.entrepreneurship.competitions = [];
 
             // Inject Country Specific Resources
             let resourceKey = activeCountry;
@@ -5083,6 +5084,18 @@ window.toggleCareerHub = function() {
                 }
                 if (genCr.communities) {
                     sectorData.communities.push(...genCr.communities.map(c => ({ name: c.title, desc: c.desc, link: c.link, type: "General Community" })));
+                }
+                if (genCr.tools) {
+                    sectorData.entrepreneurship.tools.push(...genCr.tools.map(t => ({ name: t.title, desc: t.desc, link: t.link, icon: 'wrench' })));
+                }
+                if (genCr.mentorship) {
+                    sectorData.communities.push(...genCr.mentorship.map(m => ({ name: m.title, desc: m.desc, link: m.link, type: 'Mentorship' })));
+                }
+                if (genCr.events) {
+                    sectorData.communities.push(...genCr.events.map(e => ({ name: e.title, desc: e.desc, link: e.link, type: 'Event' })));
+                }
+                if (genCr.competitions) {
+                    sectorData.entrepreneurship.competitions.push(...genCr.competitions.map(c => ({ name: c.title, desc: c.desc, link: c.link })));
                 }
             }
 
@@ -5106,6 +5119,18 @@ window.toggleCareerHub = function() {
                 }
                 if (cr.communities) {
                     sectorData.communities.unshift(...cr.communities.map(c => ({ name: c.title, desc: c.desc, link: c.link, type: 'Local Community' })));
+                }
+                if (cr.tools) {
+                    sectorData.entrepreneurship.tools.unshift(...cr.tools.map(t => ({ name: t.title, desc: t.desc, link: t.link, icon: 'wrench' })));
+                }
+                if (cr.mentorship) {
+                    sectorData.communities.unshift(...cr.mentorship.map(m => ({ name: m.title, desc: m.desc, link: m.link, type: 'Mentorship' })));
+                }
+                if (cr.events) {
+                    sectorData.communities.unshift(...cr.events.map(e => ({ name: e.title, desc: e.desc, link: e.link, type: 'Event' })));
+                }
+                if (cr.competitions) {
+                    sectorData.entrepreneurship.competitions.unshift(...cr.competitions.map(c => ({ name: c.title, desc: c.desc, link: c.link })));
                 }
             }
             
@@ -6394,7 +6419,7 @@ window.toggleCareerHub = function() {
         }
 
         window.clearCourseFilters = function() {
-            const inputs = ['filter-search', 'filter-country', 'filter-skill', 'filter-duration', 'filter-mode', 'filter-cost', 'filter-type', 'filter-lang', 'filter-feature'];
+            const inputs = ['filter-search', 'filter-country', 'filter-skill', 'filter-duration', 'filter-mode', 'filter-cost', 'filter-type', 'filter-lang', 'filter-feature', 'filter-sort'];
             inputs.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = id === 'filter-search' ? '' : 'all';
@@ -6473,6 +6498,7 @@ window.toggleCareerHub = function() {
             const langFilter = document.getElementById('filter-lang') ? document.getElementById('filter-lang').value : 'all';
             const featureFilter = document.getElementById('filter-feature') ? document.getElementById('filter-feature').value : 'all';
             const searchFilter = document.getElementById('filter-search') ? document.getElementById('filter-search').value.toLowerCase() : '';
+            const sortFilter = document.getElementById('filter-sort') ? document.getElementById('filter-sort').value : 'default';
             const tbody = document.getElementById('db-body');
             const mobileContainer = document.getElementById('db-mobile-cards');
             
@@ -6548,17 +6574,37 @@ window.toggleCareerHub = function() {
                 if (mobileContainer) mobileContainer.innerHTML = noResultsHtml;
             }
 
-            // Sort: Specific Country > Global ('all')
+            // Sort Logic
             filtered.sort((a, b) => {
-                const aIsGlobal = a.country === 'all';
-                const bIsGlobal = b.country === 'all';
-                
-                if (!aIsGlobal && bIsGlobal) return -1;
-                if (aIsGlobal && !bIsGlobal) return 1;
-                
-                // If both are specific or both are global, sort by name
-                if (!aIsGlobal && !bIsGlobal) return a.country.localeCompare(b.country);
-                return a.name.localeCompare(b.name);
+                if (sortFilter === 'duration_asc') {
+                    const durA = parseDuration(a.duration) || 999;
+                    const durB = parseDuration(b.duration) || 999;
+                    return durA - durB;
+                } else if (sortFilter === 'cost_asc') {
+                    // Simple heuristic: Free < Paid
+                    const costA = (a.cost || '').toLowerCase();
+                    const costB = (b.cost || '').toLowerCase();
+                    const isFreeA = costA.includes('free');
+                    const isFreeB = costB.includes('free');
+                    if (isFreeA && !isFreeB) return -1;
+                    if (!isFreeA && isFreeB) return 1;
+                    return a.name.localeCompare(b.name);
+                } else if (sortFilter === 'rating_desc') {
+                    const starsA = (a.outcomeData && a.outcomeData.stars) ? a.outcomeData.stars : 0;
+                    const starsB = (b.outcomeData && b.outcomeData.stars) ? b.outcomeData.stars : 0;
+                    return starsB - starsA;
+                } else {
+                    // Default: Specific Country > Global ('all')
+                    const aIsGlobal = a.country === 'all';
+                    const bIsGlobal = b.country === 'all';
+                    
+                    if (!aIsGlobal && bIsGlobal) return -1;
+                    if (aIsGlobal && !bIsGlobal) return 1;
+                    
+                    // If both are specific or both are global, sort by name
+                    if (!aIsGlobal && !bIsGlobal) return a.country.localeCompare(b.country);
+                    return a.name.localeCompare(b.name);
+                }
             });
 
             filtered.forEach(c => {
@@ -6989,7 +7035,8 @@ window.toggleCareerHub = function() {
             // Merge Incubators and Funding for a unified list
             let opportunities = [
                 ...(data.incubators || []).map(i => ({ ...i, type: 'Incubator', deadline: 'Rolling' })),
-                ...(data.funding || []).map(f => ({ ...f, type: 'Grant/Fund', deadline: 'Oct 30, 2025' }))
+                ...(data.funding || []).map(f => ({ ...f, type: 'Grant/Fund', deadline: 'Oct 30, 2025' })),
+                ...(data.competitions || []).map(c => ({ ...c, type: 'Competition', deadline: 'See Details' }))
             ];
 
             // Add some mock competitions if list is short
