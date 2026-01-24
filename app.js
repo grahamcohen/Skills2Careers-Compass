@@ -220,10 +220,28 @@ class DataManager {
         );
     }
     
-    getOccupations(sectorId) {
+    getOccupations(sectorId, country = 'all') {
+        let searchCountry = country === 'all' ? 'All' : country;
+        if (searchCountry === 'DRC' || searchCountry === 'Democratic Republic of Congo') searchCountry = 'DR Congo';
+
         // Filter top occupations from external file
-        const occs = this.topOccupations.filter(o => (o.sector === sectorId || o.Sector === sectorId));
+        let occs = this.topOccupations.filter(o => (o.sector === sectorId || o.Sector === sectorId));
+        
         if (occs.length > 0) {
+            // Contextualize by country
+            if (country !== 'all') {
+                 const countryOccs = occs.filter(o => (o.country === searchCountry || o.Country === searchCountry));
+                 if (countryOccs.length > 0) {
+                     occs = countryOccs;
+                 } else {
+                     const regionalOccs = occs.filter(o => (o.country === 'All' || o.Country === 'All' || o.country === 'Regional' || o.Country === 'Regional'));
+                     if (regionalOccs.length > 0) occs = regionalOccs;
+                 }
+            } else {
+                 const regionalOccs = occs.filter(o => (o.country === 'All' || o.Country === 'All' || o.country === 'Regional' || o.Country === 'Regional'));
+                 if (regionalOccs.length > 0) occs = regionalOccs;
+            }
+
             return occs.sort((a,b) => (a.rank || a.Rank) - (b.rank || b.Rank)).map(o => ({
                 name: o.occupationRole || o.Occupation_Role,
                 desc: (o.skillsDescription || o.Skills_Description) ? (o.skillsDescription || o.Skills_Description).split('.')[0] + '.' : (o.description || o.Description || 'Key role in sector.'),
@@ -231,7 +249,8 @@ class DataManager {
                 id: o.masterOccId || o.Master_Occ_ID, // Keep ID for linking
                 why: o.whyInDemand || o.Why_In_Demand, // Capture Why in Demand
                 escoCode: o.escoCode,  // Pass through ESCO
-                nationalStandards: o.nationalStandards || [] // Pass through National Standards
+                nationalStandards: o.nationalStandards || [], // Pass through National Standards
+                country: o.country || o.Country // Pass through Country
             }));
         }
         return null; // Return null to fallback to baseSectorDetailData
@@ -1018,7 +1037,7 @@ function getOJAMetrics(roleTitle, country) {
             if (scoreQuals < 3) summaryText += " Note: You may be missing key qualifications.";
 
             // Get role options for the dropdown
-            let sectorOccupations = dataManager.getOccupations(activeSectorId);
+            let sectorOccupations = dataManager.getOccupations(activeSectorId, activeCountry);
             if (!sectorOccupations || sectorOccupations.length === 0) {
                 sectorOccupations = baseSectorDetailData[activeSectorId] ? baseSectorDetailData[activeSectorId].occupations : [];
             }
@@ -1519,7 +1538,7 @@ function getOJAMetrics(roleTitle, country) {
 
             // --- DETERMINE CURRENT ROLE FIRST (Moved up to fix scope issue) ---
             // Use DataManager to ensure we pull from the same source as the dashboard (Top 10)
-            let sectorOccupations = dataManager.getOccupations(sector);
+            let sectorOccupations = dataManager.getOccupations(sector, activeCountry);
             if (!sectorOccupations || sectorOccupations.length === 0) {
                 sectorOccupations = baseSectorDetailData[sector] ? baseSectorDetailData[sector].occupations : activeData.roles.map(r => ({name: r}));
             }
@@ -2921,7 +2940,7 @@ function getOJAMetrics(roleTitle, country) {
             const details = getOccupationDetails(title, sectorName);
             
             // Lookup dynamic "Why in Demand" info
-            const dynamicOccs = dataManager.getOccupations(activeSectorId);
+            const dynamicOccs = dataManager.getOccupations(activeSectorId, activeCountry);
             const occData = dynamicOccs ? dynamicOccs.find(o => o.name === title) : null;
             const demandInfo = occData && occData.why ? occData.why : "High demand due to sector growth and skills gap.";
             
@@ -3096,7 +3115,7 @@ function getOJAMetrics(roleTitle, country) {
             const relatedRoles = [];
 
             // Use DataManager to get candidate roles (Dynamic)
-            const sectorOccs = dataManager.getOccupations(activeSectorId);
+            const sectorOccs = dataManager.getOccupations(activeSectorId, activeCountry);
             
             if (sectorOccs && sectorOccs.length > 0) {
                 sectorOccs.forEach(occ => {
@@ -3124,13 +3143,13 @@ function getOJAMetrics(roleTitle, country) {
             const topRelated = relatedRoles.slice(0, 3);
             const hasRelated = topRelated.length > 0;
 
-            // 4. Similar Roles (Lateral Pathways) - Now includes Section 3 injection
+            // 4. Similar Roles (Lateral Skills Pathways) - Now includes Section 3 injection
             document.getElementById('modal-related-section').innerHTML = hasRelated ? `
                 ${qualHtml}
                 
                 <div class="mt-6 pt-6 border-t border-slate-100">
                     <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">4</span> Similar Roles (Lateral Pathways)
+                        <span class="w-6 h-6 rounded bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">4</span> Similar Roles (Lateral Skills Pathways)
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         ${topRelated.map(r => `
@@ -4565,14 +4584,14 @@ window.toggleCareerHub = function() {
                 outlook: {
                     hiring: overrides.hiring || baseData.outlook.hiring,
                     hotspots: overrides.hotspots || baseData.outlook.hotspots,
-                    entrepreneurship: baseData.outlook.entrepreneurship,
-                    entrepreneurshipLevel: baseData.outlook.entrepreneurshipLevel,
-                    mobility: baseData.outlook.mobility,
-                    mobilityLevel: baseData.outlook.mobilityLevel,
+                    entrepreneurship: overrides.entrepreneurship || baseData.outlook.entrepreneurship,
+                    entrepreneurshipLevel: overrides.entrepreneurshipLevel || baseData.outlook.entrepreneurshipLevel,
+                    mobility: overrides.mobility || baseData.outlook.mobility,
+                    mobilityLevel: overrides.mobilityLevel || baseData.outlook.mobilityLevel,
                     source: overrides.source || baseData.outlook.source
                 },
                 // Use DataManager occupations if available, else fallback to baseData
-                occupations: dataManager.getOccupations(activeSectorId) || baseData.occupations,
+                occupations: dataManager.getOccupations(activeSectorId, activeCountry) || baseData.occupations,
                 // Use DataManager skills if available, else fallback to baseData
                 skills: dataManager.getSkills(activeSectorId) || baseData.skills
             };
@@ -4621,6 +4640,16 @@ window.toggleCareerHub = function() {
 
             const topVentures = ventures.slice(0, 4);
             const moreVentures = ventures.slice(4, 10);
+
+            // Helper for local badge
+            const getLocalBadge = (roleCountry) => {
+                if (activeCountry === 'all' || !roleCountry) return '';
+                let searchCountry = activeCountry === 'DRC' ? 'DR Congo' : activeCountry;
+                if (roleCountry === searchCountry) {
+                    return `<span title="Specific to ${activeCountry}" class="shrink-0 ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium bg-white border border-slate-200 text-slate-600 shadow-sm"><i data-lucide="map-pin" class="w-2.5 h-2.5 mr-0.5"></i> ${activeCountry}</span>`;
+                }
+                return '';
+            };
 
             const ventureHtml = ventures.length > 0 ? `
                 <div class="bg-white rounded-xl p-4 sm:p-6 border border-slate-200 shadow-sm">
@@ -4721,7 +4750,9 @@ window.toggleCareerHub = function() {
                                 <button onclick="openOccupationModal('${role.name}')" title="${role.name}" class="px-3 py-2 ${cardBgColor} border ${cardBorderColor} rounded-lg text-left ${cardHoverBg} ${cardHoverBorder} transition-all group">
                                     <div class="w-full">
                                         <div class="font-bold text-xs ${cardTitleColor} mb-0.5 flex items-center gap-1 min-w-0">
-                                            <span class="truncate">${role.name}</span> ${role.isHot ? '<span title="Critical Demand" class="shrink-0 ml-0.5 cursor-help">🔥</span>' : ''}
+                                            <span class="truncate">${role.name}</span> 
+                                            ${getLocalBadge(role.country)}
+                                            ${role.isHot ? '<span title="Critical Demand" class="shrink-0 ml-0.5 cursor-help">🔥</span>' : ''}
                                         </div>
                                         <div class="text-[10px] ${cardDescColor} leading-tight line-clamp-2">${role.desc}</div>
                                     </div>
@@ -4732,7 +4763,9 @@ window.toggleCareerHub = function() {
                                     <button onclick="openOccupationModal('${role.name}')" title="${role.name}" class="px-3 py-2 ${cardBgColor} border ${cardBorderColor} rounded-lg text-left ${cardHoverBg} ${cardHoverBorder} transition-all group">
                                         <div class="w-full">
                                             <div class="font-bold text-xs ${cardTitleColor} mb-0.5 flex items-center gap-1 min-w-0">
-                                                <span class="truncate">${role.name}</span> ${role.isHot ? '<span title="Critical Demand" class="shrink-0 ml-0.5 cursor-help">🔥</span>' : ''}
+                                                <span class="truncate">${role.name}</span> 
+                                                ${getLocalBadge(role.country)}
+                                                ${role.isHot ? '<span title="Critical Demand" class="shrink-0 ml-0.5 cursor-help">🔥</span>' : ''}
                                             </div>
                                             <div class="text-[10px] ${cardDescColor} leading-tight line-clamp-2">${role.desc}</div>
                                         </div>
@@ -5823,6 +5856,7 @@ window.toggleCareerHub = function() {
             const kits = {
                 'all': { title: "General Job Applications Kit", icon: "briefcase", cv: "Standard Professional CV", check: "LinkedIn Updated, References Ready", test: "General Aptitude" },
                 'internship': { title: "Internship Starter Kit", icon: "graduation-cap", cv: "Academic/Project-based CV", check: "Transcript, Cover Letter", test: "Basic Logic / Personality" },
+                'placement': { title: "Work Placement Kit", icon: "id-card", cv: "Placement CV / Bio-data", check: "Placement Letter, Insurance Form", test: "Work Readiness Assessment" },
                 'freelance': { title: "Freelancer Toolkit", icon: "laptop", cv: "Portfolio/Case Studies", check: "Rate Card, Contract Template", test: "Skill Assessment (e.g. Coding)" },
                 'tender': { title: "Founder Tender Kit", icon: "file-text", cv: "Company Profile / Capability Statement", check: "Tax Compliance, Registration Certs", test: "Technical Proposal Evaluation" },
                 'volunteer': { title: "Volunteer Kit", icon: "heart", cv: "Skills-based Resume", check: "Availability Schedule, Motivation Statement", test: "Values Alignment" }
@@ -5842,6 +5876,7 @@ window.toggleCareerHub = function() {
                     <div class="flex gap-2 mb-4 overflow-x-auto pb-1 shrink-0">
                         <button onclick="showJobBoardView('all')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('all')}">All</button>
                         <button onclick="showJobBoardView('internship')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('internship')}">Internships</button>
+                        <button onclick="showJobBoardView('placement')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('placement')}">Placement</button>
                         <button onclick="showJobBoardView('freelance')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('freelance')}">Freelance</button>
                         <button onclick="showJobBoardView('tender')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('tender')}">Tenders</button>
                         <button onclick="showJobBoardView('volunteer')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('volunteer')}">Volunteer</button>
@@ -5865,6 +5900,7 @@ window.toggleCareerHub = function() {
             const kits = {
                 'all': { title: "General Job Applications Kit", items: ["Master CV Template", "Cover Letter Guide", "LinkedIn Checklist", "Common Interview Qs"] },
                 'internship': { title: "Internship Starter Kit", items: ["No-Experience Resume Template", "University Transcript Guide", "Internship Cover Letter", "Behavioral Interview Prep"] },
+                'placement': { title: "Work Placement Kit", items: ["Placement Application Letter", "Daily Work Logbook Template", "Supervisor Evaluation Form", "Placement Report Structure"] },
                 'freelance': { title: "Freelancer Toolkit", items: ["Service Rate Card Template", "Client Contract Draft", "Portfolio Website Checklist", "Proposal Email Script"] },
                 'tender': { title: "Founder Tender Kit", items: ["Capability Statement Template", "Tax Compliance Checklist", "Technical Proposal Structure", "Financial Proposal Sheet"] },
                 'volunteer': { title: "Volunteer Applications Kit", items: ["Motivation Statement Template", "Availability Schedule", "Soft Skills Checklist", "Values Alignment Prep"] }
@@ -5902,6 +5938,7 @@ window.toggleCareerHub = function() {
                     <div class="flex gap-2 mb-2 overflow-x-auto pb-1 shrink-0 justify-center">
                         <button onclick="renderApplicationKit('all', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('all')}">General</button>
                         <button onclick="renderApplicationKit('internship', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('internship')}">Internship</button>
+                        <button onclick="renderApplicationKit('placement', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('placement')}">Placement</button>
                         <button onclick="renderApplicationKit('freelance', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('freelance')}">Freelance</button>
                         <button onclick="renderApplicationKit('tender', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('tender')}">Tender</button>
                         <button onclick="renderApplicationKit('volunteer', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('volunteer')}">Volunteer</button>
