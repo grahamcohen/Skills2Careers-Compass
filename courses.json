@@ -449,6 +449,12 @@
     "outcomeData": {
       "available": true,
       "accreditation": "Accredited"
+    },
+    "micro_credential_policy": {
+      "credit_recognition": true,
+      "standalone_cert": true,
+      "alternative_pathway": false,
+      "partners": ["Coursera", "Cisco"]
     }
   },
   {
@@ -565,6 +571,12 @@
       "uplift": "High",
       "methodology": "University Report",
       "stars": 4
+    },
+    "micro_credential_policy": {
+      "credit_recognition": true,
+      "standalone_cert": true,
+      "alternative_pathway": false,
+      "partners": []
     }
   },
   {
@@ -1233,7 +1245,13 @@
     "description": "A premier degree program in the region focusing on sustainable agriculture, rural development, and agricultural research.",
     "language": "English",
     "prerequisites": "UACE 2 Principal Passes",
-    "lastUpdated": "2024"
+    "lastUpdated": "2024",
+    "micro_credential_policy": {
+      "credit_recognition": false,
+      "standalone_cert": true,
+      "alternative_pathway": false,
+      "partners": ["Mastercard Foundation"]
+    }
   },
   {
     "id": "a_tz_1",
@@ -1642,6 +1660,12 @@
     "outcomeData": {
       "available": true,
       "accreditation": "Accredited"
+    },
+    "micro_credential_policy": {
+      "credit_recognition": true,
+      "standalone_cert": false,
+      "alternative_pathway": true,
+      "partners": ["ALX"]
     }
   },
   {

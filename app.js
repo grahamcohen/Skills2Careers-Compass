@@ -683,6 +683,18 @@ function getOJAMetrics(roleTitle, country) {
                     }
                 }
 
+                // Micro-credential Policy Tags
+                if (t.micro_credential_policy) {
+                    if (t.micro_credential_policy.credit_recognition) {
+                        tagsHtml += `<span class="text-[9px] font-bold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100 flex items-center gap-1" title="Recognized as credit toward degree"><i data-lucide="graduation-cap" class="w-2.5 h-2.5"></i> Degree Credit</span>`;
+                    }
+                    if (t.micro_credential_policy.standalone_cert) {
+                        tagsHtml += `<span class="text-[9px] font-bold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded border border-purple-100 flex items-center gap-1" title="Available as standalone professional certificate"><i data-lucide="award" class="w-2.5 h-2.5"></i> Pro Cert</span>`;
+                    }
+                    if (t.micro_credential_policy.alternative_pathway) {
+                        tagsHtml += `<span class="text-[9px] font-bold bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-100 flex items-center gap-1" title="Alternative admission pathway"><i data-lucide="shuffle" class="w-2.5 h-2.5"></i> Alt Pathway</span>`;
+                    }
+                }
 
                 if (t.outcomeData && t.outcomeData.available) {
                     // ... existing scorecard logic ...
@@ -771,6 +783,11 @@ function getOJAMetrics(roleTitle, country) {
                         <div class="text-xs text-slate-600 mb-3 leading-snug line-clamp-3">
                             ${t.description || 'No description available.'}
                         </div>
+
+                        ${t.micro_credential_policy && t.micro_credential_policy.partners && t.micro_credential_policy.partners.length > 0 ? 
+                            `<div class="text-[10px] text-slate-500 mb-3 pt-2 border-t border-slate-50 flex items-center gap-1">
+                                <span class="font-bold">Partners:</span> ${t.micro_credential_policy.partners.join(', ')}
+                             </div>` : ''}
 
                         <div class="grid grid-cols-3 gap-2 border-y border-slate-100 py-3 mb-3">
                             <div class="text-center">
@@ -2299,7 +2316,7 @@ function getOJAMetrics(roleTitle, country) {
                     ];
                 } else {
                     appResources = [
-                        { title: "Ajira Digital", desc: "Govt program linking youth to digital work.", icon: "monitor", link: "https://ajiradigital.go.ke/" },
+                        { title: "Ajira Digital", desc: "Govt programme linking youth to digital work.", icon: "monitor", link: "https://ajiradigital.go.ke/" },
                         { title: "Andela Learning", desc: "Peer learning & potential tracks.", icon: "code", link: "https://andela.com/" }
                     ];
                     mentorResources = [
@@ -3556,6 +3573,12 @@ function getOJAMetrics(roleTitle, country) {
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Pathway Builder</h3>
                         <p class="text-sm text-slate-600">Create a personalized step-by-step learning roadmap for <strong>${sectorName}</strong> roles.</p>
                     </button>
+                    
+                    <button onclick="openSkillsView('pp-recommendations')" class="p-6 bg-teal-50 border border-teal-100 rounded-xl hover:border-teal-300 hover:bg-white hover:shadow-md text-left transition-all group">
+                        <div class="p-3 bg-teal-100 text-teal-600 rounded-lg w-fit mb-4 group-hover:bg-teal-600 group-hover:text-white transition-colors"><i data-lucide="compass" class="w-6 h-6"></i></div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Curated Paths</h3>
+                        <p class="text-sm text-slate-600">Explore quick-start learning paths tailored for specific career outcomes.</p>
+                    </button>
 
                     <button onclick="openSkillsView('pp-launchpad')" class="p-6 bg-orange-50 border border-orange-100 rounded-xl hover:border-orange-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-orange-100 text-orange-600 rounded-lg w-fit mb-4 group-hover:bg-orange-600 group-hover:text-white transition-colors"><i data-lucide="rocket" class="w-6 h-6"></i></div>
@@ -3569,14 +3592,10 @@ function getOJAMetrics(roleTitle, country) {
                         <p class="text-sm text-slate-600">Find scholarships, loans, and grants for your <strong>${sectorName}</strong> education.</p>
                     </button>
 
-                    <button onclick="openSkillsView('pp-courses')" class="p-6 bg-blue-50 border border-blue-100 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-md text-left transition-all group col-span-1 md:col-span-2">
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-                            <div class="p-3 bg-blue-100 text-blue-600 rounded-lg w-fit group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-6 h-6"></i></div>
-                            <div>
-                                <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
-                                <p class="text-sm text-slate-600">Search verified <strong>${sectorName}</strong> training providers and certifications.</p>
-                            </div>
-                        </div>
+                    <button onclick="openSkillsView('pp-courses')" class="p-6 bg-blue-50 border border-blue-100 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-md text-left transition-all group">
+                        <div class="p-3 bg-blue-100 text-blue-600 rounded-lg w-fit mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-6 h-6"></i></div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
+                        <p class="text-sm text-slate-600">Search verified <strong>${sectorName}</strong> training providers and certifications.</p>
                     </button>
             `;
             if(window.lucide) lucide.createIcons();
@@ -3611,7 +3630,8 @@ function getOJAMetrics(roleTitle, country) {
                     nav.className = 'pp-back-nav mb-4';
                     target.insertBefore(nav, target.firstChild);
                 }
-                nav.innerHTML = `<button onclick="navigateBackInHub()" class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 font-medium"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>`;
+                const backLabel = (hubNavigationStack.length === 0) ? "Back to Hub" : "Back";
+                nav.innerHTML = `<button onclick="navigateBackInHub()" class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 font-medium"><i data-lucide="arrow-left" class="w-4 h-4"></i> ${backLabel}</button>`;
                 
                 // Trigger specific render logic if needed
                 if(viewId === 'pp-diagnostic') {
@@ -3627,6 +3647,8 @@ function getOJAMetrics(roleTitle, country) {
                     renderFinancialAidTab();
                 } else if (viewId === 'pp-resources') {
                     renderResourceLibrary();
+                } else if (viewId === 'pp-recommendations') {
+                    showTrainingRecommendations('pp-recommendations', 'navigateBackInHub()');
                 }
                 
                 // Scroll to top
@@ -4178,6 +4200,16 @@ window.showTrainingHubView = function(view) {
                 <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl -mr-10 -mt-10"></div>
             </div>
 
+            <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-4 flex justify-between items-center shadow-sm">
+                <div>
+                    <h3 class="font-bold text-indigo-900 text-sm">Not sure where to start?</h3>
+                    <p class="text-xs text-indigo-700">Explore curated quick-start paths.</p>
+                </div>
+                <button onclick="showTrainingRecommendations()" class="px-3 py-2 bg-white text-indigo-700 font-bold rounded-lg text-xs border border-indigo-200 hover:bg-indigo-50 transition-colors shadow-sm flex items-center gap-1">
+                    <i data-lucide="compass" class="w-3 h-3"></i> Recommendations
+                </button>
+            </div>
+
             <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
                 <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2 mb-3"><i data-lucide="filter" class="w-4 h-4 text-indigo-500"></i> Filter Training</h3>
                 <div class="space-y-3">
@@ -4311,6 +4343,101 @@ window.showTrainingHubView = function(view) {
     
     if(window.lucide) lucide.createIcons();
 }
+
+window.showTrainingRecommendations = function(targetId = 'training-hub-content', backAction = "showTrainingHubView('find')") {
+    const container = document.getElementById(targetId);
+    if (!container) return;
+    
+    const paths = [
+        {
+            title: "Path 1: Zero Budget → Employment",
+            icon: "banknote",
+            color: "emerald",
+            steps: [
+                "Start with free Coursera/edX courses to test interest",
+                "Apply for EASTRIP scholarship (79% employment rate)",
+                "Complete micro-credential with financial aid",
+                "Apply to local initiatives (MADE Alliance, dSkills@EA)"
+            ]
+        },
+        {
+            title: "Path 2: Fast-Track Tech Career",
+            icon: "cpu",
+            color: "indigo",
+            steps: [
+                "Complete Google IT Support Certificate",
+                "Add IBM Data Science Certificate (8 months)",
+                "Apply to Moringa School bootcamp (70-85% employment)",
+                "Leverage ECTS credits toward degree if desired"
+            ]
+        },
+        {
+            title: "Path 3: Agriculture Entrepreneur",
+            icon: "leaf",
+            color: "green",
+            steps: [
+                "Complete FAO e-Learning courses (free)",
+                "Join Digital Agriculture Africa programme",
+                "Get MADE Alliance digital credential",
+                "Apply for Digital and Green Innovation Acceleration"
+            ]
+        },
+        {
+            title: "Path 4: Renewable Energy Professional",
+            icon: "zap",
+            color: "orange",
+            steps: [
+                "Join EASTRIP energy sector programme",
+                "Pursue JKUAT Diploma in Renewable Energy",
+                "Apply for GRÓ Geothermal Training (fully funded)",
+                "Get a micro-credential in green skills"
+            ]
+        }
+    ];
+
+    const pathsHtml = paths.map(p => `
+        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-${p.color}-300 transition-colors group">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-${p.color}-50 text-${p.color}-600 rounded-lg"><i data-lucide="${p.icon}" class="w-5 h-5"></i></div>
+                <h3 class="font-bold text-slate-800 text-sm group-hover:text-${p.color}-700">${p.title}</h3>
+            </div>
+            <div class="space-y-3 relative">
+                <div class="absolute left-2.5 top-2 bottom-2 w-0.5 bg-slate-100"></div>
+                ${p.steps.map((step, i) => `
+                    <div class="flex gap-3 relative">
+                        <div class="w-5 h-5 rounded-full bg-white border-2 border-${p.color}-100 text-[10px] font-bold text-slate-500 flex items-center justify-center shrink-0 z-10">${i+1}</div>
+                        <p class="text-xs text-slate-600 leading-snug pt-0.5">${step}</p>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+
+    container.innerHTML = `
+        <div class="animate-fade-in space-y-4">
+            <button onclick="${backAction}" class="mb-2 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+            
+            <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100">
+                <h2 class="text-lg font-bold text-indigo-900 mb-2">Curated Learning Paths</h2>
+                <p class="text-sm text-indigo-700">Select a path to see a step-by-step guide tailored to specific career outcomes.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                ${pathsHtml}
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mt-6">
+                <h4 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i> Verification Checklist</h4>
+                <ul class="text-xs text-slate-600 space-y-2">
+                    <li class="flex items-start gap-2"><i data-lucide="briefcase" class="w-3 h-3 mt-0.5 text-slate-400"></i> <span><strong>Employer Acceptance:</strong> Check if the credential is recognized by target employers in your industry.</span></li>
+                    <li class="flex items-start gap-2"><i data-lucide="globe" class="w-3 h-3 mt-0.5 text-slate-400"></i> <span><strong>Credit Transfer:</strong> Look for EACATS or ECTS-recognized credentials if you plan to pursue a degree in another EAC country or Europe.</span></li>
+                </ul>
+            </div>
+        </div>
+    `;
+    if(window.lucide) lucide.createIcons();
+}
+
 window.toggleCareerHub = function() {
     // Close Unified Hub if open
     closeAllDrawers('career-hub-drawer');
@@ -6769,7 +6896,7 @@ window.toggleCareerHub = function() {
 
         // --- NEW: Render Financial Aid Tab (Replaces UnifiedFinancialAid) ---
         window.renderFinancialAidTab = function() {
-            const container = document.getElementById('pp-finance');
+            const container = document.getElementById('pp-finance-content');
             if(!container) return;
 
             // Capture current filter state if elements exist

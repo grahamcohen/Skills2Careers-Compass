@@ -44,7 +44,7 @@
 
     <div id="proto-banner" class="bg-indigo-600 text-white text-xs py-2 px-4 flex flex-wrap justify-center items-center relative z-[60] gap-x-4 gap-y-1">
         <div class="flex items-center gap-2">
-            <span class="font-bold bg-white text-indigo-600 px-2 py-0.5 rounded text-[10px] uppercase">Prototype v1.5</span>
+            <span class="font-bold bg-white text-indigo-600 px-2 py-0.5 rounded text-[10px] uppercase">Prototype v1.4</span>
         </div>
         <span class="hidden sm:inline text-white/80">Demonstrating UI flow for Skills2Careers Compass.</span>
     </div>
@@ -340,7 +340,7 @@
                         <div class="p-2 bg-emerald-100 text-emerald-600 rounded-lg shrink-0"><i data-lucide="search" class="w-5 h-5"></i></div>
                         <div>
                             <h3 class="font-bold text-emerald-900 text-sm">Find training that matches your needs</h3>
-                            <p class="text-xs text-emerald-700 mt-1">Search a curated database of training providers across East Africa. Filter by cost, duration, and mode.</p>
+                            <p class="text-xs text-emerald-700 mt-1">Search a curated database of training providers across the East Africa Community. Filter by certificate type, cost, duration, and mode.</p>
                         </div>
                     </div>
 
@@ -359,10 +359,15 @@
                         </div>
                         <div id="course-filters-grid" class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Skill Focus</label>
-                                <select id="filter-skill" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
-                                    <option value="all">All Skills</option>
-                                    <!-- Populated dynamically -->
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Credential Type</label>
+                                <select id="filter-type" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="all">All Types</option>
+                                    <option value="cert">Certificate / License</option>
+                                    <option value="micro">Micro-credential</option>
+                                    <option value="degree">Degree / Diploma</option>
+                                    <option value="bootcamp">Bootcamp / Practical</option>
+                                    <option value="tvet">TVET / Polytechnic</option>
+                                    <option value="platform">Platforms & Communities</option>
                                 </select>
                             </div>
                             <div>
@@ -407,18 +412,6 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Credential Type</label>
-                                <select id="filter-type" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
-                                    <option value="all">All Types</option>
-                                    <option value="cert">Certificate / License</option>
-                                    <option value="micro">Micro-credential</option>
-                                    <option value="degree">Degree / Diploma</option>
-                                    <option value="bootcamp">Bootcamp / Practical</option>
-                                    <option value="tvet">TVET / Polytechnic</option>
-                                    <option value="platform">Platforms & Communities</option>
-                                </select>
-                            </div>
-                            <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Language</label>
                                 <select id="filter-lang" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
                                     <option value="all">Any Language</option>
@@ -426,16 +419,8 @@
                                     <option value="Swahili">Kiswahili</option>
                                     <option value="French">French</option>
                                 </select>
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Feature</label>
-                                <select id="filter-feature" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
-                                    <option value="all">Any Feature</option>
-                                    <option value="unesco">UNESCO / GSA</option>
-                                    <option value="women">Women-Focused</option>
-                                </select>
-                            </div>
-                        </div>
 
                         <div class="mt-2">
                             <button onclick="document.getElementById('extra-course-filters').classList.toggle('hidden'); this.textContent = this.textContent.includes('More') ? 'View Less Filters' : 'View More Filters';" class="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
@@ -486,8 +471,13 @@
                 <!-- TAB 4: LAUNCHPAD -->
                 <div id="pp-launchpad" class="pp-view-content hidden space-y-6"></div>
 
+                <!-- TAB: RECOMMENDATIONS -->
+                <div id="pp-recommendations" class="pp-view-content hidden space-y-6"></div>
+
                 <!-- TAB 5: FINANCIAL AID -->
-                <div id="pp-finance" class="pp-view-content hidden space-y-6"></div>
+                <div id="pp-finance" class="pp-view-content hidden space-y-6">
+                    <div id="pp-finance-content"></div>
+                </div>
 
                 <!-- TAB 6: RESOURCE LIBRARY -->
                 <div id="pp-resources" class="pp-view-content hidden space-y-6"></div>
@@ -571,17 +561,6 @@
                 <button onclick="openUnifiedHub()" class="p-2 bg-white rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors" aria-label="Close Training Hub"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div id="training-hub-content" class="flex-1 overflow-y-auto p-5 space-y-6 custom-scroll"></div>
-        </div>
-
-        <div id="reports-modal" class="fixed inset-0 z-[100] hidden flex items-start justify-center p-4 pt-4 md:pt-10">
-            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal('reports-modal')"></div>
-            <div class="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden transform transition-all scale-95 opacity-0" id="reports-modal-panel">
-                <div class="p-5 border-b border-slate-100 bg-white flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5 text-indigo-600"></i> Reports & Methodology</h2>
-                    <button onclick="closeModal('reports-modal')" class="p-2 bg-white rounded-full text-slate-400 hover:text-slate-600 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
-                </div>
-                <div class="flex-1 overflow-y-auto p-6 custom-scroll" id="reports-content"></div>
-            </div>
         </div>
     </main>
 
