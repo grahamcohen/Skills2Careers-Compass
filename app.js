@@ -666,11 +666,37 @@ function getOJAMetrics(roleTitle, country) {
 
                 // Trust Tags
                 let tagsHtml = '';
-                if (t.outcomeData.accreditation === 'Accredited') {
-                    tagsHtml += `<span class="text-[9px] font-bold bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-100 flex items-center gap-1" title="Nationally Accredited"><i data-lucide="shield-check" class="w-2.5 h-2.5"></i> Accredited</span>`;
+                
+                // 1. Outcome-tracked
+                if (t.outcomeData && t.outcomeData.available) {
+                    tagsHtml += `<span class="text-[9px] font-bold bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-100 flex items-center gap-1" title="Employment outcomes verified"><i data-lucide="bar-chart-2" class="w-2.5 h-2.5"></i> Outcome-tracked</span>`;
                 }
-                if (t.outcomeData.stackable) {
+
+                // 2. Stackable (Check outcomeData or infer from type)
+                const isStackable = t.outcomeData.stackable || (t.type && (t.type.includes('Micro') || t.type.includes('Cert') || t.type.includes('Badge') || t.type.includes('Degree')));
+                if (isStackable) {
                     tagsHtml += `<span class="text-[9px] font-bold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100 flex items-center gap-1" title="Counts towards larger qualification"><i data-lucide="layers" class="w-2.5 h-2.5"></i> Stackable</span>`;
+                }
+
+                // 3. Credit-bearing
+                if (t.micro_credential_policy && t.micro_credential_policy.credit_recognition) {
+                    tagsHtml += `<span class="text-[9px] font-bold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded border border-purple-100 flex items-center gap-1" title="Recognized as credit toward degree"><i data-lucide="graduation-cap" class="w-2.5 h-2.5"></i> Credit-bearing</span>`;
+                }
+
+                // 4. Low-cost / Subsidized / ISA
+                const costLower = (t.cost || '').toLowerCase();
+                const costTypeLower = (t.costType || '').toLowerCase();
+                if (costTypeLower === 'free' || costTypeLower === 'subsidized' || costLower.includes('isa') || costLower.includes('income share') || costLower.includes('free')) {
+                     let label = 'Low-cost';
+                     if (costLower.includes('isa') || costLower.includes('income share')) label = 'ISA Available';
+                     else if (costTypeLower === 'subsidized') label = 'Subsidized';
+                     
+                     tagsHtml += `<span class="text-[9px] font-bold bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-100 flex items-center gap-1" title="Financial accessibility"><i data-lucide="banknote" class="w-2.5 h-2.5"></i> ${label}</span>`;
+                }
+
+                // Accreditation (Keep as it's valuable)
+                if (t.outcomeData.accreditation === 'Accredited') {
+                    tagsHtml += `<span class="text-[9px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200 flex items-center gap-1" title="Nationally Accredited"><i data-lucide="shield-check" class="w-2.5 h-2.5"></i> Accredited</span>`;
                 }
                 
                 // QA Framework Tags
@@ -685,9 +711,6 @@ function getOJAMetrics(roleTitle, country) {
 
                 // Micro-credential Policy Tags
                 if (t.micro_credential_policy) {
-                    if (t.micro_credential_policy.credit_recognition) {
-                        tagsHtml += `<span class="text-[9px] font-bold bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100 flex items-center gap-1" title="Recognized as credit toward degree"><i data-lucide="graduation-cap" class="w-2.5 h-2.5"></i> Degree Credit</span>`;
-                    }
                     if (t.micro_credential_policy.standalone_cert) {
                         tagsHtml += `<span class="text-[9px] font-bold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded border border-purple-100 flex items-center gap-1" title="Available as standalone professional certificate"><i data-lucide="award" class="w-2.5 h-2.5"></i> Pro Cert</span>`;
                     }
@@ -2945,6 +2968,7 @@ function getOJAMetrics(roleTitle, country) {
         }
 
         function openOccupationModal(title) {
+            closeAllModals('occupation-modal');
             const modal = document.getElementById('occupation-modal');
             const panel = document.getElementById('occupation-modal-panel');
             
@@ -3343,7 +3367,8 @@ function getOJAMetrics(roleTitle, country) {
             }, 200);
         }
 
-        function closeAllDrawers(exceptId = null) {
+        function closeAllModals(exceptId = null) {
+            // 1. Close Drawers
             const drawers = [
                 'unified-hub-modal', 
                 'career-hub-drawer', 
@@ -3356,6 +3381,23 @@ function getOJAMetrics(roleTitle, country) {
                     const el = document.getElementById(id);
                     if (el && !el.classList.contains('translate-x-full')) {
                         el.classList.add('translate-x-full');
+                    }
+                }
+            });
+
+            // 2. Close Centered Modals
+            const modals = [
+                'occupation-modal',
+                'skill-modal',
+                'venture-modal',
+                'resource-modal',
+                'certificate-modal'
+            ];
+            modals.forEach(id => {
+                if (id !== exceptId) {
+                    const el = document.getElementById(id);
+                    if (el && !el.classList.contains('hidden')) {
+                        closeModal(id);
                     }
                 }
             });
@@ -3476,7 +3518,7 @@ function getOJAMetrics(roleTitle, country) {
 
         window.openUnifiedHub = function(startTab = 'pp-diagnostic', roleName = null, pathwayGoal = null) {
             // Close any open drawers to prevent overlap
-            closeAllDrawers('unified-hub-modal');
+            closeAllModals('unified-hub-modal');
 
             const drawer = document.getElementById('unified-hub-modal');
             
@@ -3730,6 +3772,7 @@ function getOJAMetrics(roleTitle, country) {
 
         // --- NEW: View Certificate Logic ---
         window.viewCertificate = function(badgeName) {
+            closeAllModals('certificate-modal');
             const modal = document.getElementById('certificate-modal');
             const panel = document.getElementById('certificate-modal-panel');
             
@@ -4105,7 +4148,7 @@ function getOJAMetrics(roleTitle, country) {
 
 window.toggleTrainingHub = function() {
     // Close Unified Hub if open
-    closeAllDrawers('training-hub-drawer');
+    closeAllModals('training-hub-drawer');
 
     // 2. Toggle this drawer (Remove class to show, Add class to hide)
     const drawer = document.getElementById('training-hub-drawer');
@@ -4440,7 +4483,7 @@ window.showTrainingRecommendations = function(targetId = 'training-hub-content',
 
 window.toggleCareerHub = function() {
     // Close Unified Hub if open
-    closeAllDrawers('career-hub-drawer');
+    closeAllModals('career-hub-drawer');
 
     // 2. Toggle this drawer
     const drawer = document.getElementById('career-hub-drawer');
@@ -4450,6 +4493,7 @@ window.toggleCareerHub = function() {
     resetCareerHub(); 
 }
         window.openSkillModal = function(skillName) {
+            closeAllModals('skill-modal');
             const modal = document.getElementById('skill-modal');
             const panel = document.getElementById('skill-modal-panel');
             const sectorName = activeSectorId === 'agri' ? 'Agritech' : activeSectorId === 'energy' ? 'Renewable Energies' : 'Digital Economies / AI';
@@ -4579,6 +4623,7 @@ window.toggleCareerHub = function() {
         }
 
         window.openResourceModal = function(category) {
+            closeAllModals('resource-modal');
             const modal = document.getElementById('resource-modal');
             const panel = document.getElementById('resource-modal-panel');
             document.getElementById('resource-modal-title').innerText = category;
@@ -4966,6 +5011,7 @@ window.toggleCareerHub = function() {
 
         // --- NEW: Venture Modal Logic ---
         window.openVentureModal = function(title) {
+            closeAllModals('venture-modal');
             const modal = document.getElementById('venture-modal');
             const panel = document.getElementById('venture-modal-panel');
             
@@ -7695,7 +7741,7 @@ window.toggleCareerHub = function() {
         }
 
         window.toggleSectorHub = function() {
-            closeAllDrawers('sector-hub-drawer');
+            closeAllModals('sector-hub-drawer');
             const drawer = document.getElementById('sector-hub-drawer');
             if (drawer) {
                 drawer.classList.toggle('translate-x-full');
