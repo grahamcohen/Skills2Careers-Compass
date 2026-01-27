@@ -4468,14 +4468,6 @@ window.showTrainingRecommendations = function(targetId = 'training-hub-content',
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 ${pathsHtml}
             </div>
-
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mt-6">
-                <h4 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i> Verification Checklist</h4>
-                <ul class="text-xs text-slate-600 space-y-2">
-                    <li class="flex items-start gap-2"><i data-lucide="briefcase" class="w-3 h-3 mt-0.5 text-slate-400"></i> <span><strong>Employer Acceptance:</strong> Check if the credential is recognized by target employers in your industry.</span></li>
-                    <li class="flex items-start gap-2"><i data-lucide="globe" class="w-3 h-3 mt-0.5 text-slate-400"></i> <span><strong>Credit Transfer:</strong> Look for EACATS or ECTS-recognized credentials if you plan to pursue a degree in another EAC country or Europe.</span></li>
-                </ul>
-            </div>
         </div>
     `;
     if(window.lucide) lucide.createIcons();
@@ -4989,18 +4981,6 @@ window.toggleCareerHub = function() {
             
             container.innerHTML = html;
             if(window.lucide) lucide.createIcons();
-        }
-
-        window.openVentureLaunchpad = function(ventureTitle) {
-            // Close Venture Modal
-            closeModal('venture-modal');
-            
-            // Open Unified Hub -> Founder's Launchpad Tab
-            openUnifiedHub('pp-launchpad', null, null);
-            // Ensure specific venture is rendered after opening
-            setTimeout(() => {
-                if(typeof renderVentureLaunchpad === 'function') renderVentureLaunchpad(ventureTitle);
-            }, 100);
         }
 
         // --- NEW: Render Specific Venture in Launchpad ---
@@ -5739,132 +5719,6 @@ window.toggleCareerHub = function() {
             doc.save(`${name.replace(/ /g, "_")}_CV.pdf`);
         }
 
-        window.showCommunityView = function(activeFilter = 'all') {
-            const sectorData = getSectorCareerResources(activeSectorId);
-            const container = document.getElementById('career-hub-content');
-            
-            // Determine Theme based on Sector
-            const themeConfig = (typeof sectorThemes !== 'undefined') ? sectorThemes[activeSectorId] : { color: 'indigo' };
-            const theme = themeConfig.color;
-            
-            // Exclude mentorship platforms shown in the other tab
-            let communities = (sectorData.communities || []).filter(c => 
-                c.type !== 'Mentorship' && !c.name.toLowerCase().includes('mentor')
-            );
-
-            // Add Mock Events based on sector (since JSON might not have them yet)
-            if (activeSectorId === 'digital') communities.push({ name: "Africa Tech Summit", desc: "Nairobi • Feb 2025", type: "Event", link: "https://www.africatechsummit.com/" });
-            if (activeSectorId === 'agri') communities.push({ name: "Sankalp Africa Summit", desc: "Nairobi • Feb 2025", type: "Event", link: "https://sankalpforum.com/" });
-            if (activeSectorId === 'energy') communities.push({ name: "Solar Africa Expo", desc: "KICC • June 2025", type: "Event", link: "https://www.solarafricaexpo.com/" });
-
-            // Filter Logic
-            let filteredItems = communities;
-            if (activeFilter === 'networks') {
-                filteredItems = communities.filter(c => c.type !== 'Event');
-            } else if (activeFilter === 'events') {
-                filteredItems = communities.filter(c => c.type === 'Event');
-            }
-
-            const itemsHtml = filteredItems.map(c => {
-                const isEvent = c.type === 'Event';
-                const icon = isEvent ? 'calendar' : 'users';
-                const btnBg = isEvent ? 'bg-orange-50 text-orange-700' : `bg-${theme}-50 text-${theme}-600`;
-                const btnText = isEvent ? 'Register' : 'Join';
-
-                return `
-                <div class="p-3 border border-slate-200 rounded-lg bg-white flex flex-col gap-2">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <div class="font-bold text-sm text-slate-800 flex items-center gap-2">
-                                <i data-lucide="${icon}" class="w-3.5 h-3.5 text-slate-400"></i> ${c.name}
-                            </div>
-                            <div class="text-xs text-slate-500 mt-0.5">${c.desc}</div>
-                        </div>
-                        ${c.link && c.link !== 'N/A' ? `
-                        <a href="${c.link}" target="_blank" class="text-[10px] font-bold ${btnBg} hover:underline flex items-center gap-1 px-2 py-1 rounded shrink-0">
-                            ${btnText} <i data-lucide="external-link" class="w-3 h-3"></i>
-                        </a>` : `<span class="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded cursor-not-allowed">Invite Only</span>`}
-                    </div>
-                </div>
-            `}).join('');
-
-            // --- NEW: Featured WhatsApp/Telegram Groups ---
-            const featuredGroup = activeSectorId === 'agri' ? { name: 'Agri-Biz Youth EA', members: '3.4k' } 
-                                : activeSectorId === 'energy' ? { name: 'Solar Techs East Africa', members: '1.8k' } 
-                                : { name: 'Nairobi Devs & AI', members: '5.2k' };
-
-            // Only show featured group in All or Networks
-            const showFeatured = activeFilter === 'all' || activeFilter === 'networks';
-            const featuredHtml = showFeatured ? `
-                <div class="p-3 border border-emerald-200 bg-emerald-50/50 rounded-lg mb-3">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <div class="font-bold text-sm text-emerald-900 flex items-center gap-1"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i> ${featuredGroup.name}</div>
-                            <div class="text-xs text-emerald-700 mt-0.5">Active WhatsApp Group • ${featuredGroup.members} Members</div>
-                        </div>
-                        <button class="text-[10px] font-bold bg-white text-emerald-700 border border-emerald-200 px-2 py-1 rounded hover:bg-emerald-50 shadow-sm">Join Chat</button>
-                    </div>
-                </div>
-            ` : '';
-
-            // Filter Buttons Helper
-            const getBtnClass = (filter) => activeFilter === filter 
-                ? "bg-slate-800 text-white shadow-sm" 
-                : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50";
-
-            container.innerHTML = `
-                <div class="animate-fade-in flex flex-col h-full">
-                    <button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 shrink-0"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
-                    <!-- Filters -->
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 grid grid-cols-2 gap-3 mb-4">
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-1">Location</label>
-                            <select onchange="setGlobalCountry(this.value); showCommunityView('${activeFilter}');" class="w-full text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-${theme}-500 cursor-pointer">
-                                <option value="all" ${activeCountry === 'all' ? 'selected' : ''}>Regional</option>
-                                <option value="Kenya" ${activeCountry === 'Kenya' ? 'selected' : ''}>Kenya</option>
-                                <option value="Uganda" ${activeCountry === 'Uganda' ? 'selected' : ''}>Uganda</option>
-                                <option value="Tanzania" ${activeCountry === 'Tanzania' ? 'selected' : ''}>Tanzania</option>
-                                <option value="Rwanda" ${activeCountry === 'Rwanda' ? 'selected' : ''}>Rwanda</option>
-                                <option value="Burundi" ${activeCountry === 'Burundi' ? 'selected' : ''}>Burundi</option>
-                                <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
-                                <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
-                                <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-1">Sector</label>
-                            <select onchange="setGlobalSector(this.value); showCommunityView('${activeFilter}');" class="w-full text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-${theme}-500 cursor-pointer">
-                                <option value="agri" ${activeSectorId === 'agri' ? 'selected' : ''}>Agritech</option>
-                                <option value="energy" ${activeSectorId === 'energy' ? 'selected' : ''}>Renewable Energy</option>
-                                <option value="digital" ${activeSectorId === 'digital' ? 'selected' : ''}>Digital Economy</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="shrink-0">
-                        <div class="flex gap-2 mb-4 overflow-x-auto pb-1">
-                            <button onclick="showCommunityView('all')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('all')}">All</button>
-                            <button onclick="showCommunityView('networks')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('networks')}">Networks</button>
-                            <button onclick="showCommunityView('events')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('events')}">Events</button>
-                        </div>
-                    </div>
-
-                    <div class="space-y-3 overflow-y-auto pr-1 pb-4">
-                        ${featuredHtml}
-                        ${itemsHtml.length > 0 ? itemsHtml : '<div class="text-xs text-slate-500 italic text-center py-4">No items found for this category.</div>'}
-                        
-                        ${(activeFilter === 'all' || activeFilter === 'networks') ? `
-                        <div class="p-3 border border-slate-200 rounded-lg bg-white">
-                            <div class="font-bold text-sm text-slate-800">Women in Tech Africa</div>
-                            <div class="text-xs text-slate-500 mb-2">Regional Chapter • Virtual/Hybrid</div>
-                            <a href="https://www.womenintechafrica.com/" target="_blank" class="text-[10px] font-bold text-${theme}-600 hover:underline flex items-center gap-1">Join Community <i data-lucide="external-link" class="w-3 h-3"></i></a>
-                        </div>` : ''}
-                    </div>
-                </div>
-            `;
-            if(window.lucide) lucide.createIcons();
-        }
-
         window.showEmployerConnectView = function() {
             const container = document.getElementById('career-hub-content');
             const sector = activeSectorId;
@@ -6274,98 +6128,6 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
-        window.showEntrepreneurshipView = function() {
-            const sectorData = getSectorCareerResources(activeSectorId);
-            const data = sectorData.entrepreneurship || {};
-            const tc = data.theme || 'indigo'; // Default theme color
-            const title = data.title || (activeSectorId === 'agri' ? 'Agritech' : activeSectorId === 'energy' ? 'Renewable Energy' : 'Digital Economy');
-
-            const incubatorHtml = (data.incubators || []).map(i => `
-                <a href="${i.link}" target="_blank" class="p-3 bg-white border border-slate-200 rounded-lg hover:border-${tc}-400 transition-colors group block shadow-sm">
-                    <div class="font-bold text-xs text-slate-800 flex justify-between items-center group-hover:text-${tc}-700">
-                        ${i.name} <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-${tc}-500"></i>
-                    </div>
-                    <div class="text-[10px] text-slate-500 mt-1 leading-tight">${i.desc}</div>
-                </a>
-            `).join('');
-
-            const fundingHtml = (data.funding || []).map(f => `
-                <a href="${f.link}" target="_blank" class="p-3 bg-white border border-slate-200 rounded-lg hover:border-${tc}-400 transition-colors group block shadow-sm">
-                    <div class="font-bold text-xs text-slate-800 flex justify-between items-center group-hover:text-${tc}-700">
-                        <span class="flex items-center gap-1">
-                            ${f.name}
-                            ${f.gsa_member ? '<span class="text-[9px] bg-blue-100 text-blue-700 px-1 rounded border border-blue-200">UNESCO</span>' : ''}
-                        </span>
-                        <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-${tc}-500"></i>
-                    </div>
-                    <div class="text-[10px] text-slate-500 mt-1 leading-tight">${f.desc}</div>
-                </a>
-            `).join('');
-
-            const toolsHtml = (data.tools || []).map(t => `
-                <a href="${t.link}" target="_blank" class="flex items-center gap-3 p-2 bg-${tc}-50/50 rounded-lg border border-${tc}-100 hover:bg-${tc}-100 hover:border-${tc}-300 transition-all group">
-                    <div class="p-1.5 bg-white text-${tc}-600 rounded shadow-sm group-hover:scale-110 transition-transform"><i data-lucide="${t.icon}" class="w-4 h-4"></i></div>
-                    <div class="flex-1">
-                        <div class="text-xs font-bold text-slate-800 flex justify-between items-center">
-                            ${t.name} <i data-lucide="external-link" class="w-3 h-3 text-${tc}-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                        </div>
-                        <div class="text-[10px] text-slate-500">${t.desc}</div>
-                    </div>
-                </a>
-            `).join('');
-
-            const container = document.getElementById('career-hub-content');
-            container.innerHTML = `
-                <div class="animate-fade-in space-y-5">
-                    <!-- Header -->
-                    <div>
-                        <button onclick="resetCareerHub()" class="mb-3 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-${tc}-100 text-${tc}-700 border border-${tc}-200">${title} Sector</span>
-                        </div>
-                        <h3 class="font-bold text-lg text-slate-900 flex items-center gap-2">
-                            <i data-lucide="rocket" class="w-5 h-5 text-orange-600"></i> Founder Launchpad
-                        </h3>
-                        <p class="text-xs text-slate-500">Curated resources to start and scale your ${title} venture.</p>
-                    </div>
-
-                    <!-- Incubators -->
-                    <div>
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2 flex items-center gap-1"><i data-lucide="warehouse" class="w-3 h-3"></i> Incubators & Hubs</h4>
-                        <div class="space-y-2">
-                            ${incubatorHtml}
-                        </div>
-                    </div>
-
-                    <!-- Funding -->
-                    <div>
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2 flex items-center gap-1"><i data-lucide="banknote" class="w-3 h-3"></i> Grants & Funding</h4>
-                        <div class="space-y-2">
-                            ${fundingHtml}
-                        </div>
-                    </div>
-
-                    <!-- Toolkit -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-                        <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wide mb-3">🧰 The Founder's Toolkit</h4>
-                        <div class="space-y-2">
-                            ${toolsHtml}
-                            <a href="https://accounts.ecitizen.go.ke" target="_blank" class="flex items-center gap-3 p-2 bg-slate-50 rounded-lg border border-slate-100 mt-2 hover:bg-slate-100 hover:border-slate-300 transition-all group">
-                                <div class="p-1.5 bg-white text-slate-600 rounded shadow-sm"><i data-lucide="file-text" class="w-4 h-4"></i></div>
-                                <div class="flex-1">
-                                    <div class="text-xs font-bold text-slate-800 flex justify-between items-center">
-                                        Business Registration <i data-lucide="external-link" class="w-3 h-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                                    </div>
-                                    <div class="text-[10px] text-slate-500">e-Citizen (KE) / RDB (RW) / BRELA (TZ).</div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            `;
-            if(window.lucide) lucide.createIcons();
-        }
-
         // --- NEW: AI Tools View ---
         window.showAIToolsView = function() {
             const container = document.getElementById('career-hub-content');
@@ -6561,18 +6323,6 @@ window.toggleCareerHub = function() {
                 </div>
             `;
             if(window.lucide) lucide.createIcons();
-        }
-
-        window.togglePathwayResults = function() {
-            const results = document.getElementById('pathway-results');
-            const form = document.getElementById('pathway-form');
-            if(results.classList.contains('hidden')) {
-                results.classList.remove('hidden');
-                form.classList.add('opacity-50', 'pointer-events-none');
-            } else {
-                results.classList.add('hidden');
-                form.classList.remove('opacity-50', 'pointer-events-none');
-            }
         }
 
         // --- NEW: Toggle More Filters in Training Hub ---
