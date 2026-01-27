@@ -3124,9 +3124,10 @@ function getOJAMetrics(roleTitle, country) {
 
             const qualHtml = `
                 <div class="mt-6 pt-6 border-t border-slate-100" id="modal-qualifications-section">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1 flex items-center gap-2">
                         <span class="w-6 h-6 rounded bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">3</span> Qualifications & Requirements
                     </h3>
+                    <p class="text-[10px] text-slate-400 italic mb-3 ml-8">This is a typical use case. Please check with employers for exact qualifications and years of experience required.</p>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
                             <div class="flex items-center gap-2 mb-1"><i data-lucide="graduation-cap" class="w-4 h-4 text-indigo-500"></i><span class="text-[10px] font-bold text-slate-500 uppercase">Education</span></div>
