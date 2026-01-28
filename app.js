@@ -7376,18 +7376,18 @@ window.toggleCareerHub = function() {
             container.innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
                     <!-- Block 1: High Growth Sectors -->
-                        <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-gradient-to-br from-emerald-50 to-teal-100 border border-emerald-200 rounded-2xl p-6 hover:border-emerald-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+                        <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-gradient-to-br from-purple-50 to-fuchsia-100 border border-emerald-200 rounded-2xl p-6 hover:border-emerald-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
                         <div class="absolute top-0 right-0 p-6 opacity-30 group-hover:opacity-40 transition-opacity">
-                            <i data-lucide="map" class="w-32 h-32 text-emerald-900/20"></i>
+                            <i data-lucide="map" class="w-32 h-32 text-purple-900/20"></i>
                         </div>
                         <div class="flex items-center gap-4 mb-5 relative z-10">
-                            <div class="w-12 h-12 bg-white text-emerald-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md ring-1 ring-emerald-100">
+                            <div class="w-12 h-12 bg-white text-purple-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md ring-1 ring-purple-100">
                                 <i data-lucide="bar-chart-2" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-emerald-900 transition-colors">High Growth Sectors</h3>
+                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-purple-900 transition-colors">High Growth Sectors</h3>
                         </div>
                         <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Discover fast-growing green and digital sectors across the East Africa region and see which jobs, skills, and entrepreneurship opportunities are rising fast — right now.</p>
-                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-emerald-700 group-hover:gap-3 transition-all relative z-10">
+                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-purple-700 group-hover:gap-3 transition-all relative z-10">
                             Start Navigating <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
                     </button>
