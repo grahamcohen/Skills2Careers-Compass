@@ -772,7 +772,7 @@ const roleResourcesMap = {
     "Soil Data Analyst": [
         { title: "FAO: Global Soil Partnership", url: "https://www.fao.org/global-soil-partnership" },
         { title: "ISRIC: SoilGrids Africa", url: "https://www.isric.org" },
-        { title: "AfSIS: Africa Soil Information Service", url: "http://africasoils.net/" },
+        { title: "AfSIS: Africa Soil Information Service", url: "https://www.isric.org/explore/afsis" },
         { title: "SoilCares: Digital Soil Testing", url: "https://soilcares.com/" }
     ],
     "Smart Irrigation Tech": [
@@ -789,7 +789,7 @@ const roleResourcesMap = {
     ],
     "Agri-Input Sales": [
         { title: "Apollo Agriculture: Agent Model", url: "https://apolloagriculture.com/" },
-        { title: "Safaricom DigiFarm", url: "https://www.safaricom.co.ke/media-center-landing/frequently-asked-questions/digifarm-faqs?utm_source=chatgpt.com" },
+        { title: "Safaricom DigiFarm", url: "https://www.safaricom.co.ke/annualreport_2022/digifarm/" },
         { title: "CropLife Africa Middle East", url: "https://croplifeafrica.org/" },
         { title: "Agro-Dealer Development (AFAP)", url: "https://www.afap-partnership.org/" }
     ],
@@ -914,7 +914,7 @@ const roleResourcesMap = {
     "Data Scientist": [
         { title: "World Bank: Data for Policy", url: "https://data.worldbank.org" },
         { title: "UN Global Pulse", url: "https://www.unglobalpulse.org" },
-        { title: "Data Science Africa", url: "http://www.datascienceafrica.org/" },
+        { title: "Data Science Africa", url: "https://www.datascienceafrica.org/" },
         { title: "DeepLearning.AI", url: "https://www.deeplearning.ai/" }
     ],
     "Cloud Architect": [
@@ -1264,7 +1264,7 @@ const sectorRoles = {
 // --- 11. Sector Pathway Resources (Ecosystem) ---
 const sectorPathwayResources = {
     agri: [
-        { title: "Safaricom DigiFarm", desc: "Integrated inputs, finance & info hub.", link: "https://www.safaricom.co.ke/personal/value-added-services/digifarm", icon: "smartphone" },
+        { title: "Safaricom DigiFarm", desc: "Integrated inputs, finance & info hub.", link: "https://www.safaricom.co.ke/annualreport_2022/digifarm/", icon: "smartphone" },
         { title: "iShamba", desc: "SMS-first advisory & weather updates.", link: "https://ishamba.com/", icon: "message-square" },
         { title: "Esoko", desc: "Market prices & agronomy tips.", link: "https://esoko.com/", icon: "bar-chart-2" },
         { title: "Apollo Agriculture", desc: "Financing for small-scale farmers.", link: "https://apolloagriculture.com/", icon: "credit-card" },
@@ -1274,20 +1274,31 @@ const sectorPathwayResources = {
         { title: "FAO eLearning", desc: "Certified climate-smart modules.", link: "https://elearning.fao.org/", icon: "book-open" },
         { title: "Zindi Africa", desc: "Competitions to build portfolio.", link: "https://zindi.africa/", icon: "award" },
         { title: "Moringa School", desc: "Project-based tech training.", link: "https://moringaschool.com/", icon: "code" },
-        { title: "CareerVillage Coach", desc: "AI Career Coach & Mentorship.", link: "https://www.careervillage.org/", icon: "message-circle" }
+        { title: "CareerVillage Coach", desc: "AI Career Coach & Mentorship.", link: "https://www.careervillage.org/", icon: "message-circle" },
+        { title: "Villgro Africa", desc: "Incubator for health & life science (agri) startups.", link: "https://villgroafrica.org/", icon: "sprout" },
+        { title: "AECF", desc: "Funding for agribusiness & renewable energy.", link: "https://www.aecfafrica.org/", icon: "banknote" },
+        { title: "Ignite Trade Africa", desc: "Trade facilitation & market access support.", link: "https://ignitetradeafrica.com/", icon: "globe" }
     ],
     energy: [
         { title: "SEforALL Open Africa Power", desc: "Leadership for young energy professionals.", link: "https://www.seforall.org/", icon: "users" },
-        { title: "AFSIA Jobs", desc: "Africa Solar Industry Association vacancies.", link: "http://www.afsiasolar.com/careers/jobs/", icon: "briefcase" },
-        { title: "GOGLA Investment Academy", desc: "Off-grid solar finance know-how.", link: "https://www.gogla.org/investment-academy", icon: "trending-up" },
+        { title: "AFSIA Jobs", desc: "Africa Solar Industry Association vacancies.", link: "https://afsiasolar.com/career/", icon: "briefcase" },
+        { title: "GOGLA Investment Academy", desc: "Off-grid solar finance know-how.", link: "https://www.gogla.org/resources", icon: "trending-up" },
         { title: "ARE Investment Academy", desc: "DRE investment readiness modules.", link: "https://www.ruralelec.org/", icon: "book-open" },
-        { title: "CareerVillage Coach", desc: "AI Career Coach & Mentorship.", link: "https://www.careervillage.org/", icon: "message-circle" }
+        { title: "CareerVillage Coach", desc: "AI Career Coach & Mentorship.", link: "https://www.careervillage.org/", icon: "message-circle" },
+        { title: "Kenya Climate Ventures", desc: "Investments for climate-smart energy solutions.", link: "https://kcv.co.ke/", icon: "leaf" },
+        { title: "ClimAccelerator", desc: "Global accelerator for climate innovation.", link: "https://climaccelerator.climate-kic.org/", icon: "zap" },
+        { title: "EEP Africa", desc: "Clean energy financing & knowledge.", link: "https://eepafrica.org/", icon: "sun" }
     ],
     digital: [
         { title: "CareerVillage Coach", desc: "AI Career Coach & Mentorship.", link: "https://www.careervillage.org/", icon: "message-circle" },
         { title: "Andela Learning", desc: "Tech skills & community.", link: "https://andela.com/learning-community/", icon: "code" },
         { title: "Google Digital Skills", desc: "Free digital marketing courses.", link: "https://learndigital.withgoogle.com/digitalskills", icon: "monitor" },
-        { title: "Zindi Africa", desc: "Data science competitions.", link: "https://zindi.africa/", icon: "database" }
+        { title: "Zindi Africa", desc: "Data science competitions.", link: "https://zindi.africa/", icon: "database" },
+        { title: "Antler East Africa", desc: "Build your startup from scratch with funding.", link: "https://www.antler.co/location/east-africa", icon: "rocket" },
+        { title: "Norrsken House Kigali", desc: "Largest hub for entrepreneurs in East Africa.", link: "https://www.norrsken.org/eastafrica", icon: "home" },
+        { title: "Flat6Labs", desc: "Seed funding & mentorship for startups.", link: "https://flat6labs.com/", icon: "trending-up" },
+        { title: "Tony Elumelu Foundation", desc: "Seed capital & training for African entrepreneurs.", link: "https://www.tonyelumelufoundation.org/", icon: "users" },
+        { title: "Google for Startups", desc: "Accelerator for African tech startups.", link: "https://startup.google.com/accelerator/africa/", icon: "cpu" }
     ]
 };
 
@@ -1438,7 +1449,8 @@ const signalResources = {
         ],
         'Innovation Investments/Grants': [
             { title: "AgFunder News", desc: "AgriFoodTech investment news and reports.", link: "https://agfundernews.com/" },
-            { title: "Briter Bridges", desc: "Innovation ecosystem intelligence in Africa.", link: "https://briterbridges.com/" }
+            { title: "Briter Bridges", desc: "Innovation ecosystem intelligence in Africa.", link: "https://briterbridges.com/" },
+            { title: "AECF", desc: "Africa Enterprise Challenge Fund.", link: "https://www.aecfafrica.org/" }
         ]
     },
     energy: {
@@ -1448,7 +1460,8 @@ const signalResources = {
         ],
         'Innovation Investments/Grants': [
             { title: "GOGLA Resources", desc: "Off-grid solar market reports.", link: "https://www.gogla.org/resources" },
-            { title: "EEP Africa", desc: "Clean energy financing.", link: "https://eepafrica.org/" }
+            { title: "EEP Africa", desc: "Clean energy financing.", link: "https://eepafrica.org/" },
+            { title: "Kenya Climate Ventures", desc: "Climate-smart investment.", link: "https://kcv.co.ke/" }
         ]
     },
     digital: {
@@ -1458,7 +1471,8 @@ const signalResources = {
         ],
         'Innovation Investments/Grants': [
             { title: "Partech Africa", desc: "Tech investment reports.", link: "https://partechpartners.com/africa-reports/" },
-            { title: "Disrupt Africa", desc: "Startup news and investment reports.", link: "https://disrupt-africa.com/" }
+            { title: "Disrupt Africa", desc: "Startup news and investment reports.", link: "https://disrupt-africa.com/" },
+            { title: "TLcom Capital", desc: "Tech VC for Africa.", link: "https://tlcomcapital.com/" }
         ]
     }
 };

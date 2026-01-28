@@ -3617,16 +3617,10 @@ function getOJAMetrics(roleTitle, country) {
                         <p class="text-sm text-slate-600">Create a personalized step-by-step learning roadmap for <strong>${sectorName}</strong> roles.</p>
                     </button>
                     
-                    <button onclick="openSkillsView('pp-recommendations')" class="p-6 bg-teal-50 border border-teal-100 rounded-xl hover:border-teal-300 hover:bg-white hover:shadow-md text-left transition-all group">
-                        <div class="p-3 bg-teal-100 text-teal-600 rounded-lg w-fit mb-4 group-hover:bg-teal-600 group-hover:text-white transition-colors"><i data-lucide="compass" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">Curated Paths</h3>
-                        <p class="text-sm text-slate-600">Explore quick-start learning paths tailored for specific career outcomes.</p>
-                    </button>
-
                     <button onclick="openSkillsView('pp-launchpad')" class="p-6 bg-orange-50 border border-orange-100 rounded-xl hover:border-orange-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-orange-100 text-orange-600 rounded-lg w-fit mb-4 group-hover:bg-orange-600 group-hover:text-white transition-colors"><i data-lucide="rocket" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Founder's Launchpad</h3>
-                        <p class="text-sm text-slate-600">Access incubators, funding sources, and playbooks to start your <strong>${sectorName}</strong> venture.</p>
+                        <p class="text-sm text-slate-600">Access information on incubators, funding sources, and playbooks to start your <strong>${sectorName}</strong> venture.</p>
                     </button>
 
                     <button onclick="openSkillsView('pp-finance')" class="p-6 bg-purple-50 border border-purple-100 rounded-xl hover:border-purple-300 hover:bg-white hover:shadow-md text-left transition-all group">
@@ -3639,6 +3633,12 @@ function getOJAMetrics(roleTitle, country) {
                         <div class="p-3 bg-blue-100 text-blue-600 rounded-lg w-fit mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
                         <p class="text-sm text-slate-600">Search verified <strong>${sectorName}</strong> training providers and certifications.</p>
+                    </button>
+
+                    <button onclick="openSkillsView('pp-recommendations')" class="p-6 bg-teal-50 border border-teal-100 rounded-xl hover:border-teal-300 hover:bg-white hover:shadow-md text-left transition-all group">
+                        <div class="p-3 bg-teal-100 text-teal-600 rounded-lg w-fit mb-4 group-hover:bg-teal-600 group-hover:text-white transition-colors"><i data-lucide="compass" class="w-6 h-6"></i></div>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Still not sure?</h3>
+                        <p class="text-sm text-slate-600">Look at brief suggestions for learning paths in <strong>${sectorName}</strong>.</p>
                     </button>
             `;
             if(window.lucide) lucide.createIcons();
@@ -5768,7 +5768,7 @@ window.toggleCareerHub = function() {
                     ],
                     alumni: [
                         { name: "Women in Renewable Energy (WIRE)", platform: "Association", link: "https://wire-africa.org/" },
-                        { name: "AFSIA Members Network", platform: "Portal", link: "http://www.afsiasolar.com/" },
+                        { name: "AFSIA Members Network", platform: "Portal", link: "https://afsiasolar.com/" },
                         { name: "IEEE Power & Energy Society", platform: "Professional Body", link: "https://www.ieee-pes.org/" }
                     ]
                 },
