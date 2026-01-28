@@ -1266,7 +1266,9 @@ const sectorPathwayResources = {
     agri: [
         { title: "Safaricom DigiFarm", desc: "Integrated inputs, finance & info hub.", link: "https://www.safaricom.co.ke/annualreport_2022/digifarm/", icon: "smartphone" },
         { title: "iShamba", desc: "SMS-first advisory & weather updates.", link: "https://ishamba.com/", icon: "message-square" },
-        { title: "Esoko", desc: "Market prices & agronomy tips.", link: "https://esoko.com/", icon: "bar-chart-2" },
+        { title: "Emata", desc: "Digital micro-loans for farmers (Uganda).", link: "https://emata.ug/", icon: "banknote" },
+        { title: "GIZ-SAIS Investment Readiness", desc: "Support for African agritech scaling.", link: "https://www.giz.de/en/worldwide/78869.html", icon: "trending-up" },
+        { title: "Katapult Africa", desc: "Accelerator for climate & agri-tech.", link: "https://katapult.vc/africa/", icon: "rocket" },
         { title: "Apollo Agriculture", desc: "Financing for small-scale farmers.", link: "https://apolloagriculture.com/", icon: "credit-card" },
         { title: "One Acre Fund", desc: "Field officer support & USSD access.", link: "https://oneacrefund.org/", icon: "users" },
         { title: "Digital Green", desc: "Localized video extension content.", link: "https://www.digitalgreen.org/", icon: "video" },
@@ -1277,9 +1279,12 @@ const sectorPathwayResources = {
         { title: "CareerVillage Coach", desc: "AI Career Coach & Mentorship.", link: "https://www.careervillage.org/", icon: "message-circle" },
         { title: "Villgro Africa", desc: "Incubator for health & life science (agri) startups.", link: "https://villgroafrica.org/", icon: "sprout" },
         { title: "AECF", desc: "Funding for agribusiness & renewable energy.", link: "https://www.aecfafrica.org/", icon: "banknote" },
-        { title: "Ignite Trade Africa", desc: "Trade facilitation & market access support.", link: "https://ignitetradeafrica.com/", icon: "globe" }
+        { title: "Ignite Trade Africa", desc: "Trade facilitation & market access support.", link: "https://ignitetradeafrica.com/", icon: "globe" },
+        { title: "Village Enterprise", desc: "Micro-enterprise graduation program.", link: "https://villageenterprise.org/", icon: "users" },
+        { title: "SPARK", desc: "SME coaching in fragile communities.", link: "https://spark.ngo/", icon: "briefcase" }
     ],
     energy: [
+        { title: "Digital Energy Challenge", desc: "Grants for digital energy startups.", link: "https://www.afd.fr/en/digital-energy-challenge", icon: "award" },
         { title: "SEforALL Open Africa Power", desc: "Leadership for young energy professionals.", link: "https://www.seforall.org/", icon: "users" },
         { title: "AFSIA Jobs", desc: "Africa Solar Industry Association vacancies.", link: "https://afsiasolar.com/career/", icon: "briefcase" },
         { title: "GOGLA Investment Academy", desc: "Off-grid solar finance know-how.", link: "https://www.gogla.org/resources", icon: "trending-up" },
@@ -1287,9 +1292,12 @@ const sectorPathwayResources = {
         { title: "CareerVillage Coach", desc: "AI Career Coach & Mentorship.", link: "https://www.careervillage.org/", icon: "message-circle" },
         { title: "Kenya Climate Ventures", desc: "Investments for climate-smart energy solutions.", link: "https://kcv.co.ke/", icon: "leaf" },
         { title: "ClimAccelerator", desc: "Global accelerator for climate innovation.", link: "https://climaccelerator.climate-kic.org/", icon: "zap" },
+        { title: "Schneider Electric Univ.", desc: "Free energy & automation training.", link: "https://www.schneideruniversities.com/", icon: "cpu" },
         { title: "EEP Africa", desc: "Clean energy financing & knowledge.", link: "https://eepafrica.org/", icon: "sun" }
     ],
     digital: [
+        { title: "The Baobab Network", desc: "Accelerator for early-stage tech.", link: "https://thebaobabnetwork.com/", icon: "rocket" },
+        { title: "Nvidia Inception", desc: "Program for AI startups (Free credits).", link: "https://www.nvidia.com/en-us/startups/", icon: "cpu" },
         { title: "CareerVillage Coach", desc: "AI Career Coach & Mentorship.", link: "https://www.careervillage.org/", icon: "message-circle" },
         { title: "Andela Learning", desc: "Tech skills & community.", link: "https://andela.com/learning-community/", icon: "code" },
         { title: "Google Digital Skills", desc: "Free digital marketing courses.", link: "https://learndigital.withgoogle.com/digitalskills", icon: "monitor" },
@@ -1298,7 +1306,10 @@ const sectorPathwayResources = {
         { title: "Norrsken House Kigali", desc: "Largest hub for entrepreneurs in East Africa.", link: "https://www.norrsken.org/eastafrica", icon: "home" },
         { title: "Flat6Labs", desc: "Seed funding & mentorship for startups.", link: "https://flat6labs.com/", icon: "trending-up" },
         { title: "Tony Elumelu Foundation", desc: "Seed capital & training for African entrepreneurs.", link: "https://www.tonyelumelufoundation.org/", icon: "users" },
-        { title: "Google for Startups", desc: "Accelerator for African tech startups.", link: "https://startup.google.com/accelerator/africa/", icon: "cpu" }
+        { title: "Google for Startups", desc: "Accelerator for African tech startups.", link: "https://startup.google.com/accelerator/africa/", icon: "cpu" },
+        { title: "Lionesses of Africa", desc: "Community for women entrepreneurs.", link: "https://lionessesofafrica.com/", icon: "heart" },
+        { title: "YALI Network", desc: "Leadership training & connection.", link: "https://yali.state.gov/", icon: "globe" },
+        { title: "Orange Corners", desc: "Incubation & facilities for youth.", link: "https://www.orangecorners.com/", icon: "box" }
     ]
 };
 
@@ -1450,7 +1461,8 @@ const signalResources = {
         'Innovation Investments/Grants': [
             { title: "AgFunder News", desc: "AgriFoodTech investment news and reports.", link: "https://agfundernews.com/" },
             { title: "Briter Bridges", desc: "Innovation ecosystem intelligence in Africa.", link: "https://briterbridges.com/" },
-            { title: "AECF", desc: "Africa Enterprise Challenge Fund.", link: "https://www.aecfafrica.org/" }
+            { title: "AECF", desc: "Africa Enterprise Challenge Fund.", link: "https://www.aecfafrica.org/" },
+            { title: "Heifer International", desc: "Grants for youth in agriculture.", link: "https://www.heifer.org/" }
         ]
     },
     energy: {
@@ -1461,7 +1473,8 @@ const signalResources = {
         'Innovation Investments/Grants': [
             { title: "GOGLA Resources", desc: "Off-grid solar market reports.", link: "https://www.gogla.org/resources" },
             { title: "EEP Africa", desc: "Clean energy financing.", link: "https://eepafrica.org/" },
-            { title: "Kenya Climate Ventures", desc: "Climate-smart investment.", link: "https://kcv.co.ke/" }
+            { title: "Kenya Climate Ventures", desc: "Climate-smart investment.", link: "https://kcv.co.ke/" },
+            { title: "All On", desc: "Impact investing for energy access.", link: "https://www.all-on.com/" }
         ]
     },
     digital: {
@@ -1472,7 +1485,8 @@ const signalResources = {
         'Innovation Investments/Grants': [
             { title: "Partech Africa", desc: "Tech investment reports.", link: "https://partechpartners.com/africa-reports/" },
             { title: "Disrupt Africa", desc: "Startup news and investment reports.", link: "https://disrupt-africa.com/" },
-            { title: "TLcom Capital", desc: "Tech VC for Africa.", link: "https://tlcomcapital.com/" }
+            { title: "TLcom Capital", desc: "Tech VC for Africa.", link: "https://tlcomcapital.com/" },
+            { title: "Ajim Capital", desc: "Pre-seed/Seed funding for African tech.", link: "https://ajimcapital.com/" }
         ]
     }
 };
@@ -1896,6 +1910,86 @@ const heroPersonaContent = {
 
 // --- 46. Real Courses Data (Fallback) ---
 const realCourses = [
+    {
+        "id": "ai_nvidia_1",
+        "name": "Building A Brain in 10 Minutes",
+        "provider": "Nvidia",
+        "type": "Short Course",
+        "level": "short",
+        "duration": "Self-paced",
+        "durationHours": 1,
+        "difficulty": "Beginner",
+        "cost": "Free",
+        "costType": "Free",
+        "mode": "Online",
+        "sector": "digital",
+        "skills": ["AI", "Neural Networks", "Deep Learning"],
+        "url": "https://www.nvidia.com/en-us/training/online/",
+        "country": "all",
+        "description": "A quick, high-level introduction to how neural networks learn from data.",
+        "language": "English",
+        "lastUpdated": "2025"
+    },
+    {
+        "id": "ai_dl_1",
+        "name": "Generative AI for Everyone",
+        "provider": "DeepLearning.AI (Coursera)",
+        "type": "Short Course",
+        "level": "short",
+        "duration": "6 hours",
+        "durationHours": 6,
+        "difficulty": "Beginner",
+        "cost": "Free (Audit)",
+        "costType": "Freemium",
+        "mode": "Online",
+        "sector": "digital",
+        "skills": ["Generative AI", "Prompt Engineering", "AI Strategy"],
+        "url": "https://www.coursera.org/learn/generative-ai-for-everyone",
+        "country": "all",
+        "description": "Understand how generative AI works and how to use it in your professional life.",
+        "language": "English",
+        "lastUpdated": "2025"
+    },
+    {
+        "id": "ai_harvard_1",
+        "name": "CS50's Intro to AI with Python",
+        "provider": "Harvard (edX)",
+        "type": "University Course",
+        "level": "long",
+        "duration": "7 weeks",
+        "durationHours": 80,
+        "difficulty": "Advanced",
+        "cost": "Free (Audit)",
+        "costType": "Freemium",
+        "mode": "Online",
+        "sector": "digital",
+        "skills": ["Python", "Machine Learning", "AI Algorithms"],
+        "url": "https://cs50.harvard.edu/ai/",
+        "country": "all",
+        "description": "Explore the concepts and algorithms at the foundation of modern artificial intelligence.",
+        "language": "English",
+        "lastUpdated": "2025"
+    },
+    {
+        "id": "ai_ibm_gen",
+        "name": "Generative AI Fundamentals",
+        "provider": "IBM SkillsBuild",
+        "type": "Micro-Credential",
+        "level": "short",
+        "duration": "Self-paced",
+        "durationHours": 5,
+        "difficulty": "Beginner",
+        "cost": "Free",
+        "costType": "Free",
+        "mode": "Online",
+        "sector": "digital",
+        "skills": ["Generative AI", "Ethics", "AI Models"],
+        "url": "https://skillsbuild.org/",
+        "country": "all",
+        "description": "Learn the basics of generative AI models and their applications in business.",
+        "language": "English",
+        "lastUpdated": "2025"
+    },
     {
         "id": "c_001",
         "name": "Solar PV Installation T1/T2",

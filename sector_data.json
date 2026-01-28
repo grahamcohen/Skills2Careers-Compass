@@ -75,7 +75,7 @@
       "communities": [{ "name": "e-Agriculture Community", "desc": "Global community of practice for digital agriculture.", "link": "https://www.e-agriculture.org/", "type": "Community" }],
       "jobs": [{ "title": "Agri-Jobs Africa", "company": "Various", "link": "#", "type": "Platform" }],
       "entrepreneurship": {
-        "incubators": [{ "name": "iBizAfrica", "desc": "Strathmore University's incubation center.", "link": "https://ibizafrica.co.ke/" }],
+        "incubators": [{ "name": "iBizAfrica", "desc": "Strathmore University's incubation center.", "link": "https://ibizafrica.co.ke/" }, { "name": "Village Enterprise", "desc": "Micro-enterprise graduation program for rural youth.", "link": "https://villageenterprise.org/" }],
         "funding": [{ "name": "AGRF Agribusiness Deal Room", "desc": "Platform connecting ventures to capital.", "link": "https://agrf.org/" }]
       }
     }
@@ -158,7 +158,7 @@
       "communities": [{ "name": "GOGLA", "desc": "Global association for the off-grid solar energy industry.", "link": "https://www.gogla.org/", "type": "Industry Body" }],
       "jobs": [{ "title": "Renewable Energy Jobs", "company": "Various", "link": "#", "type": "Platform" }],
       "entrepreneurship": {
-        "incubators": [{ "name": "Kenya Climate Innovation Center", "desc": "Provides incubation and financing for green ventures.", "link": "https://www.kenyacic.org/" }],
+        "incubators": [{ "name": "Kenya Climate Innovation Center", "desc": "Provides incubation and financing for green ventures.", "link": "https://www.kenyacic.org/" }, { "name": "Shortlist", "desc": "Talent drive for clean energy companies.", "link": "https://www.shortlist.net/" }],
         "funding": [{ "name": "GET.invest Finance Catalyst", "desc": "Advisory service linking projects to financiers.", "link": "https://www.get-invest.eu/" }]
       }
     }
@@ -266,10 +266,10 @@
     ],
     "resources": {
       "lmi": [{ "name": "ITU DataHub", "desc": "Global and regional data on ICT access, use, and skills.", "link": "https://datahub.itu.int", "type": "Global Data" }],
-      "communities": [{ "name": "Andela Learning Community", "desc": "Pan-African community for software developers.", "link": "https://andela.com/learning-community/", "type": "Community" }],
+      "communities": [{ "name": "Andela Learning Community", "desc": "Pan-African community for software developers.", "link": "https://andela.com/learning-community/", "type": "Community" }, { "name": "Lionesses of Africa", "desc": "Network for women entrepreneurs in Africa.", "link": "https://lionessesofafrica.com/", "type": "Community" }],
       "jobs": [{ "title": "LinkedIn Jobs", "company": "Global", "link": "https://www.linkedin.com/jobs/", "type": "Platform" }],
       "entrepreneurship": {
-        "incubators": [{ "name": "AfriLabs", "desc": "A network of over 400 innovation centers across Africa.", "link": "https://www.afrilabs.com/" }],
+        "incubators": [{ "name": "AfriLabs", "desc": "A network of over 400 innovation centers across Africa.", "link": "https://www.afrilabs.com/" }, { "name": "Orange Corners", "desc": "Incubation and facilities for young entrepreneurs.", "link": "https://www.orangecorners.com/" }],
         "funding": [{ "name": "Partech Africa", "desc": "Venture capital fund dedicated to technology startups in Africa.", "link": "https://partechpartners.com/africa-reports/" }]
       }
     }
