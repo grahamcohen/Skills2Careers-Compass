@@ -5229,6 +5229,8 @@ window.toggleCareerHub = function() {
                 const genCr = dataManager.digitalResources.country_resources[resourceKey];
                 if (genCr.policy) {
                     sectorData.lmi.push(...genCr.policy.map(p => ({ name: p.title, desc: p.desc, link: p.link, type: 'National Policy' })));
+                    // NEW: Also map to tools for Launchpad (Market Access/Registration)
+                    sectorData.entrepreneurship.tools.push(...genCr.policy.map(p => ({ name: p.title, desc: p.desc, link: p.link, type: 'Public Service' })));
                 }
                 if (genCr.hubs) {
                     sectorData.entrepreneurship.incubators.push(...genCr.hubs.map(h => ({ name: h.title, desc: h.desc, link: h.link })));
@@ -5250,6 +5252,9 @@ window.toggleCareerHub = function() {
                 }
                 if (genCr.competitions) {
                     sectorData.entrepreneurship.competitions.push(...genCr.competitions.map(c => ({ name: c.title, desc: c.desc, link: c.link })));
+                }
+                if (genCr.funding) {
+                    sectorData.entrepreneurship.funding.push(...genCr.funding.map(f => ({ name: f.title, desc: f.desc, link: f.link, type: 'National Funding' })));
                 }
             }
 
@@ -5357,9 +5362,13 @@ window.toggleCareerHub = function() {
                         if (!sectorData.jobs.some(j => j.title === res.title)) {
                             sectorData.jobs.push({ title: res.title, company: "Sector Resource", link: res.link, type: "Platform" });
                         }
-                    } else if (lowerTitle.includes('fund') || lowerTitle.includes('invest') || lowerTitle.includes('grant') || lowerTitle.includes('capital')) {
+                    } else if (lowerTitle.includes('fund') || lowerTitle.includes('invest') || lowerTitle.includes('grant') || lowerTitle.includes('capital') || lowerDesc.includes('loan') || lowerDesc.includes('finance')) {
                         if (!sectorData.entrepreneurship.funding.some(f => f.name === res.title)) {
                             sectorData.entrepreneurship.funding.push({ name: res.title, desc: res.desc, link: res.link });
+                        }
+                    } else if (lowerTitle.includes('incubator') || lowerTitle.includes('accelerator') || lowerTitle.includes('hub') || lowerTitle.includes('lab') || lowerDesc.includes('startup') || lowerDesc.includes('venture')) {
+                        if (!sectorData.entrepreneurship.incubators.some(i => i.name === res.title)) {
+                            sectorData.entrepreneurship.incubators.push({ name: res.title, desc: res.desc, link: res.link });
                         }
                     } else if (!lowerTitle.includes('academy') && !lowerTitle.includes('learning') && !lowerDesc.includes('training')) {
                         // Default to Community/Ecosystem (excluding pure training which belongs in Training Hub)
@@ -5635,6 +5644,10 @@ window.toggleCareerHub = function() {
                                 </div>
                             </div>
                             <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Portfolio / LinkedIn URL</label>
+                                <input type="text" id="cv-portfolio" class="w-full text-sm border-slate-300 rounded-lg p-2" placeholder="github.com/username or behance.net/user">
+                            </div>
+                            <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1">Professional Summary</label>
                                 <textarea id="cv-summary" rows="3" class="w-full text-sm border-slate-300 rounded-lg p-2" placeholder="Motivated professional with 2 years of experience in..."></textarea>
                             </div>
@@ -5643,8 +5656,12 @@ window.toggleCareerHub = function() {
                                 <input type="text" id="cv-skills" class="w-full text-sm border-slate-300 rounded-lg p-2" placeholder="Python, Data Analysis, Project Management">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Experience / Projects</label>
-                                <textarea id="cv-experience" rows="4" class="w-full text-sm border-slate-300 rounded-lg p-2" placeholder="• Role at Company (Dates): Achieved X by doing Y..."></textarea>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Work Experience</label>
+                                <textarea id="cv-experience" rows="3" class="w-full text-sm border-slate-300 rounded-lg p-2" placeholder="• Role at Company (Dates): Achieved X by doing Y..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Key Projects (Micro-Projects)</label>
+                                <textarea id="cv-projects" rows="3" class="w-full text-sm border-slate-300 rounded-lg p-2" placeholder="• Project Name: Description of what you built or solved..."></textarea>
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1">Education</label>
@@ -5675,9 +5692,11 @@ window.toggleCareerHub = function() {
             const role = document.getElementById('cv-role').value || "Professional Role";
             const email = document.getElementById('cv-email').value || "email@example.com";
             const phone = document.getElementById('cv-phone').value || "Phone";
+            const portfolio = document.getElementById('cv-portfolio').value || "";
             const summary = document.getElementById('cv-summary').value || "";
             const skills = document.getElementById('cv-skills').value || "";
             const experience = document.getElementById('cv-experience').value || "";
+            const projects = document.getElementById('cv-projects').value || "";
             const education = document.getElementById('cv-education').value || "";
 
             // Styling
@@ -5692,7 +5711,11 @@ window.toggleCareerHub = function() {
             doc.setFontSize(10);
             doc.setTextColor(0);
             doc.setFont("helvetica", "normal");
-            doc.text(`${email} | ${phone}`, 20, 35);
+            
+            let contactInfo = `${email} | ${phone}`;
+            if (portfolio) contactInfo += ` | ${portfolio}`;
+            
+            doc.text(contactInfo, 20, 35);
             
             doc.setLineWidth(0.5);
             doc.line(20, 38, 190, 38);
@@ -5715,6 +5738,7 @@ window.toggleCareerHub = function() {
             addSection("SUMMARY", summary);
             addSection("SKILLS", skills);
             addSection("EXPERIENCE", experience);
+            addSection("PROJECTS", projects);
             addSection("EDUCATION", education);
             
             doc.save(`${name.replace(/ /g, "_")}_CV.pdf`);
@@ -6655,7 +6679,24 @@ window.toggleCareerHub = function() {
             const countryFilter = document.getElementById('finance-filter-country') ? document.getElementById('finance-filter-country').value : activeCountry;
             const typeFilter = document.getElementById('finance-filter-type') ? document.getElementById('finance-filter-type').value : 'all';
 
-            let items = dataManager.scholarships || [];
+            let items = [...(dataManager.scholarships || [])];
+
+            // NEW: Merge Business Funding from Sector Data
+            const sectorData = getSectorCareerResources(activeSectorId);
+            if (sectorData && sectorData.entrepreneurship && sectorData.entrepreneurship.funding) {
+                const bizFunds = sectorData.entrepreneurship.funding.map(f => ({
+                    name: f.name,
+                    provider: "Gov/Partner",
+                    type: "Business Fund",
+                    coverage: "Loans/Grants",
+                    country: activeCountry === 'all' ? 'Regional' : activeCountry,
+                    target: "Youth/SME",
+                    deadline: "Rolling",
+                    link: f.link,
+                    desc: f.desc
+                }));
+                items = [...items, ...bizFunds];
+            }
 
             // Filter
             items = items.filter(item => {
@@ -6676,7 +6717,7 @@ window.toggleCareerHub = function() {
                             <div class="text-xs font-bold text-indigo-600 uppercase tracking-wide mb-0.5">${item.provider}</div>
                             <h4 class="font-bold text-sm text-slate-900 group-hover:text-indigo-700">${item.name}</h4>
                         </div>
-                        <span class="px-2 py-1 rounded text-[10px] font-bold shrink-0 ${item.type === 'Loan' ? 'bg-orange-50 text-orange-700' : 'bg-emerald-50 text-emerald-700'}">${item.type}</span>
+                        <span class="px-2 py-1 rounded text-[10px] font-bold shrink-0 ${item.type === 'Loan' ? 'bg-orange-50 text-orange-700' : (item.type === 'Business Fund' ? 'bg-blue-50 text-blue-700' : 'bg-emerald-50 text-emerald-700')}">${item.type}</span>
                     </div>
                     <p class="text-xs text-slate-600 mb-3 leading-relaxed">${item.desc}</p>
                     <div class="flex flex-wrap items-center justify-between gap-y-2 pt-3 border-t border-slate-50">
@@ -6704,7 +6745,24 @@ window.toggleCareerHub = function() {
             let selectedCountry = countrySelect ? countrySelect.value : activeCountry;
             let selectedType = typeSelect ? typeSelect.value : 'all';
 
-            const scholarships = dataManager.scholarships || [];
+            let scholarships = [...(dataManager.scholarships || [])];
+
+            // NEW: Merge Business Funding
+            const sectorData = getSectorCareerResources(activeSectorId);
+            if (sectorData && sectorData.entrepreneurship && sectorData.entrepreneurship.funding) {
+                const bizFunds = sectorData.entrepreneurship.funding.map(f => ({
+                    name: f.name,
+                    provider: "Gov/Partner",
+                    type: "Business Fund",
+                    coverage: "Loans/Grants",
+                    country: activeCountry === 'all' ? 'Regional' : activeCountry,
+                    target: "Youth/SME",
+                    deadline: "Rolling",
+                    link: f.link,
+                    desc: f.desc
+                }));
+                scholarships = [...scholarships, ...bizFunds];
+            }
             
             // Filter Logic
             const filtered = scholarships.filter(s => {
@@ -6720,7 +6778,7 @@ window.toggleCareerHub = function() {
                             <div class="text-xs font-bold text-purple-600 uppercase tracking-wide mb-0.5">${item.provider}</div>
                             <h4 class="font-bold text-sm text-slate-900 group-hover:text-purple-700">${item.name}</h4>
                         </div>
-                        <span class="px-2 py-1 rounded text-[10px] font-bold shrink-0 ${item.type === 'Loan' ? 'bg-orange-50 text-orange-700' : 'bg-emerald-50 text-emerald-700'}">${item.type}</span>
+                        <span class="px-2 py-1 rounded text-[10px] font-bold shrink-0 ${item.type === 'Loan' ? 'bg-orange-50 text-orange-700' : (item.type === 'Business Fund' ? 'bg-blue-50 text-blue-700' : 'bg-emerald-50 text-emerald-700')}">${item.type}</span>
                     </div>
                     <p class="text-xs text-slate-600 mb-3 leading-relaxed">${item.desc}</p>
                     <div class="flex flex-wrap items-center justify-between gap-y-2 pt-3 border-t border-slate-50">
@@ -6772,6 +6830,7 @@ window.toggleCareerHub = function() {
                                         <option value="Scholarship" ${selectedType === 'Scholarship' ? 'selected' : ''}>Scholarship</option>
                                         <option value="Loan" ${selectedType === 'Loan' ? 'selected' : ''}>Loan</option>
                                         <option value="Grant" ${selectedType === 'Grant' ? 'selected' : ''}>Grant</option>
+                                        <option value="Business Fund" ${selectedType === 'Business Fund' ? 'selected' : ''}>Business Fund</option>
                                     </select>
                                     <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
                                 </div>
@@ -6886,6 +6945,91 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
+        // --- NEW: Render Launchpad Resources List (Filtered) ---
+        window.renderLaunchpadResources = function(filter = 'all') {
+            const container = document.getElementById('launchpad-resources-list');
+            if(!container) return;
+
+            const sector = activeSectorId;
+            const sectorData = getSectorCareerResources(sector);
+            const data = sectorData.entrepreneurship || {};
+            const themeConfig = (typeof sectorThemes !== 'undefined') ? sectorThemes[sector] : { color: 'indigo' };
+            const tc = themeConfig.color;
+
+            // Re-construct opportunities list
+            let opportunities = [
+                ...(data.incubators || []).map(i => ({ ...i, type: 'Incubator', deadline: 'Rolling' })),
+                ...(data.funding || []).map(f => ({ ...f, type: 'Grant/Fund', deadline: 'Rolling' })),
+                ...(data.competitions || []).map(c => ({ ...c, type: 'Competition', deadline: 'See Details' })),
+                ...(data.tools || []).map(t => ({ ...t, type: 'Gov/Tool', deadline: 'N/A' }))
+            ];
+
+            if (opportunities.length < 4) {
+                opportunities.push({ name: "Annual Sector Prize", desc: "Seed funding for early stage.", link: "#", type: "Competition", deadline: "Nov 15, 2025" });
+            }
+
+            // Filter
+            if (filter !== 'all') {
+                if (filter === 'Funding') {
+                    opportunities = opportunities.filter(o => o.type === 'Grant/Fund' || o.type === 'Competition');
+                } else if (filter === 'Incubators') {
+                    opportunities = opportunities.filter(o => o.type === 'Incubator');
+                } else if (filter === 'Tools') {
+                    opportunities = opportunities.filter(o => o.type === 'Gov/Tool');
+                }
+            }
+
+            // Update Buttons State
+            const buttons = document.querySelectorAll('.launchpad-filter-btn');
+            buttons.forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.className = `launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-${tc}-600 text-white shadow-sm`;
+                } else {
+                    btn.className = `launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-50`;
+                }
+            });
+
+            if (opportunities.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs italic">No resources found for this category.</div>`;
+                return;
+            }
+
+            const oppsHtml = opportunities.map(op => {
+                const reminderText = encodeURIComponent(`Reminder: Apply for ${op.name} (${op.type}) by ${op.deadline}. Link: ${op.link}`);
+                const waLink = `https://wa.me/?text=${reminderText}`;
+                
+                return `
+                <div class="p-3 bg-white border border-slate-200 rounded-lg hover:border-${tc}-400 transition-all group shadow-sm flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <div class="font-bold text-sm text-slate-800 group-hover:text-${tc}-700 mb-0.5">
+                                ${op.name} 
+                                ${op.gsa_member ? '<span class="text-[9px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200 font-bold ml-1">UNESCO</span>' : ''}
+                            </div>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap sm:hidden">${op.type}</span>
+                        </div>
+                        <div class="text-xs text-slate-500 leading-tight mb-1">${op.desc}</div>
+                        <div class="flex items-center gap-3 text-[10px] font-medium text-slate-400">
+                            <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> Deadline: ${op.deadline}</span>
+                            <span class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">${op.type}</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <a href="${waLink}" target="_blank" class="p-2 text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-100 transition-colors" title="Set WhatsApp Reminder">
+                            <i data-lucide="bell" class="w-4 h-4"></i>
+                        </a>
+                        <a href="${op.link}" target="_blank" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg text-xs hover:bg-slate-50 hover:text-${tc}-600 transition-colors flex items-center gap-1">
+                            Visit <i data-lucide="external-link" class="w-3 h-3"></i>
+                        </a>
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            container.innerHTML = oppsHtml;
+            if(window.lucide) lucide.createIcons();
+        }
+
         // --- NEW: Render Launchpad Tab (Unified Hub) ---
         window.renderLaunchpadTab = function() {
             const container = document.getElementById('pp-launchpad');
@@ -6954,51 +7098,6 @@ window.toggleCareerHub = function() {
             const basePb = sectorPlaybook.default;
             const countryPb = sectorPlaybook[activeCountry] || {};
             const pb = { ...basePb, ...countryPb };
-
-            // --- 2. Directory of Resources Logic ---
-            // Merge Incubators and Funding for a unified list
-            let opportunities = [
-                ...(data.incubators || []).map(i => ({ ...i, type: 'Incubator', deadline: 'Rolling' })),
-                ...(data.funding || []).map(f => ({ ...f, type: 'Grant/Fund', deadline: 'Oct 30, 2025' })),
-                ...(data.competitions || []).map(c => ({ ...c, type: 'Competition', deadline: 'See Details' }))
-            ];
-
-            // Add some mock competitions if list is short
-            if (opportunities.length < 4) {
-                opportunities.push({ name: "Annual Sector Prize", desc: "Seed funding for early stage.", link: "#", type: "Competition", deadline: "Nov 15, 2025" });
-            }
-
-            const oppsHtml = opportunities.map(op => {
-                const reminderText = encodeURIComponent(`Reminder: Apply for ${op.name} (${op.type}) by ${op.deadline}. Link: ${op.link}`);
-                const waLink = `https://wa.me/?text=${reminderText}`;
-                
-                return `
-                <div class="p-3 bg-white border border-slate-200 rounded-lg hover:border-${tc}-400 transition-all group shadow-sm flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <div class="font-bold text-sm text-slate-800 group-hover:text-${tc}-700 mb-0.5">
-                                ${op.name} 
-                                ${op.gsa_member ? '<span class="text-[9px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200 font-bold ml-1">UNESCO</span>' : ''}
-                            </div>
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap sm:hidden">${op.type}</span>
-                        </div>
-                        <div class="text-xs text-slate-500 leading-tight mb-1">${op.desc}</div>
-                        <div class="flex items-center gap-3 text-[10px] font-medium text-slate-400">
-                            <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> Deadline: ${op.deadline}</span>
-                            <span class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">${op.type}</span>
-                        </div>
-                    </div>
-                    <div class="flex gap-2 shrink-0">
-                        <a href="${waLink}" target="_blank" class="p-2 text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-100 transition-colors" title="Set WhatsApp Reminder">
-                            <i data-lucide="bell" class="w-4 h-4"></i>
-                        </a>
-                        <a href="${op.link}" target="_blank" class="px-3 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg text-xs hover:bg-slate-50 hover:text-${tc}-600 transition-colors flex items-center gap-1">
-                            Visit <i data-lucide="external-link" class="w-3 h-3"></i>
-                        </a>
-                    </div>
-                </div>
-                `;
-            }).join('');
 
             container.innerHTML = `
                 <div class="animate-fade-in space-y-8">
@@ -7070,24 +7169,30 @@ window.toggleCareerHub = function() {
 
                     <!-- 2. Resource Directory -->
                     <div>
-                        <div class="flex justify-between items-end mb-4">
+                        <div class="flex flex-col sm:flex-row justify-between items-end mb-4 gap-3">
                             <div>
                                 <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
                                     <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i> Directory of Start-up resources
                                 </h4>
                                 <p class="text-xs text-slate-500 mt-1">Incubators, financing and competitions.</p>
                             </div>
-                            <div class="relative hidden sm:block">
-                                <i data-lucide="search" class="absolute left-2.5 top-1.5 w-3.5 h-3.5 text-slate-400"></i>
-                                <input type="text" placeholder="Search opportunities..." class="pl-8 pr-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-${tc}-500 focus:border-${tc}-500 w-48">
+                            <div class="flex gap-2 overflow-x-auto pb-1 shrink-0 no-scrollbar w-full sm:w-auto">
+                                <button onclick="renderLaunchpadResources('all')" class="launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-${tc}-600 text-white shadow-sm" data-filter="all">All</button>
+                                <button onclick="renderLaunchpadResources('Funding')" class="launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-50" data-filter="Funding">Funding</button>
+                                <button onclick="renderLaunchpadResources('Incubators')" class="launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-50" data-filter="Incubators">Incubators</button>
+                                <button onclick="renderLaunchpadResources('Tools')" class="launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-50" data-filter="Tools">Tools</button>
                             </div>
                         </div>
-                        <div class="space-y-3">
-                            ${oppsHtml}
+                        <div id="launchpad-resources-list" class="space-y-3">
+                            <!-- Injected via renderLaunchpadResources -->
                         </div>
                     </div>
                 </div>
             `;
+            
+            // Initial render of resources
+            renderLaunchpadResources('all');
+            
             if(window.lucide) lucide.createIcons();
         }
 

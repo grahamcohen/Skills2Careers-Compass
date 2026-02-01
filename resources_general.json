@@ -35,7 +35,8 @@
     { "title": "Anzisha Prize", "desc": "Venture building fellowship for young entrepreneurs.", "link": "https://anzishaprize.org/", "type": "Funding" },
     { "title": "Orange Corners", "desc": "Incubation & entrepreneurship support.", "link": "https://www.orangecorners.com/", "type": "Ecosystem" },
     { "title": "WITIA", "desc": "Women in Technology in Africa.", "link": "https://witia.org/", "type": "Ecosystem" },
-    { "title": "Smart Africa Women & Girls", "desc": "ICT mentorship platform.", "link": "https://smartafrica.org/", "type": "Skills" }
+    { "title": "Smart Africa Women & Girls", "desc": "ICT mentorship platform.", "link": "https://smartafrica.org/", "type": "Skills" },
+    { "title": "EAC Youth Policy", "desc": "Framework guiding Partner States on youth programming.", "link": "https://www.eac.int/", "type": "Policy/Regulation" }
   ],
   "global_resources": [
     { "title": "ITU", "desc": "Telecom/ICT standards & policy.", "link": "https://www.itu.int/", "type": "Policy/Regulation", "gsa_member": true },
@@ -95,7 +96,10 @@
     "Kenya": {
       "policy": [
         { "title": "National Employment Authority", "desc": "Public employment services.", "link": "https://nea.go.ke/" },
-        { "title": "KLMIS", "desc": "Kenya Labour Market Information System.", "link": "https://www.labourmarket.go.ke/" }
+        { "title": "KLMIS", "desc": "Kenya Labour Market Information System.", "link": "https://www.labourmarket.go.ke/" },
+        { "title": "AGPO", "desc": "Access to Government Procurement Opportunities for youth/women.", "link": "https://agpo.go.ke/" },
+        { "title": "NHIF Supa Cover", "desc": "Health insurance available to informal sector workers.", "link": "http://www.nhif.or.ke/" },
+        { "title": "eCitizen", "desc": "Official digital payments and business registration platform.", "link": "https://accounts.ecitizen.go.ke/" }
       ],
       "jobs": [
         { "title": "NEAIMS", "desc": "National Employment Authority Integrated System.", "link": "https://neaims.go.ke/" },
@@ -118,11 +122,17 @@
         { "title": "Chevening Alumni Kenya", "desc": "UK government scholarship alumni.", "link": "https://www.chevening.org/alumni/" },
         { "title": "KUCCPS Career Guidance", "desc": "Placement & career guidance resources.", "link": "https://students.kuccps.net/" },
         { "title": "Women in STEAM Initiative", "desc": "Mentorship & clubs for girls.", "link": "https://womeninsteam.co.ke/" }
+      ],
+      "funding": [
+        { "title": "Hustler Fund", "desc": "Digital financial inclusion for individuals and MSMEs.", "link": "https://hustlerfund.go.ke/" },
+        { "title": "Youth Enterprise Dev Fund", "desc": "Loans and mentorship for youth enterprises.", "link": "http://www.youthfund.go.ke/" }
       ]
     },
     "Uganda": {
       "policy": [
-        { "title": "MGLSD", "desc": "Ministry of Gender, Labour & Social Dev.", "link": "https://mglsd.go.ug/" }
+        { "title": "MGLSD", "desc": "Ministry of Gender, Labour & Social Dev.", "link": "https://mglsd.go.ug/" },
+        { "title": "NSSF Voluntary Saving", "desc": "Social security options for informal workers.", "link": "https://www.nssfug.org/" },
+        { "title": "URSB", "desc": "Uganda Registration Services Bureau (Business Reg).", "link": "https://ursb.go.ug/" }
       ],
       "communities": [
         { "title": "Topowa Youth Mentoring", "desc": "Youth empowerment & mentorship.", "link": "https://www.topowayouth.org/" },
@@ -135,11 +145,16 @@
       ],
       "hubs": [
         { "title": "Ntawo Youth Skills Center", "desc": "Vocational skills training.", "link": "https://mglsd.go.ug/" }
+      ],
+      "funding": [
+        { "title": "Emyooga", "desc": "Presidential initiative on wealth and job creation.", "link": "https://msc.co.ug/emyooga/" },
+        { "title": "Youth Livelihood Programme", "desc": "Community demand-driven development.", "link": "https://mglsd.go.ug/" }
       ]
     },
     "Tanzania": {
       "policy": [
-        { "title": "TaESA", "desc": "Tanzania Employment Services Agency.", "link": "https://www.taesa.go.tz/" }
+        { "title": "TaESA", "desc": "Tanzania Employment Services Agency.", "link": "https://www.taesa.go.tz/" },
+        { "title": "BRELA", "desc": "Business Registrations and Licensing Agency.", "link": "https://www.brela.go.tz/" }
       ],
       "jobs": [
         { "title": "Ajira Portal (PSRS)", "desc": "Public Service Recruitment Secretariat.", "link": "https://portal.ajira.go.tz/" }
@@ -158,11 +173,16 @@
         { "title": "Skills for Employment (SET)", "desc": "Swiss contact project.", "link": "https://www.swisscontact.org/en/projects/set" },
         { "title": "Helvetas YES Project", "desc": "Youth Employment through Skills Enhancement.", "link": "https://www.helvetas.org/en/tanzania/what-we-do/youth-employment" },
         { "title": "Empower Academy", "desc": "Skills development & corporate training.", "link": "https://empower.co.tz/", "type": "Skills" }
+      ],
+      "funding": [
+        { "title": "Youth Development Fund", "desc": "Loans for youth groups and entrepreneurs.", "link": "https://www.kazi.go.tz/" }
       ]
     },
     "Rwanda": {
       "policy": [
-        { "title": "Rwanda Development Board", "desc": "Investment & career guidance.", "link": "https://rdb.rw/" }
+        { "title": "Rwanda Development Board", "desc": "Investment & career guidance.", "link": "https://rdb.rw/" },
+        { "title": "Ejo Heza", "desc": "Long-term savings scheme for informal sector workers.", "link": "https://www.ejoheza.gov.rw/" },
+        { "title": "Irembo", "desc": "One-stop portal for e-Government services.", "link": "https://irembo.gov.rw/" }
       ],
       "jobs": [
         { "title": "National Internship Portal", "desc": "Govt internship placement.", "link": "https://dhr.mifotra.gov.rw/" },
@@ -180,6 +200,9 @@
         { "title": "OWSD Rwanda", "desc": "Women in Science.", "link": "https://owsd.net/" },
         { "title": "University of Rwanda Mentorship", "desc": "Alumni-linked career support.", "link": "https://ur.ac.rw/" },
         { "title": "MCF Alumni Rwanda", "desc": "Mastercard Foundation network.", "link": "https://mastercardfdn.org/" }
+      ],
+      "funding": [
+        { "title": "BDF", "desc": "Business Development Fund for SMEs.", "link": "https://www.bdf.rw/" }
       ]
     },
     "Somalia": {
