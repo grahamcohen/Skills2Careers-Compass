@@ -2511,11 +2511,19 @@ function getOJAMetrics(roleTitle, country) {
                                 <div class="text-[10px] text-slate-600 flex items-center gap-1.5"><i data-lucide="pen-tool" class="w-3 h-3 text-slate-400"></i> Case Study Blog</div>
                             </div>
                         </div>
+                        
+                        <div class="bg-pink-50 p-3 rounded-lg border border-pink-100 flex items-center gap-3">
+                            <div class="p-2 bg-white rounded-full text-pink-600 shadow-sm"><i data-lucide="repeat" class="w-4 h-4"></i></div>
+                            <div>
+                                <h4 class="text-xs font-bold text-pink-900 mb-0.5">Continuous Reskilling</h4>
+                                <p class="text-[10px] text-pink-800 leading-tight">Pivoting is a journey. Adopt a lifelong learning approach to master your new domain.</p>
+                            </div>
+                        </div>
                     </div>
                 `;
             } else {
                 // Upskill / Strengthen
-                blockBTitle = "Career Advancement";
+                blockBTitle = "Lifelong Learning & Advancement";
                 blockBAction = "View Certifications";
                 blockBOnclick = "openUnifiedHub('pp-courses')";
                 
@@ -2577,6 +2585,14 @@ function getOJAMetrics(roleTitle, country) {
                             <div class="text-xs text-slate-600 mb-2 font-bold">Master Industry-Standard Tools</div>
                             <div class="flex flex-wrap gap-2">
                                 ${advancedTools.map(t => `<span class="px-2 py-1 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-700 shadow-sm">${t}</span>`).join('')}
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-3 rounded-lg border border-indigo-100 flex items-center gap-3">
+                            <div class="p-2 bg-white rounded-full text-indigo-600 shadow-sm"><i data-lucide="infinity" class="w-4 h-4"></i></div>
+                            <div>
+                                <h4 class="text-xs font-bold text-indigo-900 mb-0.5">Lifelong Learning Mindset</h4>
+                                <p class="text-[10px] text-indigo-800 leading-tight">Stay competitive by dedicating time to micro-learning. Check out our <button onclick="openUnifiedHub('pp-resources')" class="underline hover:text-indigo-600 font-bold">Resource Library</button> for trends.</p>
                             </div>
                         </div>
                     </div>
