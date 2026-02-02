@@ -1742,9 +1742,9 @@ const pathwayConstraints = [
 const pathwayGoals = [
     { "title": "Entry Level Job", "desc": "I want to find my first job or internship.", "icon": "briefcase" },
     { "title": "Apprenticeship", "desc": "I want to learn on the job with a mentor.", "icon": "users" },
-    { "title": "Upskill", "desc": "I want to strengthen my current skills.", "icon": "trending-up" },
+    { "title": "Upskill", "desc": "I want to strengthen my current skills for work or life.", "icon": "trending-up" },
     { "title": "Venture", "desc": "I want to start my own business.", "icon": "rocket" },
-    { "title": "Change Careers", "desc": "I want to pivot to a new sector.", "icon": "refresh-cw" }
+    { "title": "Career Pivot", "desc": "I want to pivot to a new job or sector.", "icon": "refresh-cw" }
 ];
 
 // --- 38. Interview Questions ---

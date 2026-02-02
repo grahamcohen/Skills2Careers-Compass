@@ -2167,11 +2167,10 @@ function getOJAMetrics(roleTitle, country) {
 
             // Fallback if pathwayGoals is missing
             const goals = (typeof pathwayGoals !== 'undefined' && Array.isArray(pathwayGoals)) ? pathwayGoals : [
+                { "title": "Upskill", "desc": "I want to strengthen my current skills.", "icon": "trending-up" },
                 { "title": "Entry Level Job", "desc": "I want to find my first job or internship.", "icon": "briefcase" },
                 { "title": "Apprenticeship", "desc": "I want to learn on the job with a mentor.", "icon": "users" },
-                { "title": "Upskill", "desc": "I want to strengthen my current skills.", "icon": "trending-up" },
-                { "title": "Venture", "desc": "I want to start my own business.", "icon": "rocket" },
-                { "title": "Change Careers", "desc": "I want to pivot to a new sector.", "icon": "refresh-cw" }
+                { "title": "Career pivot", "desc": "I want to pivot to a new job or sector.", "icon": "refresh-cw" }
             ];
 
             container.innerHTML = `
@@ -2476,7 +2475,7 @@ function getOJAMetrics(roleTitle, country) {
                         </div>
                     </div>
                 `;
-            } else if (goal === 'Change Careers') {
+            } else if (goal === 'Career Pivots') {
                 blockBTitle = "Career Pivot Strategy";
                 blockBAction = "Start Pivot Audit";
                 blockBOnclick = "renderPivotAudit()";
@@ -2513,10 +2512,10 @@ function getOJAMetrics(roleTitle, country) {
                         </div>
                         
                         <div class="bg-pink-50 p-3 rounded-lg border border-pink-100 flex items-center gap-3">
-                            <div class="p-2 bg-white rounded-full text-pink-600 shadow-sm"><i data-lucide="repeat" class="w-4 h-4"></i></div>
+                            <div class="p-2 bg-white rounded-full text-pink-600 shadow-sm"><i data-lucide="infinity" class="w-4 h-4"></i></div>
                             <div>
-                                <h4 class="text-xs font-bold text-pink-900 mb-0.5">Continuous Reskilling</h4>
-                                <p class="text-[10px] text-pink-800 leading-tight">Pivoting is a journey. Adopt a lifelong learning approach to master your new domain.</p>
+                                <h4 class="text-xs font-bold text-pink-900 mb-0.5">Lifelong Learning</h4>
+                                <p class="text-[10px] text-pink-800 leading-tight">Pivoting is a journey. Adopt a continuous learning approach to master your new domain.</p>
                             </div>
                         </div>
                     </div>
@@ -2591,7 +2590,7 @@ function getOJAMetrics(roleTitle, country) {
                         <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-3 rounded-lg border border-indigo-100 flex items-center gap-3">
                             <div class="p-2 bg-white rounded-full text-indigo-600 shadow-sm"><i data-lucide="infinity" class="w-4 h-4"></i></div>
                             <div>
-                                <h4 class="text-xs font-bold text-indigo-900 mb-0.5">Lifelong Learning Mindset</h4>
+                                <h4 class="text-xs font-bold text-indigo-900 mb-0.5">Lifelong Learning</h4>
                                 <p class="text-[10px] text-indigo-800 leading-tight">Stay competitive by dedicating time to micro-learning. Check out our <button onclick="openUnifiedHub('pp-resources')" class="underline hover:text-indigo-600 font-bold">Resource Library</button> for trends.</p>
                             </div>
                         </div>
@@ -2603,7 +2602,7 @@ function getOJAMetrics(roleTitle, country) {
             const catalogue = getMasterTrainingCatalogue('all', sector, activeCountry);
             let courses = [];
             
-            if (['Internship', 'Entry Level Job', 'Change Careers', 'Apprenticeship'].includes(goal)) {
+            if (['Internship', 'Entry Level Job', 'Career Pivot', 'Apprenticeship'].includes(goal)) {
                 courses = [...catalogue.short, ...catalogue.med];
             } else if (['Strengthen my current skills', 'Upskill'].includes(goal)) {
                 courses = [...catalogue.med, ...catalogue.long];
@@ -3630,7 +3629,7 @@ function getOJAMetrics(roleTitle, country) {
                     <button onclick="openSkillsView('pp-practice')" class="p-6 bg-indigo-50 border border-indigo-100 rounded-xl hover:border-indigo-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-indigo-100 text-indigo-600 rounded-lg w-fit mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><i data-lucide="map" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Pathway Builder</h3>
-                        <p class="text-sm text-slate-600">Create a personalized step-by-step learning roadmap for <strong>${sectorName}</strong> roles.</p>
+                        <p class="text-sm text-slate-600">Create a personalized learning roadmap for <strong>${sectorName}</strong> roles or to support <strong>lifelong learning</strong>.</p>
                     </button>
                     
                     <button onclick="openSkillsView('pp-launchpad')" class="p-6 bg-orange-50 border border-orange-100 rounded-xl hover:border-orange-300 hover:bg-white hover:shadow-md text-left transition-all group">
