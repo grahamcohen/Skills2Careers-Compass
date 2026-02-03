@@ -2170,7 +2170,7 @@ function getOJAMetrics(roleTitle, country) {
                 { "title": "Entry Level Job", "desc": "I want to find my first job or internship.", "icon": "briefcase" },
                 { "title": "Apprenticeship", "desc": "I want to learn on the job with a mentor.", "icon": "users" },
                 { "title": "Advancement & Lifelong Learning", "desc": "I want to strengthen my current skills.", "icon": "trending-up" },
-                { "title": "Career pivot", "desc": "I want to pivot to a new job or sector.", "icon": "refresh-cw" }
+                { "title": "Career Pivot", "desc": "I want to pivot to a new job or sector.", "icon": "refresh-cw" }
             ];
 
             container.innerHTML = `
@@ -2477,7 +2477,7 @@ function getOJAMetrics(roleTitle, country) {
                         </div>
                     </div>
                 `;
-            } else if (goal === 'Career Pivots') {
+            } else if (goal === 'Career Pivot') {
                 blockBTitle = "Career Pivot Strategy";
                 blockBAction = "Start Pivot Audit";
                 blockBOnclick = "renderPivotAudit()";
