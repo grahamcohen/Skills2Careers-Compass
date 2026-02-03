@@ -2167,9 +2167,9 @@ function getOJAMetrics(roleTitle, country) {
 
             // Fallback if pathwayGoals is missing
             const goals = (typeof pathwayGoals !== 'undefined' && Array.isArray(pathwayGoals)) ? pathwayGoals : [
-                { "title": "Upskill", "desc": "I want to strengthen my current skills.", "icon": "trending-up" },
                 { "title": "Entry Level Job", "desc": "I want to find my first job or internship.", "icon": "briefcase" },
                 { "title": "Apprenticeship", "desc": "I want to learn on the job with a mentor.", "icon": "users" },
+                { "title": "Advancement & Lifelong Learning", "desc": "I want to strengthen my current skills.", "icon": "trending-up" },
                 { "title": "Career pivot", "desc": "I want to pivot to a new job or sector.", "icon": "refresh-cw" }
             ];
 
@@ -2267,6 +2267,8 @@ function getOJAMetrics(roleTitle, country) {
             let blockBContent = "";
             let blockBAction = "";
             let blockBOnclick = "";
+            let blockCAction = "";
+            let blockCOnclick = "";
 
             if (goal === 'Apprenticeship') {
                 blockBTitle = "Apprenticeship Starter Kit";
@@ -2522,9 +2524,9 @@ function getOJAMetrics(roleTitle, country) {
                 `;
             } else {
                 // Upskill / Strengthen
-                blockBTitle = "Lifelong Learning & Advancement";
-                blockBAction = "View Certifications";
-                blockBOnclick = "openUnifiedHub('pp-courses')";
+                blockBTitle = "Advancement & Lifelong Learning";
+                blockCAction = "Browse Courses";
+                blockCOnclick = "openUnifiedHub('pp-courses')";
                 
                 // NEW: Contextualize tools based on Interest
                 let advancedTools = [];
@@ -2568,20 +2570,6 @@ function getOJAMetrics(roleTitle, country) {
                                 <div class="text-lg font-bold text-indigo-900">+40% <span class="text-[10px] font-normal text-indigo-700">with specialization</span></div>
                                 <div class="w-full bg-indigo-200 h-1.5 rounded-full mt-2"><div class="bg-indigo-600 h-1.5 rounded-full" style="width: 70%"></div></div>
                             </div>
-                            <div class="p-3 bg-amber-50 border border-amber-100 rounded-lg">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <i data-lucide="award" class="w-4 h-4 text-amber-600"></i>
-                                    <span class="text-xs font-bold text-amber-800">Top Certifications</span>
-                                </div>
-                                <ul class="text-[10px] text-amber-900 space-y-1 list-disc list-inside">
-                                    <li>Professional Cloud Architect</li>
-                                    <li>PMP / Agile Practitioner</li>
-                                    <li>Advanced Data Analytics</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                            <div class="text-xs text-slate-600 mb-2 font-bold">Master Industry-Standard Tools</div>
                             <div class="flex flex-wrap gap-2">
                                 ${advancedTools.map(t => `<span class="px-2 py-1 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-700 shadow-sm">${t}</span>`).join('')}
                             </div>
@@ -2723,23 +2711,23 @@ function getOJAMetrics(roleTitle, country) {
 
                     ${profileHtml}
 
-                    <!-- A. Skills Focus -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
-                        <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-4"><span class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">A</span> Skills Focus</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            ${skillsHtml}
-                        </div>
-                    </div>
-
-                    <!-- B. Practice / Toolkit -->
+                    <!-- A. Practice Toolkit -->
                     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">B</span> ${blockBTitle}</h3>
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">A</span> ${blockBTitle}</h3>
                             ${blockBAction ? `<button onclick="${blockBOnclick}" class="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded hover:bg-purple-100 border border-purple-100">${blockBAction}</button>` : ''}
                         </div>
                         ${blockBContent}
+                    </div>
+
+                    <!-- B. Skills Focus -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-4"><span class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">B</span> Skills Focus</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            ${skillsHtml}
+                        </div>
                     </div>
 
                     <!-- C. Training -->
@@ -2747,16 +2735,9 @@ function getOJAMetrics(roleTitle, country) {
                     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3">
-                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">C</span> Bridge Skills and Knowledge Gaps</h3>
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">C</span> Examples of Training</h3>
                             <div class="flex gap-2">
-                                <select onchange="updatePathwayConstraint('mode', this.value)" class="text-[10px] border-slate-200 rounded bg-slate-50 text-slate-600 focus:ring-0 py-1 pl-2 pr-6 cursor-pointer hover:bg-slate-100">
-                                    <option value="Any" ${!pathwayState.constraints.mode || pathwayState.constraints.mode === 'Any' ? 'selected' : ''}>Any Mode</option>
-                                    <option value="Online" ${pathwayState.constraints.mode === 'Online' ? 'selected' : ''}>Online</option>
-                                </select>
-                                <select onchange="updatePathwayConstraint('budget', this.value)" class="text-[10px] border-slate-200 rounded bg-slate-50 text-slate-600 focus:ring-0 py-1 pl-2 pr-6 cursor-pointer hover:bg-slate-100">
-                                    <option value="Any" ${!pathwayState.constraints.budget || pathwayState.constraints.budget === 'Any' ? 'selected' : ''}>Any Cost</option>
-                                    <option value="Free" ${pathwayState.constraints.budget === 'Free' ? 'selected' : ''}>Free</option>
-                                </select>
+                                ${blockCAction ? `<button onclick="${blockCOnclick}" class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded hover:bg-emerald-100 border border-emerald-100">${blockCAction}</button>` : ''}
                             </div>
                         </div>
                         <div class="grid grid-cols-1 gap-4">
