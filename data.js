@@ -1408,15 +1408,15 @@ const specificJobTitles = {
 // --- 14. Regional Hotspots ---
 const skillHotspots = {
     agri: {
-        "Soil Analysis": "High demand in the <strong>Rift Valley (Kenya)</strong> and <strong>SAGCOT region (Tanzania)</strong> within large commercial estates and tea/coffee multinationals.",
-        "IoT Sensors": "Rapid adoption in export-grade flower farms in <strong>Naivasha</strong> and smart-irrigation projects in semi-arid counties.",
+        "Soil Analysis": "High demand in the <strong>Rift Valley (Kenya)</strong> and <strong>SAGCOT region (Tanzania)</strong> within large commercial estates (Tea/Coffee).",
+        "IoT Sensors": "Rapid adoption in export-grade <strong>Horticulture</strong> farms in <strong>Naivasha</strong> and smart-irrigation projects.",
         "GIS Mapping": "Critical for <strong>County Government</strong> land registries and regional urban planning departments across the EAC.",
         "Python": "Central to <strong>Nairobi's AgTech startups</strong> building credit scoring models and crop yield prediction platforms.",
         "Mobile Money API": "Ubiquitous demand across <strong>FinTech hubs</strong> in Nairobi, Kampala, and Dar es Salaam for rural payment integration.",
-        "Logistics": "Concentrated in export processing zones (EPZ) and the <strong>Mombasa-Kigali transport corridor</strong>.",
+        "Logistics": "Critical for <strong>Horticulture & Dairy (Cold Chain)</strong>. Less relevant for Cereal/Maize belts unless for export.",
         "Climate Modeling": "Key for Insurance companies in <strong>Nairobi</strong> and regional meteorological departments.",
         "Remote Sensing": "Used extensively by NGOs and development agencies monitoring food security in <strong>Northern Kenya</strong> and <strong>Karamoja (Uganda)</strong>.",
-        "Inventory Mgmt": "Essential for Agri-input distributors and warehouse receipt systems in <strong>Eldoret</strong> and <strong>Kitale</strong>.",
+        "Inventory Mgmt": "Essential for Agri-input distributors and warehouse receipt systems (Maize/Grains) in <strong>Eldoret</strong> and <strong>Kitale</strong>.",
         "Data Viz": "Sought after by Impact Investors and donor-funded programs headquartered in <strong>Nairobi</strong> and <strong>Kigali</strong>.",
         "Crop Science": "Research institutes like <strong>KALRO</strong> and seed companies in the <strong>Western Kenya</strong> maize belt.",
         "Drone Ops": "Growing demand for crop spraying and mapping in large-scale plantations in <strong>Kilifi</strong> and <strong>Central Province</strong>."
@@ -1689,7 +1689,7 @@ const credentialRules = {
         ],
         countries: {
             Kenya: [
-                { keywords: ['Solar', 'Installer'], text: "EPRA Solar PV License (Class T1/T2/T3)" },
+                { keywords: ['Solar', 'Installer', 'Technician', 'Tech'], text: "EPRA Solar PV License (Class T1/T2/T3)" },
                 { keywords: ['Electrician', 'Grid'], text: "EPRA Electrician License (Class C2/C1)" },
                 { keywords: ['Engineer'], text: "EBK (Engineers Board of Kenya) Registration" }
             ],
@@ -1923,6 +1923,7 @@ const realCourses = [
         "mode": "Online",
         "sector": "digital",
         "skills": ["AI", "Neural Networks", "Deep Learning"],
+        "occupations": ["AI Engineer", "Data Scientist"],
         "url": "https://www.nvidia.com/en-us/training/online/",
         "country": "all",
         "description": "A quick, high-level introduction to how neural networks learn from data.",
@@ -1943,6 +1944,7 @@ const realCourses = [
         "mode": "Online",
         "sector": "digital",
         "skills": ["Generative AI", "Prompt Engineering", "AI Strategy"],
+        "occupations": ["AI Product Manager", "Digital Marketer"],
         "url": "https://www.coursera.org/learn/generative-ai-for-everyone",
         "country": "all",
         "description": "Understand how generative AI works and how to use it in your professional life.",
@@ -1963,6 +1965,7 @@ const realCourses = [
         "mode": "Online",
         "sector": "digital",
         "skills": ["Python", "Machine Learning", "AI Algorithms"],
+        "occupations": ["Machine Learning Engineer", "Python Developer"],
         "url": "https://cs50.harvard.edu/ai/",
         "country": "all",
         "description": "Explore the concepts and algorithms at the foundation of modern artificial intelligence.",
@@ -1983,6 +1986,7 @@ const realCourses = [
         "mode": "Online",
         "sector": "digital",
         "skills": ["Generative AI", "Ethics", "AI Models"],
+        "occupations": ["AI Ethics Officer", "Business Analyst"],
         "url": "https://skillsbuild.org/",
         "country": "all",
         "description": "Learn the basics of generative AI models and their applications in business.",
@@ -2002,6 +2006,7 @@ const realCourses = [
         "type": "Certificate",
         "url": "https://serc.strathmore.edu/",
         "skills": ["Solar PV", "Electrical Wiring", "Safety Protocols"],
+        "occupations": ["Solar PV Installer", "Solar Technician"],
         "gsa_member": true,
         "lastUpdated": "2024"
     },
@@ -2018,6 +2023,7 @@ const realCourses = [
         "type": "Bootcamp",
         "url": "https://moringaschool.com/",
         "skills": ["Python", "Data Analysis", "Machine Learning"],
+        "occupations": ["Data Scientist", "Data Analyst"],
         "women_focused": true,
         "lastUpdated": "2024"
     },
@@ -2034,6 +2040,7 @@ const realCourses = [
         "type": "Short Course",
         "url": "https://www.africanmanagers.org/",
         "skills": ["Agribusiness", "Financial Literacy", "Market Access"],
+        "occupations": ["Agri-Entrepreneur", "Co-op Manager"],
         "unesco_unevoc": true,
         "lastUpdated": "2024"
     }

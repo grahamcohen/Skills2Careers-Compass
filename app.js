@@ -1669,6 +1669,7 @@ function getOJAMetrics(roleTitle, country) {
                                 <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold">1</span> 
                                 Minimum Qualifications Check
                             </h3>
+                            <p class="text-[10px] text-slate-400 italic mb-3 ml-8">These are typical requirements. Specific employers may have different standards.</p>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                                 <label class="p-3 border border-slate-200 rounded-lg cursor-pointer hover:border-${themeColor}-400 transition-all bg-white group relative">
                                     <input type="checkbox" name="qual_check" value="edu" class="peer sr-only">
@@ -4388,52 +4389,55 @@ window.showTrainingRecommendations = function(targetId = 'training-hub-content',
     const container = document.getElementById(targetId);
     if (!container) return;
     
-    const paths = [
-        {
-            title: "Path 1: Zero Budget → Employment",
-            icon: "banknote",
-            color: "emerald",
+    // 1. Get Occupations for current context (Sector & Country)
+    let occupations = dataManager.getOccupations(activeSectorId, activeCountry);
+    
+    // Fallback if DataManager returns nothing
+    if (!occupations || occupations.length === 0) {
+        const baseData = (typeof baseSectorDetailData !== 'undefined') ? baseSectorDetailData[activeSectorId] : null;
+        if (baseData && baseData.occupations) occupations = baseData.occupations;
+    }
+
+    // Ensure we have data and limit to top 10
+    const topOccupations = (occupations || []).slice(0, 10);
+
+    // 2. Generate Pathways dynamically
+    const paths = topOccupations.map((occ, index) => {
+        const roleName = occ.name;
+        
+        // Get Qualifications (Global Data)
+        const quals = (typeof roleQualifications !== 'undefined' && roleQualifications[roleName]) 
+            ? roleQualifications[roleName] 
+            : { education: "Relevant Degree or Diploma", certification: "Industry Standard Certification", experience: "Entry-level experience" };
+
+        // Get Skills (Global Data)
+        const skillsData = (typeof roleSkills !== 'undefined' && roleSkills[roleName]) 
+            ? roleSkills[roleName] 
+            : { technical: ["Core Technical Skills", "Industry Knowledge"] };
+        
+        // Format Skills (Top 3)
+        const topSkills = skillsData.technical ? skillsData.technical.slice(0, 3).join(", ") : "Key Sector Skills";
+
+        // Determine Icon/Color
+        const colors = ['emerald', 'indigo', 'blue', 'purple', 'orange', 'teal'];
+        const color = colors[index % colors.length];
+        
+        return {
+            title: roleName,
+            icon: "map-pin", 
+            color: color,
             steps: [
-                "Start with free Coursera/edX courses to test interest",
-                "Apply for EASTRIP scholarship (79% employment rate)",
-                "Complete micro-credential with financial aid",
-                "Apply to local initiatives (MADE Alliance, dSkills@EA)"
+                `<strong>Build Skills:</strong> Focus on ${topSkills}.`,
+                `<strong>Education:</strong> ${quals.education}.`,
+                `<strong>Credentialing:</strong> Obtain ${quals.certification}.`,
+                `<strong>Experience:</strong> ${quals.experience}.`
             ]
-        },
-        {
-            title: "Path 2: Fast-Track Tech Career",
-            icon: "cpu",
-            color: "indigo",
-            steps: [
-                "Complete Google IT Support Certificate",
-                "Add IBM Data Science Certificate (8 months)",
-                "Apply to Moringa School bootcamp (70-85% employment)",
-                "Leverage ECTS credits toward degree if desired"
-            ]
-        },
-        {
-            title: "Path 3: Agriculture Entrepreneur",
-            icon: "leaf",
-            color: "green",
-            steps: [
-                "Complete FAO e-Learning courses (free)",
-                "Join Digital Agriculture Africa programme",
-                "Get MADE Alliance digital credential",
-                "Apply for Digital and Green Innovation Acceleration"
-            ]
-        },
-        {
-            title: "Path 4: Renewable Energy Professional",
-            icon: "zap",
-            color: "orange",
-            steps: [
-                "Join EASTRIP energy sector programme",
-                "Pursue JKUAT Diploma in Renewable Energy",
-                "Apply for GRÓ Geothermal Training (fully funded)",
-                "Get a micro-credential in green skills"
-            ]
-        }
-    ];
+        };
+    });
+
+    // 3. Render
+    const sectorName = activeSectorId === 'agri' ? 'Agritech' : activeSectorId === 'energy' ? 'Renewable Energy' : 'Digital Economy';
+    const countryName = activeCountry === 'all' ? 'East Africa (Regional)' : activeCountry;
 
     const pathsHtml = paths.map(p => `
         <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-${p.color}-300 transition-colors group">
@@ -4458,12 +4462,12 @@ window.showTrainingRecommendations = function(targetId = 'training-hub-content',
             <button onclick="${backAction}" class="mb-2 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
             
             <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100">
-                <h2 class="text-lg font-bold text-indigo-900 mb-2">Curated Learning Paths</h2>
-                <p class="text-sm text-indigo-700">Select a path to see a step-by-step guide tailored to specific career outcomes.</p>
+                <h2 class="text-lg font-bold text-indigo-900 mb-2">Career Pathways: ${sectorName}</h2>
+                <p class="text-sm text-indigo-700">Typical skills, education, and credentialing paths for top occupations in <strong>${countryName}</strong>.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                ${pathsHtml}
+                ${pathsHtml.length > 0 ? pathsHtml : '<div class="col-span-2 text-center text-slate-500 italic py-8">No specific occupation pathways found for this selection.</div>'}
             </div>
         </div>
     `;
@@ -5046,9 +5050,10 @@ window.toggleCareerHub = function() {
             // 1. At a Glance (Snapshot)
             const snapshotHtml = `
                 <div>
-                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-1 flex items-center gap-2">
                         <i data-lucide="info" class="w-4 h-4"></i> Venture Snapshot
                     </h3>
+                    <p class="text-[10px] text-slate-400 italic mb-3 ml-6">Capital estimates are indicative and vary by location.</p>
                     <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-y-5 gap-x-4">
                             <div>
