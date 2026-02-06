@@ -4603,8 +4603,11 @@ window.toggleCareerHub = function() {
             closeModal('skill-modal');
             
             // Reset filters to ensure search finds results globally
-            const selects = document.querySelectorAll('#course-filters-grid select');
-            selects.forEach(s => s.value = 'all');
+            const container = document.getElementById('pp-courses');
+            if (container) {
+                const selects = container.querySelectorAll('select');
+                selects.forEach(s => s.value = 'all');
+            }
 
             const searchInput = document.getElementById('filter-search');
             if(searchInput) {
@@ -6504,7 +6507,10 @@ window.toggleCareerHub = function() {
                 if (featureFilter === 'unesco') matchFeature = c.gsa_member || c.unesco_unevoc;
                 else if (featureFilter === 'women') matchFeature = c.women_focused;
 
-                const matchSearch = searchFilter === '' || (c.name && c.name.toLowerCase().includes(searchFilter)) || (c.provider && c.provider.toLowerCase().includes(searchFilter));
+                const matchSearch = searchFilter === '' || 
+                    (c.name && c.name.toLowerCase().includes(searchFilter)) || 
+                    (c.provider && c.provider.toLowerCase().includes(searchFilter)) ||
+                    (c.skills && Array.isArray(c.skills) && c.skills.some(s => s.toLowerCase().includes(searchFilter)));
 
                 return matchCountry && matchSector && matchSkill && matchDuration && matchMode && matchCost && matchLang && matchType && matchFeature && matchSearch;
             });

@@ -406,7 +406,36 @@
                             </div>
                         </div>
                         
-                        <div id="extra-course-filters" class="hidden grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                        <div id="extra-course-filters" class="hidden grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Sector</label>
+                                <select id="filter-sector" onchange="populateSkillFilter(); renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="all">All Sectors</option>
+                                    <option value="agri">Agritech</option>
+                                    <option value="energy">Renewable Energy</option>
+                                    <option value="digital">Digital Economy</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Location</label>
+                                <select id="filter-country" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="all">All Locations</option>
+                                    <option value="Kenya">Kenya</option>
+                                    <option value="Uganda">Uganda</option>
+                                    <option value="Tanzania">Tanzania</option>
+                                    <option value="Rwanda">Rwanda</option>
+                                    <option value="Burundi">Burundi</option>
+                                    <option value="South Sudan">South Sudan</option>
+                                    <option value="DRC">DR Congo</option>
+                                    <option value="Somalia">Somalia</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Skill</label>
+                                <select id="filter-skill" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="all">All Skills</option>
+                                </select>
+                            </div>
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Duration</label>
                                 <select id="filter-duration" onchange="renderProviderTable()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-emerald-500 focus:border-emerald-500">
@@ -427,8 +456,8 @@
                                     <option value="Swahili">Kiswahili</option>
                                     <option value="French">French</option>
                                 </select>
-                                </div>
                             </div>
+                        </div>
 
                         <div class="mt-2">
                             <button onclick="document.getElementById('extra-course-filters').classList.toggle('hidden'); this.textContent = this.textContent.includes('More') ? 'View Less Filters' : 'View More Filters';" class="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
