@@ -109,7 +109,6 @@ class DataManager {
         // Force re-renders
         try { if (typeof renderOccupationsView === 'function') renderOccupationsView(); } catch(e) { console.warn("Error rendering occupations:", e); }
         try { if (typeof resetCareerHub === 'function') resetCareerHub(); } catch(e) { console.warn("Error resetting hub:", e); }
-        try { if (typeof renderSectorCards === 'function') renderSectorCards(); } catch(e) { console.warn("Error rendering cards:", e); }
         try { if (typeof updateHeroStats === 'function') updateHeroStats(); } catch(e) { console.warn("Error updating stats:", e); }
 
         // Hide Spinner
@@ -281,6 +280,9 @@ class DataManager {
             const desc = (res.desc || "").toLowerCase();
             const title = (res.title || "").toLowerCase();
             const type = (res.type || "").toLowerCase();
+
+            // Filter out invalid URLs
+            if (!res.link || res.link === '#' || !res.link.startsWith('http')) return null;
             
             // Heuristic to identify training/learning resources
             const isTraining = type.includes('skill') || type.includes('education') || type.includes('bootcamp') || type.includes('training') || type.includes('academy') ||
@@ -1385,7 +1387,7 @@ function getOJAMetrics(roleTitle, country) {
                         <div class="flex justify-between items-end mb-3">
                             <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                                 <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs">1</span> 
-                                Bridge Skills and Knowledge Gaps
+                                Level Up Your Skills
                             </h4>
                             <div class="flex gap-1 bg-slate-100 p-0.5 rounded-lg">
                                 <button onclick="renderPathwayCourseGrid('match')" class="pathway-sort-btn px-2 py-1 text-[10px] font-bold rounded-md transition-colors bg-white text-slate-600 border border-slate-200 shadow-sm" data-sort="match">Best Match</button>
@@ -1401,7 +1403,7 @@ function getOJAMetrics(roleTitle, country) {
                     <div>
                          <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                             <span class="w-5 h-5 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs">2</span> 
-                            Boost your Employability (${roleName})
+                            Get Job-Ready (${roleName})
                         </h4>
                         <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                             <div class="divide-y divide-slate-100">
@@ -1454,7 +1456,7 @@ function getOJAMetrics(roleTitle, country) {
                     <div>
                         <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-3">
                             <span class="w-5 h-5 rounded-full bg-${theme}-100 text-${theme}-600 flex items-center justify-center text-xs">${empSectionNum}</span> 
-                            Get Work Ready! 
+                            Sharpen Soft Skills
                         </h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             ${proofHtml}
@@ -2037,8 +2039,8 @@ function getOJAMetrics(roleTitle, country) {
                                     <p class="text-xs text-slate-500 leading-relaxed mb-3">${opt.desc}</p>
                                 </div>
                                 <div class="mt-auto pt-2 border-t border-slate-200 group-hover:border-purple-100 w-full">
-                                    <div class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Example Roles</div>
-                                    <p class="text-[10px] text-slate-500 leading-snug">${roleText}</p>
+                                    <div class="text-xs font-bold text-slate-500 uppercase mb-1">Example Roles</div>
+                                    <p class="text-xs text-purple-700 font-medium leading-snug">${roleText}</p>
                                 </div>
                             </button>
                         `}).join('')}
@@ -2169,10 +2171,9 @@ function getOJAMetrics(roleTitle, country) {
             // Fallback if pathwayGoals is missing
             const goals = (typeof pathwayGoals !== 'undefined' && Array.isArray(pathwayGoals)) ? pathwayGoals : [
                 { "title": "Entry Level Job", "desc": "I want to find my first job or internship.", "icon": "briefcase" },
-                { "title": "Apprenticeship", "desc": "I want to learn on the job with a mentor.", "icon": "users" },
+                { "title": "Placement & Apprenticeship", "desc": "I want to learn on the job with a mentor.", "icon": "users" },
                 { "title": "Advancement & Lifelong Learning", "desc": "I want to strengthen my current skills.", "icon": "trending-up" },
-                { "title": "Career Pivot", "desc": "I want to pivot to a new job or sector.", "icon": "refresh-cw" }
-            ];
+                ];
 
             container.innerHTML = `
                 <div class="max-w-3xl mx-auto py-6 animate-fade-in">
@@ -2187,7 +2188,7 @@ function getOJAMetrics(roleTitle, country) {
                         <p class="text-slate-500">This helps us tailor the next steps for you.</p>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        ${goals.filter(g => g.title !== 'Venture').map(g => _renderGoalCard(g.title, g.desc, g.icon)).join('')}
+                        ${goals.filter(g => g.title !== 'Venture' && g.title !== 'Career Pivot').map(g => _renderGoalCard(g.title, g.desc, g.icon)).join('')}
                     </div>
                 </div>
             `;
@@ -2202,6 +2203,7 @@ function getOJAMetrics(roleTitle, country) {
             const sector = activeSectorId;
             const themeConfig = (typeof sectorThemes !== 'undefined') ? sectorThemes[sector] : { color: 'indigo' };
             const theme = themeConfig.color;
+            let advancedTools = []; // Defined here for scope access
             
             // --- SECTION A: SKILLS FOCUS ---
             const sectorDetails = (typeof baseSectorDetailData !== 'undefined') ? baseSectorDetailData[sector] : { skills: [] };
@@ -2209,7 +2211,7 @@ function getOJAMetrics(roleTitle, country) {
             let targetSkills = [];
 
             // Goal-based Skill Selection
-            if (['Strengthen my current skills', 'Upskill'].includes(goal)) {
+            if (['Strengthen my current skills', 'Upskill', 'Advancement & Lifelong Learning'].includes(goal)) {
                 targetSkills = allSkills.filter(s => s.isHot).slice(0, 5); // Hot/Advanced skills
             } else {
                 targetSkills = allSkills.slice(0, 4); // Foundational
@@ -2272,9 +2274,9 @@ function getOJAMetrics(roleTitle, country) {
             let blockCOnclick = "";
 
             if (goal === 'Apprenticeship') {
-                blockBTitle = "Apprenticeship Starter Kit";
-                blockBAction = "";
-                blockBOnclick = "";
+                blockBTitle = "Starter Kit";
+                blockBAction = "Launch Prep Checklist";
+                blockBOnclick = "renderApprenticeshipChecklist()";
 
                 // --- NEW: Apprenticeship Framework Data ---
                 let framework = {
@@ -2478,51 +2480,6 @@ function getOJAMetrics(roleTitle, country) {
                         </div>
                     </div>
                 `;
-            } else if (goal === 'Career Pivot') {
-                blockBTitle = "Career Pivot Strategy";
-                blockBAction = "Start Pivot Audit";
-                blockBOnclick = "renderPivotAudit()";
-
-                blockBContent = `
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div class="p-3 bg-pink-50 border border-pink-100 rounded-lg">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <i data-lucide="shuffle" class="w-4 h-4 text-pink-600"></i>
-                                    <span class="text-xs font-bold text-pink-800">Transferable Skills</span>
-                                </div>
-                                <p class="text-[10px] text-pink-700 leading-relaxed mb-2">Identify skills from your past role that apply here (e.g., Project Mgmt, Communication).</p>
-                                <div class="flex flex-wrap gap-1">
-                                    <span class="px-1.5 py-0.5 bg-white rounded text-[9px] text-pink-600 border border-pink-200">Leadership</span>
-                                    <span class="px-1.5 py-0.5 bg-white rounded text-[9px] text-pink-600 border border-pink-200">Analytics</span>
-                                </div>
-                            </div>
-                            <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <i data-lucide="users" class="w-4 h-4 text-blue-600"></i>
-                                    <span class="text-xs font-bold text-blue-800">Immersion</span>
-                                </div>
-                                <p class="text-[10px] text-blue-700 leading-relaxed mb-2">The fastest way to pivot is to speak the language. Join sector-specific events.</p>
-                                <button onclick="closeModal('unified-hub-modal'); document.getElementById('career-hub-drawer').classList.remove('translate-x-full'); showCommunitiesView();" class="text-[9px] font-bold bg-white text-blue-600 px-2 py-1 rounded border border-blue-200 hover:bg-blue-50 w-full">Find Events</button>
-                            </div>
-                        </div>
-                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                            <h4 class="text-[10px] font-bold text-slate-500 uppercase mb-2">Recommended Pivot Projects</h4>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div class="text-[10px] text-slate-600 flex items-center gap-1.5"><i data-lucide="github" class="w-3 h-3 text-slate-400"></i> Open Source Contrib.</div>
-                                <div class="text-[10px] text-slate-600 flex items-center gap-1.5"><i data-lucide="pen-tool" class="w-3 h-3 text-slate-400"></i> Case Study Blog</div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-pink-50 p-3 rounded-lg border border-pink-100 flex items-center gap-3">
-                            <div class="p-2 bg-white rounded-full text-pink-600 shadow-sm"><i data-lucide="infinity" class="w-4 h-4"></i></div>
-                            <div>
-                                <h4 class="text-xs font-bold text-pink-900 mb-0.5">Lifelong Learning</h4>
-                                <p class="text-[10px] text-pink-800 leading-tight">Pivoting is a journey. Adopt a continuous learning approach to master your new domain.</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
             } else {
                 // Upskill / Strengthen
                 blockBTitle = "Advancement & Lifelong Learning";
@@ -2530,7 +2487,6 @@ function getOJAMetrics(roleTitle, country) {
                 blockCOnclick = "openUnifiedHub('pp-courses')";
                 
                 // NEW: Contextualize tools based on Interest
-                let advancedTools = [];
                 const interest = pathwayState.interest;
                 
                 const toolsInterestMap = {
@@ -2561,27 +2517,16 @@ function getOJAMetrics(roleTitle, country) {
                 }
 
                 blockBContent = `
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-lg">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <i data-lucide="trending-up" class="w-4 h-4 text-indigo-600"></i>
-                                    <span class="text-xs font-bold text-indigo-800">Salary Potential</span>
-                                </div>
-                                <div class="text-lg font-bold text-indigo-900">+40% <span class="text-[10px] font-normal text-indigo-700">with specialization</span></div>
-                                <div class="w-full bg-indigo-200 h-1.5 rounded-full mt-2"><div class="bg-indigo-600 h-1.5 rounded-full" style="width: 70%"></div></div>
-                            </div>
-                            <div class="flex flex-wrap gap-2">
-                                ${advancedTools.map(t => `<span class="px-2 py-1 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-700 shadow-sm">${t}</span>`).join('')}
+                    <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 rounded-lg border border-indigo-100">
+                        <div class="flex items-start gap-3 mb-3">
+                            <div class="p-2 bg-white rounded-full text-indigo-600 shadow-sm shrink-0"><i data-lucide="infinity" class="w-5 h-5"></i></div>
+                            <div>
+                                <h4 class="text-sm font-bold text-indigo-900 mb-1">Lifelong Learning Strategy</h4>
+                                <p class="text-xs text-indigo-800 leading-relaxed italic">"Lifelong learning is the ongoing, voluntary, and self-motivated pursuit of knowledge."</p>
                             </div>
                         </div>
-
-                        <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-3 rounded-lg border border-indigo-100 flex items-center gap-3">
-                            <div class="p-2 bg-white rounded-full text-indigo-600 shadow-sm"><i data-lucide="infinity" class="w-4 h-4"></i></div>
-                            <div>
-                                <h4 class="text-xs font-bold text-indigo-900 mb-0.5">Lifelong Learning</h4>
-                                <p class="text-[10px] text-indigo-800 leading-tight">Stay competitive by dedicating time to micro-learning. Check out our <button onclick="openUnifiedHub('pp-resources')" class="underline hover:text-indigo-600 font-bold">Resource Library</button> for trends.</p>
-                            </div>
+                        <div class="bg-white/60 rounded p-3 text-xs text-indigo-900">
+                            Stay competitive by dedicating time to micro-learning. 
                         </div>
                     </div>
                 `;
@@ -2591,10 +2536,12 @@ function getOJAMetrics(roleTitle, country) {
             const catalogue = getMasterTrainingCatalogue('all', sector, activeCountry);
             let courses = [];
             
-            if (['Internship', 'Entry Level Job', 'Career Pivot', 'Apprenticeship'].includes(goal)) {
+            if (['Internship', 'Entry Level Job', 'Apprenticeship'].includes(goal)) {
                 courses = [...catalogue.short, ...catalogue.med];
             } else if (['Strengthen my current skills', 'Upskill'].includes(goal)) {
                 courses = [...catalogue.med, ...catalogue.long];
+            } else if (goal === 'Advancement & Lifelong Learning') {
+                courses = [...catalogue.short, ...catalogue.med]; // Prioritize Micro-learning
             } else {
                 courses = [...catalogue.short, ...catalogue.med, ...catalogue.long];
             }
@@ -2690,6 +2637,7 @@ function getOJAMetrics(roleTitle, country) {
             // --- RENDER FINAL HTML ---
             container.innerHTML = `
                 <div class="animate-fade-in space-y-6 pb-8">
+                    <button onclick="renderPathwayGoal()" class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Options</button>
                     <!-- Header -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
                         <div>
@@ -2729,14 +2677,21 @@ function getOJAMetrics(roleTitle, country) {
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             ${skillsHtml}
                         </div>
+                        ${advancedTools.length > 0 ? `
+                        <div class="mt-4 pt-4 border-t border-slate-100">
+                            <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2">Recommended Tools</h4>
+                            <div class="flex flex-wrap gap-2">
+                                ${advancedTools.map(t => `<span class="px-2 py-1 bg-slate-50 border border-slate-200 rounded text-[10px] font-bold text-slate-600 shadow-sm">${t}</span>`).join('')}
+                            </div>
+                        </div>` : ''}
                     </div>
 
                     <!-- C. Training -->
-                    ${goal !== 'Apprenticeship' ? `
+                    ${goal !== 'Placement & Apprenticeship' ? `
                     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3">
-                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">C</span> Examples of Training</h3>
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">C</span> Quick Courses</h3>
                             <div class="flex gap-2">
                                 ${blockCAction ? `<button onclick="${blockCOnclick}" class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded hover:bg-emerald-100 border border-emerald-100">${blockCAction}</button>` : ''}
                             </div>
@@ -2763,7 +2718,7 @@ function getOJAMetrics(roleTitle, country) {
                     <!-- E. Ecosystem -->
                     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-slate-400"></div>
-                        <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-4"><span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold">E</span> Read up on the Ecosystem</h3>
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-4"><span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold">E</span> Explore the Ecosystem</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             ${ecoHtml}
                         </div>
@@ -2777,6 +2732,9 @@ function getOJAMetrics(roleTitle, country) {
         window.renderReadinessScorecard = function(targetId = 'pp-practice-content', backAction = 'renderPathwayStep3()') {
             const container = document.getElementById(targetId);
             if(!container) return;
+
+            const isPathwayContext = targetId === 'pp-practice-content';
+            const optionsBtn = isPathwayContext ? `<button onclick="renderPathwayGoal()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> Options</button>` : '';
 
             const sections = [
                 {
@@ -2796,7 +2754,10 @@ function getOJAMetrics(roleTitle, country) {
             container.innerHTML = `
                 <div class="max-w-3xl mx-auto py-4 animate-fade-in">
                     <div class="mb-6 flex justify-between items-center">
-                        <button onclick="${backAction}" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+                        <div class="flex gap-4">
+                            <button onclick="${backAction}" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+                            ${optionsBtn}
+                        </div>
                         <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">Readiness Audit</div>
                     </div>
                     
@@ -2848,6 +2809,94 @@ function getOJAMetrics(roleTitle, country) {
                     const pct = Math.round((checked / total) * 100);
                     document.getElementById('readiness-bar').style.width = `${pct}%`;
                     document.getElementById('readiness-text').innerText = `${pct}%`;
+                };
+                checks.forEach(c => c.addEventListener('change', updateScore));
+            }, 100);
+
+            if(window.lucide) lucide.createIcons();
+        }
+
+        // --- NEW: Apprenticeship Checklist ---
+        window.renderApprenticeshipChecklist = function(targetId = 'pp-practice-content', backAction = 'renderPathwayStep3()') {
+            const container = document.getElementById(targetId);
+            if(!container) return;
+
+            const isPathwayContext = targetId === 'pp-practice-content';
+            const optionsBtn = isPathwayContext ? `<button onclick="renderPathwayGoal()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> Options</button>` : '';
+
+            const sections = [
+                {
+                    title: "Pre-Placement", icon: "search", color: "blue",
+                    items: ["Identify target trade/skill (e.g. Solar, Welding)", "Research national requirements (e.g. NITA, VETA)", "Prepare a 'Learner's CV' focusing on attitude"]
+                },
+                {
+                    title: "Onboarding", icon: "file-signature", color: "purple",
+                    items: ["Draft/Sign Apprenticeship Agreement", "Obtain necessary PPE (Safety Gear)", "Set up a Daily Logbook (Physical or Digital)"]
+                },
+                {
+                    title: "Daily Routine", icon: "calendar-check", color: "emerald",
+                    items: ["Schedule weekly check-ins with supervisor", "Document 3 key learnings per week", "Collect photo evidence of work (Portfolio)"]
+                }
+            ];
+
+            container.innerHTML = `
+                <div class="max-w-3xl mx-auto py-4 animate-fade-in">
+                    <div class="mb-6 flex justify-between items-center">
+                        <div class="flex gap-4">
+                            <button onclick="${backAction}" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+                            ${optionsBtn}
+                        </div>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">Placement & Apprenticeship Audit</div>
+                    </div>
+                    
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-slate-900 mb-2">Apprentice Readiness Checklist</h2>
+                        <p class="text-slate-500">Ensure you are ready for a successful placement.</p>
+                    </div>
+
+                    <div class="space-y-6" id="app-checklist-form">
+                        ${sections.map((s, idx) => `
+                            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                                <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                    <div class="p-1.5 bg-${s.color}-50 text-${s.color}-600 rounded-lg"><i data-lucide="${s.icon}" class="w-4 h-4"></i></div>
+                                    ${s.title}
+                                </h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    ${s.items.map(item => `
+                                        <label class="flex items-start gap-3 p-3 border border-slate-100 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
+                                            <input type="checkbox" class="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 app-check">
+                                            <span class="text-xs text-slate-700 font-medium leading-snug">${item}</span>
+                                        </label>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="mt-8 p-6 bg-slate-900 rounded-xl text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-lg">
+                        <div>
+                            <h3 class="font-bold text-lg mb-1">Readiness Score</h3>
+                            <p class="text-xs text-slate-400">Complete all items before your first day.</p>
+                        </div>
+                        <div class="flex items-center gap-4 w-full sm:w-auto">
+                            <div class="flex-1 sm:w-48 bg-slate-700 rounded-full h-4 overflow-hidden">
+                                <div id="app-readiness-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+                            </div>
+                            <span id="app-readiness-text" class="font-bold text-2xl font-mono">0%</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add listeners
+            setTimeout(() => {
+                const checks = document.querySelectorAll('.app-check');
+                const updateScore = () => {
+                    const total = checks.length;
+                    const checked = document.querySelectorAll('.app-check:checked').length;
+                    const pct = Math.round((checked / total) * 100);
+                    document.getElementById('app-readiness-bar').style.width = `${pct}%`;
+                    document.getElementById('app-readiness-text').innerText = `${pct}%`;
                 };
                 checks.forEach(c => c.addEventListener('change', updateScore));
             }, 100);
@@ -2935,8 +2984,9 @@ function getOJAMetrics(roleTitle, country) {
 
             container.innerHTML = `
                 <div class="max-w-3xl mx-auto py-4 animate-fade-in">
-                    <div class="mb-6">
+                    <div class="mb-6 flex gap-4">
                         <button onclick="renderPathwayStep3()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Roadmap</button>
+                        <button onclick="renderPathwayGoal()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> Options</button>
                     </div>
                     <div class="text-center mb-8">
                         <h2 class="text-2xl font-bold text-slate-900 mb-2">Cold Outreach Scripts</h2>
@@ -3520,8 +3570,16 @@ function getOJAMetrics(roleTitle, country) {
 
             const drawer = document.getElementById('unified-hub-modal');
             
+            // SAFETY FIX: Ensure hidden class is removed if it was added by mistake
+            if(drawer) drawer.classList.remove('hidden');
+            
+            // Check if we are opening from a closed state
+            const wasClosed = drawer.classList.contains('translate-x-full');
+            
             // Conditional Rendering: Only render pathway content if requested (role/goal)
             const specificRequest = !!(roleName || pathwayGoal);
+            // Check if this is a specific tab request (not default dashboard)
+            const specificTabRequest = startTab !== 'pp-diagnostic';
 
             if(specificRequest && typeof window.renderPATHWAYContent === 'function') {
                 window.renderPATHWAYContent(roleName, pathwayGoal);
@@ -3532,9 +3590,23 @@ function getOJAMetrics(roleTitle, country) {
             const isDefaultRequest = (startTab === 'pp-diagnostic' && !roleName && !pathwayGoal);
             const activeView = document.querySelector('.pp-view-content:not(.hidden)');
             
-            if (isDefaultRequest && activeView) {
-                // Resume current view (do not reset)
+            // If opening fresh with a specific request (Deep Link), clear history to avoid ghost navigation
+            if (wasClosed && (specificRequest || specificTabRequest)) {
+                hubNavigationStack = [];
+                // Hide all views to ensure we start clean
+                document.querySelectorAll('.pp-view-content').forEach(el => el.classList.add('hidden'));
+            }
+
+            if (isDefaultRequest && activeView && !wasClosed) {
+                // Resume current view if already open
                 return;
+            }
+            
+            if (isDefaultRequest && wasClosed) {
+                 // Resume if opening default and something was already active
+                 hubNavigationStack = [];
+                 renderSkillsHubDashboard();
+                 return;
             }
 
             if (startTab === 'pp-diagnostic' && !roleName) {
@@ -3543,7 +3615,8 @@ function getOJAMetrics(roleTitle, country) {
             } else {
                 // Specific deep link (e.g. from "Am I a good fit?")
                 // If specific request was made, preserve state. Otherwise reset.
-                openSkillsView(startTab, specificRequest);
+                const addToStack = !wasClosed; 
+                openSkillsView(startTab, specificRequest, addToStack);
             }
         }
 
@@ -3557,6 +3630,12 @@ function getOJAMetrics(roleTitle, country) {
             const container = document.getElementById('skills-hub-home');
             if(!container) return;
             
+            // Reset Header Title
+            const headerTitle = document.getElementById('pp-header-title');
+            if (headerTitle) {
+                headerTitle.innerHTML = `<i data-lucide="layers" class="w-6 h-6 text-indigo-600"></i> Skills & Training Hub`;
+            }
+
             // Hide other views
             document.querySelectorAll('.pp-view-content').forEach(el => el.classList.add('hidden'));
             container.classList.remove('hidden');
@@ -3605,39 +3684,154 @@ function getOJAMetrics(roleTitle, country) {
                     <button onclick="openSkillsView('pp-diagnostic')" class="p-6 bg-emerald-50 border border-emerald-100 rounded-xl hover:border-emerald-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-emerald-100 text-emerald-600 rounded-lg w-fit mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><i data-lucide="clipboard-check" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">SkillsMatch</h3>
-                        <p class="text-sm text-slate-600">Assess your current <strong>${sectorName}</strong> skills, identify gaps, and get a readiness score.</p>
+                        <p class="text-sm text-slate-600">Check your skills, find your gaps, and see if you're ready for the job.</p>
                     </button>
 
                     <button onclick="openSkillsView('pp-practice')" class="p-6 bg-indigo-50 border border-indigo-100 rounded-xl hover:border-indigo-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-indigo-100 text-indigo-600 rounded-lg w-fit mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><i data-lucide="map" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">Pathway Builder</h3>
-                        <p class="text-sm text-slate-600">Create a personalized learning roadmap for <strong>${sectorName}</strong> roles or to support <strong>lifelong learning</strong>.</p>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Career Roadmap</h3>
+                        <p class="text-sm text-slate-600">Build a step-by-step plan to reach your career goals in <strong>${sectorName}</strong>.</p>
                     </button>
                     
-                    <button onclick="openSkillsView('pp-launchpad')" class="p-6 bg-orange-50 border border-orange-100 rounded-xl hover:border-orange-300 hover:bg-white hover:shadow-md text-left transition-all group">
-                        <div class="p-3 bg-orange-100 text-orange-600 rounded-lg w-fit mb-4 group-hover:bg-orange-600 group-hover:text-white transition-colors"><i data-lucide="rocket" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">Founder's Launchpad</h3>
-                        <p class="text-sm text-slate-600">Access information on incubators, funding sources, and playbooks to start your <strong>${sectorName}</strong> venture.</p>
-                    </button>
-
-                    <button onclick="openSkillsView('pp-finance')" class="p-6 bg-purple-50 border border-purple-100 rounded-xl hover:border-purple-300 hover:bg-white hover:shadow-md text-left transition-all group">
-                        <div class="p-3 bg-purple-100 text-purple-600 rounded-lg w-fit mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors"><i data-lucide="banknote" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">Financial Aid</h3>
-                        <p class="text-sm text-slate-600">Find scholarships, loans, and grants for your <strong>${sectorName}</strong> education.</p>
-                    </button>
-
                     <button onclick="openSkillsView('pp-courses')" class="p-6 bg-blue-50 border border-blue-100 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-blue-100 text-blue-600 rounded-lg w-fit mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
-                        <p class="text-sm text-slate-600">Search verified <strong>${sectorName}</strong> training providers and certifications.</p>
+                        <p class="text-sm text-slate-600">Search for trusted training providers and certifications.</p>
                     </button>
 
                     <button onclick="openSkillsView('pp-recommendations')" class="p-6 bg-teal-50 border border-teal-100 rounded-xl hover:border-teal-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-teal-100 text-teal-600 rounded-lg w-fit mb-4 group-hover:bg-teal-600 group-hover:text-white transition-colors"><i data-lucide="compass" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">Still not sure?</h3>
-                        <p class="text-sm text-slate-600">Look at brief suggestions for learning paths in <strong>${sectorName}</strong>.</p>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Explore Roles</h3>
+                        <p class="text-sm text-slate-600">See quick ideas for careers and learning paths in <strong>${sectorName}</strong>.</p>
                     </button>
             `;
+            if(window.lucide) lucide.createIcons();
+        }
+
+        // --- NEW: Render Find Courses View (Optimized Layout) ---
+        window.renderFindCoursesView = function() {
+            const container = document.getElementById('pp-courses');
+            if (!container) return;
+
+            container.innerHTML = `
+                <div class="animate-fade-in space-y-4">
+                    <!-- Header -->
+                    <div class="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-900">Find Courses</h2>
+                            <p class="text-xs text-slate-500">Browse verified training providers in <strong>${activeSectorId === 'agri' ? 'Agritech' : activeSectorId === 'energy' ? 'Renewable Energy' : 'Digital Economy'}</strong>.</p>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                            <!-- Skill Filter (First Priority) -->
+                            <div class="col-span-1 sm:col-span-2">
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Skill Focus</label>
+                                <select id="filter-skill" onchange="renderProviderTable()" class="w-full text-xs border-slate-300 rounded-lg p-2 focus:ring-indigo-500 bg-indigo-50/50 border-indigo-200 text-indigo-900 font-medium">
+                                    <option value="all">All Skills</option>
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+
+                            <!-- Country -->
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Location</label>
+                                <select id="filter-country" onchange="renderProviderTable()" class="w-full text-xs border-slate-300 rounded-lg p-2 focus:ring-indigo-500">
+                                    <option value="all">All Locations</option>
+                                    <option value="Kenya">Kenya</option>
+                                    <option value="Uganda">Uganda</option>
+                                    <option value="Tanzania">Tanzania</option>
+                                    <option value="Rwanda">Rwanda</option>
+                                    <option value="Burundi">Burundi</option>
+                                    <option value="South Sudan">South Sudan</option>
+                                    <option value="DRC">DR Congo</option>
+                                    <option value="Somalia">Somalia</option>
+                                </select>
+                            </div>
+
+                            <!-- Mode -->
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mode</label>
+                                <select id="filter-mode" onchange="renderProviderTable()" class="w-full text-xs border-slate-300 rounded-lg p-2 focus:ring-indigo-500">
+                                    <option value="all">Any Mode</option>
+                                    <option value="Online">Online</option>
+                                    <option value="In-Person">In-Person</option>
+                                    <option value="Hybrid">Hybrid</option>
+                                </select>
+                            </div>
+
+                            <!-- Duration -->
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Duration</label>
+                                <select id="filter-duration" onchange="renderProviderTable()" class="w-full text-xs border-slate-300 rounded-lg p-2 focus:ring-indigo-500">
+                                    <option value="all">Any Duration</option>
+                                    <option value="short">Short (< 1m)</option>
+                                    <option value="1-3m">1-3 Months</option>
+                                    <option value="3-6m">3-6 Months</option>
+                                    <option value="6-12m">6-12 Months</option>
+                                    <option value="1-2y">1-2 Years</option>
+                                    <option value="2y+">2 Years+</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Cost -->
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Cost</label>
+                                <select id="filter-cost" onchange="renderProviderTable()" class="w-full text-xs border-slate-300 rounded-lg p-2 focus:ring-indigo-500">
+                                    <option value="all">Any Cost</option>
+                                    <option value="free">Free / Subsidized</option>
+                                    <option value="paid">Paid</option>
+                                </select>
+                            </div>
+
+                            <!-- Type -->
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Type</label>
+                                <select id="filter-type" onchange="renderProviderTable()" class="w-full text-xs border-slate-300 rounded-lg p-2 focus:ring-indigo-500">
+                                    <option value="all">Any Type</option>
+                                    <option value="micro">Micro-credential</option>
+                                    <option value="cert">Certificate</option>
+                                    <option value="degree">Degree/Diploma</option>
+                                    <option value="bootcamp">Bootcamp</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="p-3 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+                            <span class="text-xs font-bold text-slate-600" id="provider-counter">Loading...</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse hidden md:table">
+                                <thead>
+                                    <tr class="text-[10px] text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
+                                        <th class="px-3 py-2 font-bold">Course / Provider</th>
+                                        <th class="px-3 py-2 font-bold">Details</th>
+                                        <th class="px-3 py-2 font-bold">Quality</th>
+                                        <th class="px-3 py-2 font-bold">Outcome</th>
+                                        <th class="px-3 py-2 font-bold">Updated</th>
+                                        <th class="px-3 py-2 font-bold text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="db-body"></tbody>
+                            </table>
+                            <!-- Mobile Cards -->
+                            <div id="db-mobile-cards" class="md:hidden divide-y divide-slate-100"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Initialize Filters
+            populateSkillFilter();
+            const countrySelect = document.getElementById('filter-country');
+            if(countrySelect) countrySelect.value = activeCountry;
+            
+            renderProviderTable();
             if(window.lucide) lucide.createIcons();
         }
 
@@ -3663,24 +3857,25 @@ function getOJAMetrics(roleTitle, country) {
             if(target) {
                 target.classList.remove('hidden');
                 
-                // Inject Back Button if not present
-                let nav = target.querySelector('.pp-back-nav');
-                if(!nav) {
-                    nav = document.createElement('div');
-                    nav.className = 'pp-back-nav mb-4';
-                    target.insertBefore(nav, target.firstChild);
+                // Update Header Title
+                const headerTitle = document.getElementById('pp-header-title');
+                if (headerTitle) {
+                    if (viewId === 'pp-launchpad') {
+                        headerTitle.innerHTML = `<i data-lucide="rocket" class="w-6 h-6 text-orange-600"></i> Founder's Launchpad`;
+                    } else if (viewId === 'pp-finance') {
+                        headerTitle.innerHTML = `<i data-lucide="banknote" class="w-6 h-6 text-emerald-600"></i> Financial Aid and Scholarships`;
+                    } else {
+                        headerTitle.innerHTML = `<i data-lucide="layers" class="w-6 h-6 text-indigo-600"></i> Skills & Training Hub`;
+                    }
                 }
-                const backLabel = (hubNavigationStack.length === 0) ? "Back to Hub" : "Back";
-                nav.innerHTML = `<button onclick="navigateBackInHub()" class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 font-medium"><i data-lucide="arrow-left" class="w-4 h-4"></i> ${backLabel}</button>`;
                 
-                // Trigger specific render logic if needed
+                // Trigger specific render logic if needed (Render FIRST, then inject nav)
                 if(viewId === 'pp-diagnostic') {
                     if (!preserveState) renderPATHWAYContent();
                 } else if (viewId === 'pp-practice') {
                      if (!preserveState) initPathwayWizard();
                 } else if (viewId === 'pp-courses') {
-                    if (typeof populateSkillFilter === 'function') populateSkillFilter();
-                    renderProviderTable();
+                    renderFindCoursesView();
                 } else if (viewId === 'pp-launchpad') {
                     renderLaunchpadTab();
                 } else if (viewId === 'pp-finance') {
@@ -3691,6 +3886,19 @@ function getOJAMetrics(roleTitle, country) {
                     showTrainingRecommendations('pp-recommendations', 'navigateBackInHub()');
                 }
                 
+                // Inject Back Button (After render to ensure it persists)
+                // Skip for independent views (Launchpad, Finance)
+                if (viewId !== 'pp-launchpad' && viewId !== 'pp-finance') {
+                    let nav = target.querySelector('.pp-back-nav');
+                    if(!nav) {
+                        nav = document.createElement('div');
+                        nav.className = 'pp-back-nav mb-4';
+                        target.insertBefore(nav, target.firstChild);
+                    }
+                    const backLabel = (hubNavigationStack.length === 0) ? "Back to Hub" : "Back";
+                    nav.innerHTML = `<button onclick="navigateBackInHub()" class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 font-medium"><i data-lucide="arrow-left" class="w-4 h-4"></i> ${backLabel}</button>`;
+                }
+
                 // Scroll to top
                 const container = document.getElementById('pp-scroll-container');
                 if(container) container.scrollTop = 0;
@@ -4211,7 +4419,7 @@ window.resetTrainingHub = function() {
 
                 <button onclick="showTrainingHubView('finance')" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-purple-300 hover:bg-white hover:shadow-sm text-left transition-all group">
                     <div class="p-2 bg-purple-100 text-purple-600 rounded-lg w-fit mb-3 group-hover:bg-purple-600 group-hover:text-white transition-colors"><i data-lucide="banknote" class="w-5 h-5"></i></div>
-                    <h4 class="font-bold text-slate-800 text-sm">Financial Aid</h4>
+                    <h4 class="font-bold text-slate-800 text-sm">Financial Aid and Scholarships</h4>
                     <p class="text-xs text-slate-500 mt-1">Scholarships</p>
                 </button>
             </div>
@@ -4457,9 +4665,13 @@ window.showTrainingRecommendations = function(targetId = 'training-hub-content',
         </div>
     `).join('');
 
+    // Only show back button if NOT in Unified Hub (pp-recommendations)
+    const showBackBtn = !targetId.startsWith('pp-');
+    const backBtnHtml = showBackBtn ? `<button onclick="${backAction}" class="mb-2 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>` : '';
+
     container.innerHTML = `
         <div class="animate-fade-in space-y-4">
-            <button onclick="${backAction}" class="mb-2 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+            ${backBtnHtml}
             
             <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100">
                 <h2 class="text-lg font-bold text-indigo-900 mb-2">Career Pathways: ${sectorName}</h2>
@@ -4602,24 +4814,50 @@ window.toggleCareerHub = function() {
         window.openCoursesForSkill = function(skillName) {
             closeModal('skill-modal');
             
-            // Reset filters to ensure search finds results globally
-            const container = document.getElementById('pp-courses');
-            if (container) {
-                const selects = container.querySelectorAll('select');
-                selects.forEach(s => s.value = 'all');
-            }
-
-            const searchInput = document.getElementById('filter-search');
-            if(searchInput) {
-                searchInput.value = skillName;
-            }
+            // Open the view first
             openUnifiedHub('pp-courses', null, null);
-            // Force render to ensure filter is applied (handled by openSkillsView now)
-            setTimeout(() => { renderProviderTable(); }, 150);
+
+            // Apply filters after view is ready
+            setTimeout(() => {
+                // 1. Reset other filters
+                const container = document.getElementById('pp-courses');
+                if (container) {
+                    const selects = container.querySelectorAll('select');
+                    selects.forEach(s => {
+                        if (s.id !== 'filter-skill') s.value = 'all';
+                    });
+                }
+
+                // 2. Try to select the skill in dropdown
+                const skillSelect = document.getElementById('filter-skill');
+
+                if (skillSelect) {
+                    // Normalize for comparison
+                    const target = skillName.toLowerCase();
+                    for (let i = 0; i < skillSelect.options.length; i++) {
+                        if (skillSelect.options[i].value.toLowerCase() === target) {
+                            skillSelect.value = skillSelect.options[i].value;
+                            break;
+                        }
+                    }
+                }
+
+                // 5. Render
+                renderProviderTable();
+            }, 150);
         }
 
         window.openResourceModal = function(category) {
-            closeAllModals('resource-modal');
+            // Check if Unified Hub is open to allow stacking
+            const hub = document.getElementById('unified-hub-modal');
+            const isHubOpen = hub && !hub.classList.contains('translate-x-full');
+
+            if (isHubOpen) {
+                ['occupation-modal', 'venture-modal', 'skill-modal', 'certificate-modal'].forEach(id => closeModal(id));
+            } else {
+                closeAllModals('resource-modal');
+            }
+
             const modal = document.getElementById('resource-modal');
             const panel = document.getElementById('resource-modal-panel');
             document.getElementById('resource-modal-title').innerText = category;
@@ -4863,29 +5101,29 @@ window.toggleCareerHub = function() {
                             <div class="flex items-center justify-between mb-2">
                                 <div class="flex items-center gap-2">
                                     <div class="p-1.5 bg-${themeColor}-50 text-${themeColor}-600 rounded-lg"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
-                                    <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Sector Proxy</h4>
+                                    <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Growth Trends</h4>
                                 </div>
                                 <span class="text-[9px] text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">Src: ${data.outlook.source}</span>
                             </div>
                             <div class="text-2xl font-bold text-slate-900">${data.growth.jobTrend}</div>
-                            <div class="text-xs text-slate-500 mt-1">Macro-economic Growth Trend</div>
+                            <div class="text-xs text-slate-500 mt-1">Overall Sector Growth</div>
                         </div>
 
                         <!-- Card 2: Investments -->
                         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full">
                             <div class="flex items-center gap-2 mb-2">
                                 <div class="p-1.5 bg-${themeColor}-50 text-${themeColor}-600 rounded-lg"><i data-lucide="trending-up" class="w-4 h-4"></i></div>
-                                <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Investments</h4>
+                                <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Investment Flow</h4>
                             </div>
                             <div class="text-2xl font-bold text-slate-900">${data.growth.investment}</div>
-                            <div class="text-xs text-slate-500 mt-1">FDI & Local Capital Inflow</div>
+                            <div class="text-xs text-slate-500 mt-1">Money coming into the sector</div>
                         </div>
 
                         <!-- Card 3: Skills Demand (Meter) -->
                         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full">
                             <div class="flex items-center gap-2 mb-2">
                                 <div class="p-1.5 ${demandBgClass} rounded-lg"><i data-lucide="bar-chart-2" class="w-4 h-4"></i></div>
-                                <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Skills Demand</h4>
+                                <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Hiring Demand</h4>
                             </div>
                             <div class="flex items-end gap-2 mb-2">
                                 <div class="text-2xl font-bold ${demandColorClass}">${data.growth.skillsDemand}</div>
@@ -4900,10 +5138,10 @@ window.toggleCareerHub = function() {
                         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full">
                             <div class="flex items-center gap-2 mb-2">
                                 <div class="p-1.5 bg-${themeColor}-50 text-${themeColor}-600 rounded-lg"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
-                                <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Key Hotspots</h4>
+                                <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Top Locations</h4>
                             </div>
                             <div class="text-lg font-bold text-slate-900 leading-tight">${data.outlook.hotspots}</div>
-                            <div class="text-xs text-slate-500 mt-1">Regional Economic Hubs</div>
+                            <div class="text-xs text-slate-500 mt-1">Where the jobs are</div>
                         </div>
 
                     </div>
@@ -5054,19 +5292,19 @@ window.toggleCareerHub = function() {
             const snapshotHtml = `
                 <div>
                     <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-1 flex items-center gap-2">
-                        <i data-lucide="info" class="w-4 h-4"></i> Venture Snapshot
+                        <i data-lucide="info" class="w-4 h-4"></i> Quick Look
                     </h3>
                     <p class="text-[10px] text-slate-400 italic mb-3 ml-6">Capital estimates are indicative and vary by location.</p>
                     <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-y-5 gap-x-4">
                             <div>
-                                <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Startup Capital</div>
+                                <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Starting Cash</div>
                                 <div class="text-xs font-bold text-emerald-600 flex items-center gap-1.5">
                                     <i data-lucide="banknote" class="w-3.5 h-3.5"></i> ${capitalLevel}
                                 </div>
                             </div>
                             <div>
-                                <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Market Reach</div>
+                                <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Where to Sell</div>
                                 <div class="text-xs font-bold text-indigo-600 flex items-center gap-1.5">
                                     <i data-lucide="globe" class="w-3.5 h-3.5"></i> ${ctx.location}
                                 </div>
@@ -5084,7 +5322,7 @@ window.toggleCareerHub = function() {
                                 </div>
                             </div>
                             <div>
-                                <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Key Driver</div>
+                                <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Main Benefit</div>
                                 <div class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                                     <i data-lucide="trending-up" class="w-3.5 h-3.5 text-slate-500"></i> ${ctx.drivers[0] || 'Innovation'}
                                 </div>
@@ -5123,7 +5361,7 @@ window.toggleCareerHub = function() {
             const competenciesHtml = `
                 <section>
                     <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">2</span> Key Competencies
+                        <span class="w-6 h-6 rounded bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">2</span> Skills You Need
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         ${skillsListHtml}
@@ -5135,7 +5373,7 @@ window.toggleCareerHub = function() {
             const reqsHtml = `
                 <div class="mt-6 pt-6 border-t border-slate-100">
                     <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">3</span> Requirements & Regulations
+                        <span class="w-6 h-6 rounded bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">3</span> Rules & Requirements
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
@@ -5561,6 +5799,56 @@ window.toggleCareerHub = function() {
                 </div>
             `;
             if(window.lucide) lucide.createIcons();
+        }
+
+        // --- NEW: Career Guides View (Absorbed from Resource Modal) ---
+        window.showCareerGuides = function(backAction = null) {
+            const container = document.getElementById('career-hub-content');
+            const resources = (typeof libraryResources !== 'undefined') ? libraryResources : [];
+            
+            const backBtn = backAction 
+                ? `<button onclick="${backAction}" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Pathway</button>`
+                : `<button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>`;
+
+            const resourcesHtml = resources.map(r => `
+                <a href="${r.link}" target="_blank" class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:border-rose-300 bg-white group transition-all">
+                    <div class="p-2 bg-rose-50 text-rose-600 rounded"><i data-lucide="${r.icon}" class="w-4 h-4"></i></div>
+                    <div>
+                        <div class="font-bold text-sm text-slate-800 group-hover:text-rose-700">${r.title}</div>
+                        <div class="text-xs text-slate-500">${r.desc}</div>
+                    </div>
+                    <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-rose-500 ml-auto"></i>
+                </a>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="animate-fade-in">
+                    ${backBtn}
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="library" class="w-5 h-5 text-rose-500"></i> Career Guides</h3>
+                    <div class="space-y-3">
+                        ${resourcesHtml}
+                    </div>
+                </div>
+            `;
+            if(window.lucide) lucide.createIcons();
+        }
+
+        // --- NEW: Helper to restore Pathway from Career Guides ---
+        window.restorePathwayFromGuides = function() {
+            openUnifiedHub('pp-practice');
+            pathwayState.goal = 'Advancement & Lifelong Learning';
+            renderPathwayStep3();
+        }
+
+        // --- NEW: Helper for Lifelong Learning Button (Fixes Quoting Issues) ---
+        window.openLifelongLearningGuides = function() {
+            // Correctly close the drawer without hiding it (display:none)
+            const hub = document.getElementById('unified-hub-modal');
+            if(hub) hub.classList.add('translate-x-full');
+            
+            const drawer = document.getElementById('career-hub-drawer');
+            if(drawer) drawer.classList.remove('translate-x-full');
+            showCareerGuides("restorePathwayFromGuides()");
         }
 
         window.showCVResources = function() {
@@ -6055,70 +6343,10 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
-        // --- NEW: Hero Persona Logic ---
-        window.updateHeroPersona = function(type) {
-            const content = {
-                learner: {
-                    text: "In 10 minutes, you’ll have a shortlist of occupations you’re suited for + an idea of skills in demand + information on training options in your country.",
-                    },
-                entrepreneur: {
-                    text: "Identify high-potential venture niches, access eco-system resources, and build your capability roadmap.",
-                },
-                counsellor: {
-                    text: "Access labour market intelligence to guide students towards high-growth career paths.",
-                },
-                provider: {
-                    text: "Align your curriculum with real-time market demand and skills gaps.",
-                },
-                policy: {
-                    text: "View workforce data and trends to inform education and employment policy.",
-                }
-            };
-
-            const data = content[type] || content.learner;
-            
-            const descEl = document.getElementById('hero-desc');
-            
-            if(descEl) {
-                descEl.style.opacity = '0';
-                setTimeout(() => { descEl.innerHTML = data.text; descEl.style.opacity = '1'; }, 150);
-            }
-
-            const styles = {
-                learner: { active: "border-indigo-200 bg-white/60 backdrop-blur-sm text-indigo-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white/30 backdrop-blur-sm text-slate-500 hover:text-indigo-600 hover:border-indigo-300" },
-                entrepreneur: { active: "border-fuchsia-200 bg-white/60 backdrop-blur-sm text-fuchsia-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white/30 backdrop-blur-sm text-slate-500 hover:text-fuchsia-600 hover:border-fuchsia-300" },
-                counsellor: { active: "border-amber-200 bg-white/60 backdrop-blur-sm text-amber-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white/30 backdrop-blur-sm text-slate-500 hover:text-amber-600 hover:border-amber-300" },
-                provider: { active: "border-emerald-200 bg-white/60 backdrop-blur-sm text-emerald-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white/30 backdrop-blur-sm text-slate-500 hover:text-emerald-600 hover:border-emerald-300" },
-                policy: { active: "border-cyan-200 bg-white/60 backdrop-blur-sm text-cyan-700 font-medium shadow-sm", inactive: "border-slate-200 bg-white/30 backdrop-blur-sm text-slate-500 hover:text-cyan-600 hover:border-cyan-300" }
-            };
-
-            ['learner', 'entrepreneur', 'counsellor', 'provider', 'policy'].forEach(k => {
-                const btn = document.getElementById(`btn-p-${k}`);
-                if(btn) {
-                    if(k === type) {
-                        btn.className = `shrink-0 snap-center whitespace-nowrap px-4 py-1.5 rounded-full text-xs transition-colors ${styles[k].active}`;
-                    } else {
-                        btn.className = `shrink-0 snap-center whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${styles[k].inactive}`;
-                    }
-                }
-            });
-        }
-
         // --- NEW: Update Hero Stats ---
         window.updateHeroStats = function() {
             let statsContainer = document.getElementById('hero-stats');
-            // Auto-inject if missing but hero-desc exists (fallback for existing HTML)
-            if (!statsContainer) {
-                const descEl = document.getElementById('hero-desc');
-                if (descEl && descEl.parentNode) {
-                    statsContainer = document.createElement('div');
-                    statsContainer.id = 'hero-stats';
-                    // Insert after the description
-                    descEl.parentNode.insertBefore(statsContainer, descEl.nextSibling);
-                } else {
-                    return;
-                }
-            }
+            if (!statsContainer) return;
 
             // Safety checks
             const courses = dataManager.courses || [];
@@ -6141,7 +6369,6 @@ window.toggleCareerHub = function() {
             statsContainer.innerHTML = `
                 <div class="mt-4 pt-2 border-t border-slate-200/60 animate-fade-in w-full">
                     <div class="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-2 text-[10px] text-slate-500 font-medium px-2">
-                        <span class="font-bold text-slate-400 uppercase tracking-wide mr-1 hidden sm:inline">Database:</span>
                         <div class="flex items-center gap-1" title="Training Courses"><i data-lucide="book-open" class="w-3 h-3 text-indigo-400"></i> <span>${courseCount} Courses</span></div>
                         <span class="text-slate-300 hidden sm:inline">•</span>
                         <div class="flex items-center gap-1" title="Training Providers"><i data-lucide="building-2" class="w-3 h-3 text-indigo-400"></i> <span>${providerCount} Providers</span></div>
@@ -6312,6 +6539,15 @@ window.toggleCareerHub = function() {
                                     <p class="text-xs text-slate-500 mt-0.5">Audit your assets & strategy.</p>
                                 </div>
                                 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-emerald-500"></i>
+                            </button>
+
+                            <button onclick="showCareerGuides()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-rose-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-rose-50 text-rose-600 rounded-lg shrink-0 group-hover:bg-rose-600 group-hover:text-white transition-colors"><i data-lucide="library" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-rose-700">Career Guides</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Expert advice & tips.</p>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-rose-500"></i>
                             </button>
                         </div>
                     </div>
@@ -6531,6 +6767,10 @@ window.toggleCareerHub = function() {
 
             // Sort Logic
             filtered.sort((a, b) => {
+                // 1. Certified / Accredited Priority (Applies to Default Sort)
+                const isCertA = (a.outcomeData && a.outcomeData.accreditation === 'Accredited') || (a.type && /Degree|Diploma|Certificate|License|Certification|Professional/.test(a.type));
+                const isCertB = (b.outcomeData && b.outcomeData.accreditation === 'Accredited') || (b.type && /Degree|Diploma|Certificate|License|Certification|Professional/.test(b.type));
+
                 if (sortFilter === 'duration_asc') {
                     const durA = parseDuration(a.duration) || 999;
                     const durB = parseDuration(b.duration) || 999;
@@ -6549,6 +6789,10 @@ window.toggleCareerHub = function() {
                     const starsB = (b.outcomeData && b.outcomeData.stars) ? b.outcomeData.stars : 0;
                     return starsB - starsA;
                 } else {
+                    // Default: Certified > Specific Country > Global
+                    if (isCertA && !isCertB) return -1;
+                    if (!isCertA && isCertB) return 1;
+
                     // Default: Specific Country > Global ('all')
                     const aIsGlobal = a.country === 'all';
                     const bIsGlobal = b.country === 'all';
@@ -6678,7 +6922,7 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
-        // --- NEW: Render Financial Aid ---
+        // --- NEW: Render Financial Aid and Scholarships ---
         window.renderFinancialAid = function() {
             const container = document.getElementById('financial-aid-list');
             if (!container) return;
@@ -6804,8 +7048,7 @@ window.toggleCareerHub = function() {
                     <div class="bg-purple-50 rounded-xl p-5 border border-purple-100 flex items-start gap-4">
                         <div class="p-3 bg-purple-100 text-purple-600 rounded-xl shrink-0 shadow-sm"><i data-lucide="banknote" class="w-6 h-6"></i></div>
                         <div>
-                            <h3 class="font-bold text-purple-900 text-lg">Scholarships & Financial Aid</h3>
-                            <p class="text-sm text-purple-700 mt-1 leading-relaxed">Find funding opportunities for your education and career development across East Africa.</p>
+                            <p class="text-sm text-purple-700 mt-1 leading-relaxed">Find scholarships and funding opportunities to support your higher education, skilling and careers pathway.</p>
                         </div>
                     </div>
 
@@ -6891,6 +7134,49 @@ window.toggleCareerHub = function() {
                     ${resourcesHtml}
                 </div>
             `;
+            if(window.lucide) lucide.createIcons();
+        }
+
+        window.showResourceLibraryModal = function() {
+            // Check if Unified Hub is open to allow stacking
+            const hub = document.getElementById('unified-hub-modal');
+            const isHubOpen = hub && !hub.classList.contains('translate-x-full');
+
+            if (isHubOpen) {
+                ['occupation-modal', 'venture-modal', 'skill-modal', 'certificate-modal'].forEach(id => closeModal(id));
+            } else {
+                closeAllModals('resource-modal');
+            }
+
+            const modal = document.getElementById('resource-modal');
+            const panel = document.getElementById('resource-modal-panel');
+            document.getElementById('resource-modal-title').innerText = "Career Guides";
+            
+            const resources = [
+                { title: "How to Write an ATS-Friendly CV", desc: "Optimize your resume to pass through automated screening systems.", icon: "file-text", link: "https://www.jobscan.co/blog/ats-resume/" },
+                { title: "Mastering the STAR Method for Interviews", desc: "Structure your answers to behavioral questions effectively.", icon: "star", link: "https://www.thebalancecareers.com/what-is-the-star-interview-response-technique-2061629" },
+                { title: "Networking for Introverts", desc: "Strategies to build professional connections authentically.", icon: "users", link: "https://hbr.org/2016/08/an-introverts-guide-to-networking" },
+                { title: "Salary Negotiation 101", desc: "Tips and scripts for discussing compensation.", icon: "banknote", link: "https://www.glassdoor.com/blog/guide/how-to-negotiate-your-salary/" },
+                { title: "Building Your Personal Brand on LinkedIn", desc: "Optimize your profile to attract recruiters.", icon: "linkedin", link: "https://www.linkedin.com/business/marketing/blog/linkedin-ads/how-to-build-your-personal-brand-on-linkedin" },
+                { title: "A Guide to Informational Interviews", desc: "Learn from professionals in your target field.", icon: "message-square", link: "https://career.berkeley.edu/start-exploring/informational-interviews/" }
+            ];
+
+            const resourcesHtml = resources.map(r => `
+                <a href="${r.link}" target="_blank" class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:border-rose-300 bg-white group transition-all">
+                    <div class="p-2 bg-rose-50 text-rose-600 rounded"><i data-lucide="${r.icon}" class="w-4 h-4"></i></div>
+                    <div>
+                        <div class="font-bold text-sm text-slate-800 group-hover:text-rose-700">${r.title}</div>
+                        <div class="text-xs text-slate-500">${r.desc}</div>
+                    </div>
+                    <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-rose-500 ml-auto"></i>
+                </a>
+            `).join('');
+
+            document.getElementById('resource-modal-content').innerHTML = `<div class="space-y-3">${resourcesHtml}</div>`;
+            
+            document.body.classList.add('overflow-hidden');
+            modal.classList.remove('hidden');
+            setTimeout(() => { panel.classList.remove('scale-95', 'opacity-0'); panel.classList.add('scale-100', 'opacity-100'); }, 10);
             if(window.lucide) lucide.createIcons();
         }
 
@@ -7108,9 +7394,6 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in space-y-8">
-                    <button onclick="renderSkillsHubDashboard()" class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 font-medium"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
-
-
                     <!-- Header -->
                     <div class="bg-${tc}-50 rounded-xl p-6 border border-${tc}-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
@@ -7118,57 +7401,31 @@ window.toggleCareerHub = function() {
                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-white text-${tc}-700 border border-${tc}-200 shadow-sm">${title} Sector</span>
                                 ${activeCountry !== 'all' ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-white text-slate-600 border border-slate-200 shadow-sm"><i data-lucide="map-pin" class="w-3 h-3 inline mr-1"></i> ${activeCountry}</span>` : ''}
                             </div>
-                            <h3 class="font-bold text-xl text-slate-900 flex items-center gap-2">
-                                <i data-lucide="rocket" class="w-6 h-6 text-orange-600"></i> Founder's Launchpad
-                            </h3>
                             <p class="text-sm text-${tc}-800 mt-1 max-w-xl">From idea to investment: Your sector-specific venture building toolkit.</p>
-                        </div>
-                    </div>
-
-                    <!-- Tools Section (Moved Up) -->
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide mb-4">Essential Founder Tools</h4>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <a href="https://www.canva.com/" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:shadow-sm transition-all group bg-white">
-                                <div class="font-bold text-xs text-slate-700 group-hover:text-indigo-700 mb-1">Canva</div>
-                                <div class="text-[10px] text-slate-500">Pitch Decks & Design</div>
-                            </a>
-                            <a href="https://www.ycombinator.com/library" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-orange-300 hover:shadow-sm transition-all group bg-white">
-                                <div class="font-bold text-xs text-slate-700 group-hover:text-orange-700 mb-1">YC Library</div>
-                                <div class="text-[10px] text-slate-500">Startup Advice</div>
-                            </a>
-                            <a href="https://stripe.com/atlas" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all group bg-white">
-                                <div class="font-bold text-xs text-slate-700 group-hover:text-blue-700 mb-1">Stripe Atlas</div>
-                                <div class="text-[10px] text-slate-500">Incorporation</div>
-                            </a>
-                            <a href="https://www.notion.so/" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-slate-400 hover:shadow-sm transition-all group bg-white">
-                                <div class="font-bold text-xs text-slate-700 group-hover:text-slate-900 mb-1">Notion</div>
-                                <div class="text-[10px] text-slate-500">Workspace & Wiki</div>
-                            </a>
                         </div>
                     </div>
 
                     <!-- 1. Venture Playbook (First 30 Days) -->
                     <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                         <div class="bg-slate-50 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
-                            <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="clipboard-list" class="w-4 h-4 text-${tc}-600"></i> "First 30 Days" Playbook</h4>
+                            <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="clipboard-list" class="w-4 h-4 text-${tc}-600"></i> "First 30 Days" Game Plan</h4>
                             <span class="text-[10px] text-slate-500 font-medium">Sector-Specific Checklist</span>
                         </div>
                         <div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="p-3 bg-${tc}-50/30 rounded-lg border border-${tc}-100">
-                                <div class="text-[10px] font-bold text-${tc}-700 uppercase mb-1">Regulatory Basics</div>
+                                <div class="text-[10px] font-bold text-${tc}-700 uppercase mb-1">Rules & Permits</div>
                                 <div class="text-xs text-slate-700 font-medium">${pb.reg}</div>
                             </div>
                             <div class="p-3 bg-${tc}-50/30 rounded-lg border border-${tc}-100">
-                                <div class="text-[10px] font-bold text-${tc}-700 uppercase mb-1">Unit Economics Template</div>
+                                <div class="text-[10px] font-bold text-${tc}-700 uppercase mb-1">Profit Basics</div>
                                 <div class="text-xs text-slate-700 font-medium">${pb.economics}</div>
                             </div>
                             <div class="p-3 bg-${tc}-50/30 rounded-lg border border-${tc}-100">
-                                <div class="text-[10px] font-bold text-${tc}-700 uppercase mb-1">Pricing Strategy</div>
+                                <div class="text-[10px] font-bold text-${tc}-700 uppercase mb-1">Setting Prices</div>
                                 <div class="text-xs text-slate-700 font-medium">${pb.pricing}</div>
                             </div>
                             <div class="p-3 bg-${tc}-50/30 rounded-lg border border-${tc}-100">
-                                <div class="text-[10px] font-bold text-${tc}-700 uppercase mb-1">Go-to-Market Channels</div>
+                                <div class="text-[10px] font-bold text-${tc}-700 uppercase mb-1">Finding Customers</div>
                                 <div class="text-xs text-slate-700 font-medium">${pb.gtm}</div>
                             </div>
                         </div>
@@ -7192,6 +7449,29 @@ window.toggleCareerHub = function() {
                         </div>
                         <div id="launchpad-resources-list" class="space-y-3">
                             <!-- Injected via renderLaunchpadResources -->
+                        </div>
+                    </div>
+
+                    <!-- Tools Section -->
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide mb-4">Must-Have Tools</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <a href="https://www.canva.com/" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:shadow-sm transition-all group bg-white">
+                                <div class="font-bold text-xs text-slate-700 group-hover:text-indigo-700 mb-1">Canva</div>
+                                <div class="text-[10px] text-slate-500">Pitch Decks & Design</div>
+                            </a>
+                            <a href="https://www.ycombinator.com/library" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-orange-300 hover:shadow-sm transition-all group bg-white">
+                                <div class="font-bold text-xs text-slate-700 group-hover:text-orange-700 mb-1">YC Library</div>
+                                <div class="text-[10px] text-slate-500">Startup Advice</div>
+                            </a>
+                            <a href="https://stripe.com/atlas" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all group bg-white">
+                                <div class="font-bold text-xs text-slate-700 group-hover:text-blue-700 mb-1">Stripe Atlas</div>
+                                <div class="text-[10px] text-slate-500">Incorporation</div>
+                            </a>
+                            <a href="https://www.notion.so/" target="_blank" class="p-3 border border-slate-200 rounded-lg hover:border-slate-400 hover:shadow-sm transition-all group bg-white">
+                                <div class="font-bold text-xs text-slate-700 group-hover:text-slate-900 mb-1">Notion</div>
+                                <div class="text-[10px] text-slate-500">Workspace & Wiki</div>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -7486,7 +7766,7 @@ window.toggleCareerHub = function() {
             if (!container) return;
 
             container.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
                     <!-- Block 1: High Growth Sectors -->
                         <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-gradient-to-br from-purple-50 to-fuchsia-100 border border-emerald-200 rounded-2xl p-6 hover:border-emerald-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
                         <div class="absolute top-0 right-0 p-6 opacity-30 group-hover:opacity-40 transition-opacity">
@@ -7496,9 +7776,9 @@ window.toggleCareerHub = function() {
                             <div class="w-12 h-12 bg-white text-purple-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md ring-1 ring-purple-100">
                                 <i data-lucide="bar-chart-2" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-purple-900 transition-colors">High Growth Sectors</h3>
+                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-purple-900 transition-colors">High growth Sectors</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Discover fast-growing green and digital sectors across the East Africa region and see which jobs, skills, and entrepreneurship opportunities are rising fast — right now.</p>
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Find out which sectors are booming in East Africa right now. See where the jobs and investments are.</p>
                         <div class="mt-auto flex items-center gap-2 text-sm font-bold text-purple-700 group-hover:gap-3 transition-all relative z-10">
                             Start Navigating <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
@@ -7513,16 +7793,50 @@ window.toggleCareerHub = function() {
                             <div class="w-12 h-12 bg-white text-blue-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md ring-1 ring-blue-100">
                                 <i data-lucide="graduation-cap" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-blue-900 transition-colors">Skills & Training Hub</h3>
+                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-blue-900 transition-colors">Skills & Training</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Use tools to assess your fit for different occupations. Build a personalized skills training pathway based on your existing skills level, interests and goals.</p>
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Check if you have the right skills for the job. Find training to level up and build your career path.</p>
                         <div class="mt-auto flex items-center gap-2 text-sm font-bold text-blue-700 group-hover:gap-3 transition-all relative z-10">
                             Find Training <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
                     </button>
 
-                    <!-- Block 3: Career & Community Tools -->
-                        <button onclick="toggleCareerHub()" class="flex flex-col text-left h-full bg-gradient-to-br from-purple-50 to-fuchsia-100 border border-purple-200 rounded-2xl p-6 hover:border-purple-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+                    <!-- Block 3: Financial Aid and Scholarships-->
+                    <button onclick="openUnifiedHub('pp-finance')" class="flex flex-col text-left h-full bg-gradient-to-br from-emerald-50 to-teal-100 border border-emerald-200 rounded-2xl p-6 hover:border-emerald-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-30 group-hover:opacity-40 transition-opacity">
+                            <i data-lucide="banknote" class="w-32 h-32 text-emerald-900/20"></i>
+                        </div>
+                        <div class="flex items-center gap-4 mb-5 relative z-10">
+                            <div class="w-12 h-12 bg-white text-emerald-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md ring-1 ring-emerald-100">
+                                <i data-lucide="coins" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-emerald-900 transition-colors">Financial Aid & Scholarships</h3>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Get funding for your education and skills training. Find scholarships, loans, and grants.</p>
+                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-emerald-700 group-hover:gap-3 transition-all relative z-10">
+                            Find Funding <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </div>
+                    </button>
+
+                    <!-- Block 4: Founder's Launchpad -->
+                    <button onclick="openUnifiedHub('pp-launchpad')" class="flex flex-col text-left h-full bg-gradient-to-br from-orange-50 to-amber-100 border border-orange-200 rounded-2xl p-6 hover:border-orange-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-30 group-hover:opacity-40 transition-opacity">
+                            <i data-lucide="rocket" class="w-32 h-32 text-orange-900/20"></i>
+                        </div>
+                        <div class="flex items-center gap-4 mb-5 relative z-10">
+                            <div class="w-12 h-12 bg-white text-orange-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md ring-1 ring-orange-100">
+                                <i data-lucide="zap" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-orange-900 transition-colors">Start Your Business</h3>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Get the tools, guides, and funding you need to launch your own venture.</p>
+                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-orange-700 group-hover:gap-3 transition-all relative z-10">
+                            Launch Venture <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </div>
+                    </button>
+
+                    <!-- Block 5: Career & Community Tools -->
+                    <button onclick="toggleCareerHub()" class="flex flex-col text-left h-full bg-gradient-to-br from-purple-50 to-fuchsia-100 border border-purple-200 rounded-2xl p-6 hover:border-purple-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
                         <div class="absolute top-0 right-0 p-6 opacity-30 group-hover:opacity-40 transition-opacity">
                             <i data-lucide="users" class="w-32 h-32 text-purple-900/20"></i>
                         </div>
@@ -7530,9 +7844,9 @@ window.toggleCareerHub = function() {
                             <div class="w-12 h-12 bg-white text-purple-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md ring-1 ring-purple-100">
                                 <i data-lucide="handshake" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-purple-900 transition-colors">Career & Community Tools</h3>
+                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-purple-900 transition-colors">Career Tools & Networks</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Access career guidance resources and connect with networks to increase your employability.</p>
+                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Get career advice, CV templates, and connect with people who can help you succeed.</p>
                         <div class="mt-auto flex items-center gap-2 text-sm font-bold text-purple-700 group-hover:gap-3 transition-all relative z-10">
                             Access Tools <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>

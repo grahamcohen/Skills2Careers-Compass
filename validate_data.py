@@ -21,7 +21,8 @@ FILES = {
     "res_ev": os.path.join(BASE_DIR, "resources_evidence.json"),
     "res_dig": os.path.join(BASE_DIR, "resources_digital.json"),
     "res_agri": os.path.join(BASE_DIR, "resources_agri.json"),
-    "res_energy": os.path.join(BASE_DIR, "resources_energy.json")
+    "res_energy": os.path.join(BASE_DIR, "resources_energy.json"),
+    "sector_data": os.path.join(BASE_DIR, "sector_data.json")
 }
 
 EXPECTED_SECTORS = {"agri", "energy", "digital", "all", "Agriculture", "Renewables", "Digital/AI"} # Normalized in app.js, but checking raw
@@ -83,6 +84,8 @@ def validate():
     skills = data_store.get("skills", [])
     courses = data_store.get("courses", [])
     ventures = data_store.get("ventures", [])
+    sector_data = data_store.get("sector_data", {})
+    app_data = data_store.get("app_data", {})
 
     # --- 1. Validate Wages ---
     if wages:
@@ -166,8 +169,29 @@ def validate():
             if not c.get("url"):
                 print(f"  ⚠️ Course[{i}]: Missing 'url'")
                 errors += 1
+    
+    # --- 5. Validate Sector Data ---
+    if sector_data:
+        print(f"📋 Checking Sector Data...")
+        for sector, details in sector_data.items():
+            if "occupations" in details:
+                for i, occ in enumerate(details["occupations"]):
+                    if not occ.get("name"):
+                        print(f"  ⚠️ Sector {sector} Occ[{i}]: Missing 'name'")
+                        errors += 1
+            if "skills" in details:
+                for i, skill in enumerate(details["skills"]):
+                    if not skill.get("name") and not skill.get("skill"):
+                        print(f"  ⚠️ Sector {sector} Skill[{i}]: Missing 'name' or 'skill'")
+                        errors += 1
 
-    # --- 5. URL Verification ---
+    # --- 6. Validate App Data ---
+    if app_data:
+        if "pathwayGoals" not in app_data:
+             print(f"  ⚠️ App Data: Missing 'pathwayGoals'")
+             errors += 1
+
+    # --- 7. URL Verification ---
     print("\n🌐 Extracting and Verifying URLs (this may take a moment)...")
     all_urls = set()
     for key, data in data_store.items():

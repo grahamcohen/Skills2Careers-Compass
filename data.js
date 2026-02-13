@@ -825,6 +825,9 @@ const roleResourcesMap = {
     ],
     "Livestock Health Tech": [
         { title: "WOAH: Animal Health in Africa", url: "https://www.woah.org" },
+        { title: "Kenya Veterinary Board (KVB)", url: "https://kenyavetboard.or.ke/" },
+        { title: "Tanzania Vet Council (VCT)", url: "https://www.vct.go.tz/" },
+        { title: "Uganda Vet Board (MAAIF)", url: "https://www.agriculture.go.ug/" },
         { title: "GALVmed: Livestock Health", url: "https://www.galvmed.org" },
         { title: "ILRI: Livestock Research", url: "https://www.ilri.org/" },
         { title: "CowTribe: Last Mile Delivery", url: "https://www.cowtribe.com/" }
@@ -835,10 +838,20 @@ const roleResourcesMap = {
         { title: "GFRAS: Rural Advisory Services", url: "https://www.g-fras.org/" },
         { title: "AFAAS: African Forum for Advisory Services", url: "https://www.afaas-africa.org/" }
     ],
+    "Agro-Processing Technician": [
+        { title: "Kenya Ministry of Health (Food Hygiene)", url: "https://www.health.go.ke/" },
+        { title: "Rwanda Standards Board (RSB)", url: "https://www.rsb.gov.rw/" },
+        { title: "Uganda National Bureau of Standards", url: "https://www.unbs.go.ug/" },
+        { title: "Tanzania Bureau of Standards (TBS)", url: "https://www.tbs.go.tz/" },
+        { title: "KEBS: Food Safety Schemes", url: "https://www.kebs.org/" }
+    ],
 
     // --- ENERGY ---
     "Solar PV Installer": [
-        { title: "EPRA: Licensing Requirements (Kenya)", url: "https://www.epra.go.ke" },
+        { title: "EPRA: Licensing Guide (Kenya)", url: "https://www.epra.go.ke" },
+        { title: "ERA: Installation Permits (Uganda)", url: "https://www.era.go.ug/" },
+        { title: "EWURA: LOIS Licensing (Tanzania)", url: "https://www.ewura.go.tz/" },
+        { title: "RURA: Electrical Permits (Rwanda)", url: "https://licensing.rura.rw/" },
         { title: "IRENA: Renewable Energy Jobs", url: "https://www.irena.org" },
         { title: "GOGLA: Off-Grid Solar", url: "https://www.gogla.org/" },
         { title: "Solar Energy International", url: "https://www.solarenergy.org/" }
@@ -1888,25 +1901,6 @@ const applicationKitsResources = {
     'volunteer': { title: "Volunteer Applications Kit", items: ["Skills-Based Volunteer Resume", "Motivation Statement / Personal Essay", "Availability & Commitment Schedule", "Soft Skills Self-Assessment", "Volunteer Code of Conduct Preview"] }
 };
 
-// --- 45. Hero Persona Content ---
-const heroPersonaContent = {
-    learner: {
-        text: "In 10 minutes, you’ll have a shortlist of occupations, skills in demand and leads to targeted training options.",
-    },
-    entrepreneur: {
-        text: "Identify high-potential venture niches, access eco-system resources, and build your capability roadmap.",
-    },
-    counsellor: {
-        text: "Access labor market intelligence to guide students towards high-growth career paths.",
-    },
-    provider: {
-        text: "Align your curriculum with real-time market demand and skills gaps.",
-    },
-    policy: {
-        text: "View workforce data and trends to inform education and employment policy.",
-    }
-};
-
 // --- 46. Real Courses Data (Fallback) ---
 const realCourses = [
     {
@@ -2097,7 +2091,8 @@ const apprenticeshipFrameworks = {
 // --- 49. AI Tools ---
 const aiTools = [
     { title: "ChatGPT / Claude", desc: "Drafting cover letters & interview practice.", link: "https://chat.openai.com/", icon: "message-square" },
-    { title: "Resume Worded", desc: "AI scoring for your CV content.", link: "https://resumeworded.com/", icon: "file-text" },
+    { title: "Resume Worded", desc: "A
+        I scoring for your CV content.", link: "https://resumeworded.com/", icon: "file-text" },
     { title: "CareerVillage Coach", desc: "Personalized AI Career Coach.", link: "https://www.careervillage.org/", icon: "user-check" },
     { title: "Interview Warmup", desc: "Google's AI interview practice tool.", link: "https://grow.google/certificates/interview-warmup/", icon: "mic" },
     { title: "TealHQ", desc: "AI Resume Builder & Job Tracker.", link: "https://www.tealhq.com/", icon: "briefcase" },
@@ -2106,12 +2101,12 @@ const aiTools = [
 
 // --- 50. Library Resources ---
 const libraryResources = [
-    { title: "How to Write an ATS-Friendly CV", desc: "Optimize your resume to pass through automated screening systems.", icon: "file-text", link: "#" },
-    { title: "Mastering the STAR Method for Interviews", desc: "Structure your answers to behavioral questions effectively.", icon: "star", link: "#" },
-    { title: "Networking for Introverts", desc: "Strategies to build professional connections authentically.", icon: "users", link: "#" },
-    { title: "Salary Negotiation 101", desc: "Tips and scripts for discussing compensation.", icon: "banknote", link: "#" },
-    { title: "Building Your Personal Brand on LinkedIn", desc: "Optimize your profile to attract recruiters.", icon: "linkedin", link: "#" },
-    { title: "A Guide to Informational Interviews", desc: "Learn from professionals in your target field.", icon: "message-square", link: "#" }
+    { title: "How to Write an ATS-Friendly CV", desc: "Optimize your resume to pass through automated screening systems.", icon: "file-text", link: "https://www.jobscan.co/blog/ats-resume/" },
+    { title: "Mastering the STAR Method for Interviews", desc: "Structure your answers to behavioral questions effectively.", icon: "star", link: "https://www.thebalancecareers.com/what-is-the-star-interview-response-technique-2061629" },
+    { title: "Networking for Introverts", desc: "Strategies to build professional connections authentically.", icon: "users", link: "https://hbr.org/2016/08/an-introverts-guide-to-networking" },
+    { title: "Salary Negotiation 101", desc: "Tips and scripts for discussing compensation.", icon: "banknote", link: "https://www.glassdoor.com/blog/guide/how-to-negotiate-your-salary/" },
+    { title: "Building Your Personal Brand on LinkedIn", desc: "Optimize your profile to attract recruiters.", icon: "linkedin", link: "https://www.linkedin.com/business/marketing/blog/linkedin-ads/how-to-build-your-personal-brand-on-linkedin" },
+    { title: "A Guide to Informational Interviews", desc: "Learn from professionals in your target field.", icon: "message-square", link: "https://career.berkeley.edu/start-exploring/informational-interviews/" }
 ];
 
 // --- 51. Employer Connect Events ---
