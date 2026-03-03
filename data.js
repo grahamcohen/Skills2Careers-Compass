@@ -1290,6 +1290,7 @@ const sectorPathwayResources = {
         { title: "Zindi Africa", desc: "Competitions to build portfolio.", link: "https://zindi.africa/", icon: "award" },
         { title: "Moringa School", desc: "Project-based tech training.", link: "https://moringaschool.com/", icon: "code" },
         { title: "CareerVillage Coach", desc: "AI Career Coach & Mentorship.", link: "https://www.careervillage.org/", icon: "message-circle" },
+        { title: "AfDB ENABLE Youth", desc: "Agri-business incubation & finance.", link: "https://www.afdb.org/en/topics-and-sectors/initiatives-partnerships/enable-youth", icon: "sprout" },
         { title: "Villgro Africa", desc: "Incubator for health & life science (agri) startups.", link: "https://villgroafrica.org/", icon: "sprout" },
         { title: "AECF", desc: "Funding for agribusiness & renewable energy.", link: "https://www.aecfafrica.org/", icon: "banknote" },
         { title: "Ignite Trade Africa", desc: "Trade facilitation & market access support.", link: "https://ignitetradeafrica.com/", icon: "globe" },
@@ -1313,6 +1314,8 @@ const sectorPathwayResources = {
         { title: "Nvidia Inception", desc: "Program for AI startups (Free credits).", link: "https://www.nvidia.com/en-us/startups/", icon: "cpu" },
         { title: "CareerVillage Coach", desc: "AI Career Coach & Mentorship.", link: "https://www.careervillage.org/", icon: "message-circle" },
         { title: "Andela Learning", desc: "Tech skills & community.", link: "https://andela.com/learning-community/", icon: "code" },
+        { title: "ALX Africa", desc: "Software engineering & AI career tracks.", link: "https://www.alxafrica.com/", icon: "terminal" },
+        { title: "Refactory", desc: "Employer-driven software skilling.", link: "https://refactory.academy/", icon: "briefcase" },
         { title: "Google Digital Skills", desc: "Free digital marketing courses.", link: "https://learndigital.withgoogle.com/digitalskills", icon: "monitor" },
         { title: "Zindi Africa", desc: "Data science competitions.", link: "https://zindi.africa/", icon: "database" },
         { title: "Antler East Africa", desc: "Build your startup from scratch with funding.", link: "https://www.antler.co/location/east-africa", icon: "rocket" },
@@ -1369,6 +1372,105 @@ const skillLevelDescriptions = {
         "DevOps": { beg: "Uses Git and runs basic build scripts.", int: "Sets up CI/CD pipelines and containerization (Docker).", adv: "Manages Kubernetes clusters and Infrastructure as Code." },
         "API Design": { beg: "Consumes APIs and understands JSON.", int: "Builds RESTful endpoints with validation.", adv: "Designs GraphQL schemas and manages API gateway policies." },
         "Figma": { beg: "Creates basic wireframes and uses components.", int: "Builds interactive high-fidelity prototypes.", adv: "Manages design systems and design ops workflows." }
+    }
+};
+
+// --- 13. Cross-Sector Skills Matrix (New) ---
+const crossSectorSkillMatrix = {
+    "Data Analysis": {
+        agri: "Yield prediction & soil health models",
+        energy: "Demand forecasting & loss reduction",
+        digital: "User behavior insights & market trends"
+    },
+    "Data Analytics": { // Alias
+        agri: "Yield prediction & soil health models",
+        energy: "Demand forecasting & loss reduction",
+        digital: "User behavior insights & market trends"
+    },
+    "Data Science": { // Alias
+        agri: "Yield prediction & soil health models",
+        energy: "Demand forecasting & loss reduction",
+        digital: "User behavior insights & market trends"
+    },
+    "Machine Learning": {
+        agri: "Pest/disease prediction",
+        energy: "Load balancing models",
+        digital: "Recommendation systems"
+    },
+    "GIS Mapping": {
+        agri: "Precision mapping & land use planning",
+        energy: "Network coverage optimisation & site selection",
+        digital: "Urban mobility analytics & logistics"
+    },
+    "Python": {
+        agri: "Crop modeling scripts & automation",
+        energy: "Grid simulation & system modelling",
+        digital: "Backend development & AI pipelines"
+    },
+    "Project Management": {
+        agri: "Supply chain coordination",
+        energy: "Infrastructure rollout oversight",
+        digital: "Agile product delivery"
+    },
+    "IoT Sensors": {
+        agri: "Soil moisture & weather monitoring",
+        energy: "Smart metering & remote diagnostics",
+        digital: "Connected home & industrial automation"
+    },
+    "IoT": { // Alias
+        agri: "Soil moisture & weather monitoring",
+        energy: "Smart metering & remote diagnostics",
+        digital: "Connected home & industrial automation"
+    },
+    "Cybersecurity": {
+        agri: "Protecting farm data & supply chain integrity",
+        energy: "Securing critical grid infrastructure (SCADA)",
+        digital: "Data privacy & secure transactions"
+    },
+    "Cloud Computing": {
+        agri: "Hosting farm management platforms",
+        energy: "Centralized grid data storage",
+        digital: "Scalable app infrastructure (SaaS)"
+    },
+    "Mobile Money API": {
+        agri: "Farmer payments & micro-insurance",
+        energy: "Pay-as-you-go (PAYG) solar integration",
+        digital: "E-commerce checkout & wallets"
+    },
+    "Drone Ops": {
+        agri: "Crop spraying & multispectral imaging",
+        energy: "Power line & turbine inspection",
+        digital: "Delivery logistics & aerial videography"
+    },
+    "Project Mgmt": {
+        agri: "Supply chain coordination",
+        energy: "Infrastructure rollout oversight",
+        digital: "Agile product delivery"
+    },
+    "Data Viz": {
+        agri: "Yield maps & dashboarding",
+        energy: "Consumption patterns & outage visualization",
+        digital: "Business intelligence dashboards"
+    },
+    "AI": {
+        agri: "Crop disease detection & yield prediction",
+        energy: "Grid load forecasting & optimization",
+        digital: "Personalization & process automation"
+    },
+    "Web Dev": {
+        agri: "E-commerce platforms for produce",
+        energy: "Customer portals for utility payment",
+        digital: "SaaS applications & websites"
+    },
+    "Digital Marketing": {
+        agri: "Market access & social media sales for produce",
+        energy: "Customer acquisition for solar home systems",
+        digital: "SEO, content strategy & campaign analytics"
+    },
+    "Financial Literacy": {
+        agri: "Farm budgeting & loan application readiness",
+        energy: "PAYG payment planning & ROI calculation",
+        digital: "Unit economics (CAC/LTV) & cash flow management"
     }
 };
 
@@ -1469,7 +1571,9 @@ const signalResources = {
     agri: {
         'Sector Value-Chain Gaps': [
             { title: "FAOSTAT Value Chain", desc: "Global food and agriculture data.", link: "https://www.fao.org/faostat/en/#data" },
-            { title: "World Bank Agriculture", desc: "Data on agricultural development.", link: "https://data.worldbank.org/topic/agriculture" }
+            { title: "World Bank Agriculture", desc: "Data on agricultural development.", link: "https://data.worldbank.org/topic/agriculture" },
+            { title: "World Bank Skills Demand", desc: "Cognitive & technical skills data.", link: "https://datatopics.worldbank.org/education/w/skills" },
+            { title: "AU Digital Strategy", desc: "Agri-tech transformation indicators.", link: "https://au.int/en/documents/20200518/digital-transformation-strategy-africa-2020-2030" }
         ],
         'Innovation Investments/Grants': [
             { title: "AgFunder News", desc: "AgriFoodTech investment news and reports.", link: "https://agfundernews.com/" },
@@ -1493,7 +1597,9 @@ const signalResources = {
     digital: {
         'Sector Value-Chain Gaps': [
             { title: "ITU DataHub", desc: "ICT statistics and data.", link: "https://datahub.itu.int/" },
-            { title: "GSMA Mobile Economy", desc: "Mobile industry data and analysis.", "link": "https://www.gsma.com/mobileeconomy/sub-saharan-africa/" }
+            { title: "GSMA Mobile Economy", desc: "Mobile industry data and analysis.", "link": "https://www.gsma.com/mobileeconomy/sub-saharan-africa/" },
+            { title: "UNESCO UIS", desc: "Science, Tech & Innovation data.", "link": "http://uis.unesco.org/" },
+            { title: "World Bank Skills", desc: "Digital skills demand metrics.", "link": "https://datatopics.worldbank.org/education/w/skills" }
         ],
         'Innovation Investments/Grants': [
             { title: "Partech Africa", desc: "Tech investment reports.", link: "https://partechpartners.com/africa-reports/" },
@@ -1615,12 +1721,12 @@ const countryISOMap = {
 
 // --- 26. Fallback Ventures (Safety Net) ---
 const fallbackVentures = [
-    { "Country": "All", "Sector": "agri", "Rank": 1, "Venture_Title": "Smart-irrigation services", "Venture_Description": "Low-cost drip systems, sensors, and solar pumps.", "Key_Competencies": "Irrigation Tech, Renewable Integration", "Startup_Capital_Est": "Medium ($2k-$5k)" },
-    { "Country": "All", "Sector": "agri", "Rank": 2, "Venture_Title": "Agri-advisory micro-enterprises", "Venture_Description": "Mobile / WhatsApp advisory groups.", "Key_Competencies": "Advisory Agent, Digital Literacy", "Startup_Capital_Est": "Low (<$500)" },
-    { "Country": "All", "Sector": "energy", "Rank": 1, "Venture_Title": "Mini-grid O&M micro-enterprises", "Venture_Description": "High installation growth, weak maintenance capacity.", "Key_Competencies": "Electrical Tech, Safety Standards", "Startup_Capital_Est": "Medium ($2k-$5k)" },
-    { "Country": "All", "Sector": "energy", "Rank": 2, "Venture_Title": "Solar-home-system retail & servicing", "Venture_Description": "Training density + consumer demand.", "Key_Competencies": "PV Installation, Sales", "Startup_Capital_Est": "Low ($500-$2k)" },
-    { "Country": "All", "Sector": "digital", "Rank": 1, "Venture_Title": "Data analytics & dashboard services for MSMEs", "Venture_Description": "Strong demand for local data insights.", "Key_Competencies": "Data Analysis, Visualization", "Startup_Capital_Est": "Low (<$1k)" },
-    { "Country": "All", "Sector": "digital", "Rank": 2, "Venture_Title": "No-code app / automation micro-agency", "Venture_Description": "Low-code tool adoption rising.", "Key_Competencies": "No-code Dev, Client Ops", "Startup_Capital_Est": "Low (<$1k)" }
+    { "country": "All", "sector": "agri", "rank": 1, "title": "Smart-irrigation services", "description": "Low-cost drip systems, sensors, and solar pumps.", "competencies": "Irrigation Tech, Renewable Integration", "capital": "Medium ($2k-$5k)" },
+    { "country": "All", "sector": "agri", "rank": 2, "title": "Agri-advisory micro-enterprises", "description": "Mobile / WhatsApp advisory groups.", "competencies": "Advisory Agent, Digital Literacy", "capital": "Low (<$500)" },
+    { "country": "All", "sector": "energy", "rank": 1, "title": "Mini-grid O&M micro-enterprises", "description": "High installation growth, weak maintenance capacity.", "competencies": "Electrical Tech, Safety Standards", "capital": "Medium ($2k-$5k)" },
+    { "country": "All", "sector": "energy", "rank": 2, "title": "Solar-home-system retail & servicing", "description": "Training density + consumer demand.", "competencies": "PV Installation, Sales", "capital": "Low ($500-$2k)" },
+    { "country": "All", "sector": "digital", "rank": 1, "title": "Data analytics & dashboard services for MSMEs", "description": "Strong demand for local data insights.", "competencies": "Data Analysis, Visualization", "capital": "Low (<$1k)" },
+    { "country": "All", "sector": "digital", "rank": 2, "title": "No-code app / automation micro-agency", "description": "Low-code tool adoption rising.", "competencies": "No-code Dev, Client Ops", "capital": "Low (<$1k)" }
 ];
 
 // --- 30. Sector Map ---
@@ -1753,10 +1859,10 @@ const pathwayConstraints = [
 
 // --- 37. Pathway Goals ---
 const pathwayGoals = [
-    { "title": "Entry Level Job", "desc": "I want to find my first job or internship.", "icon": "briefcase" },
-    { "title": "Apprenticeship", "desc": "I want to learn on the job with a mentor.", "icon": "users" },
-    { "title": "Advancement & Lifelong Learning", "desc": "I want to strengthen my current skills levels for work and life.", "icon": "trending-up" },
-    { "title": "Career Pivot", "desc": "I want to pivot to a new job or sector.", "icon": "refresh-cw" }
+    { "title": "Workforce Readiness & Employability", "desc": "I want to build core work-readiness skills and professional competencies.", "icon": "book-open" },
+    { "title": "Placements and Apprenticeships", "desc": "I want to learn on the job through a work placement or with a mentor.", "icon": "users" },
+    { "title": "Entry Level Job or Internship", "desc": "I want to find my first job or an internship.", "icon": "briefcase" },
+    { "title": "Upskilling & Lifelong Learning", "desc": "I want to strengthen my current skills levels for work and life.", "icon": "trending-up" },
 ];
 
 // --- 38. Interview Questions ---
@@ -1819,7 +1925,8 @@ const apprenticeshipStandards = [
     { c: 'Kenya', name: 'NITA Guidelines', url: 'https://www.nita.go.ke/' },
     { c: 'Tanzania', name: 'VETA Apprenticeship', url: 'https://www.veta.go.tz/' },
     { c: 'Uganda', name: 'DIT Standards', url: 'https://dituganda.org/' },
-    { c: 'Rwanda', name: 'RTB Workplace Learning', url: 'https://www.rtb.gov.rw/' }
+    { c: 'Rwanda', name: 'RTB Workplace Learning', url: 'https://www.rtb.gov.rw/' },
+    { c: 'all', name: 'EAC TVET Harmonization', url: 'https://www.eac.int/education/tvet' }
 ];
 
 // --- 39. National Mentorships ---
@@ -1899,6 +2006,25 @@ const applicationKitsResources = {
     'freelance': { title: "Freelancer Toolkit", items: ["Freelance Service Rate Card", "Client Contract & SOW Template", "Portfolio Website Checklist", "Cold Pitch Email Templates", "Invoice & Payment Tracker"] },
     'tender': { title: "Founder Tender Kit", items: ["Company Profile / Capability Statement", "Tax Compliance Checklist (KRA/TRA/URA)", "Technical Proposal Structure", "Financial Proposal Budget Sheet", "Pre-qualification Questionnaire Guide"] },
     'volunteer': { title: "Volunteer Applications Kit", items: ["Skills-Based Volunteer Resume", "Motivation Statement / Personal Essay", "Availability & Commitment Schedule", "Soft Skills Self-Assessment", "Volunteer Code of Conduct Preview"] }
+};
+
+// --- 45. Hero Persona Content ---
+const heroPersonaContent = {
+    learner: {
+        text: "In 10 minutes, you’ll have a shortlist of occupations, skills in demand and leads to targeted training options.",
+    },
+    entrepreneur: {
+        text: "Identify high-potential venture niches, access eco-system resources, and build your capability roadmap.",
+    },
+    counsellor: {
+        text: "Access labor market intelligence to guide students towards high-growth career paths.",
+    },
+    provider: {
+        text: "Align your curriculum with real-time market demand and skills gaps.",
+    },
+    policy: {
+        text: "View workforce data and trends to inform education and employment policy.",
+    }
 };
 
 // --- 46. Real Courses Data (Fallback) ---
@@ -2057,7 +2183,8 @@ const fallbackScholarships = [
     { "id": "aid_013", "name": "Excellentia Program", "provider": "Denise Nyakeru Tshisekedi Foundation", "type": "Scholarship", "coverage": "Full", "country": "DR Congo", "target": "Undergraduate", "deadline": "Annual", "link": "https://fondationdnt.org/excellentia/", "desc": "Promoting academic excellence by awarding scholarships to top-performing state exam graduates in DRC." },
     { "id": "aid_014", "name": "Iftin Foundation Education Fund", "provider": "Iftin Foundation", "type": "Grant", "coverage": "Partial", "country": "Somalia", "target": "Youth / TVET", "deadline": "Rolling", "link": "https://iftinfoundation.org/", "desc": "Support for skills development and education for youth in Somalia." },
     { "id": "aid_015", "name": "EAC Scholarship Programme", "provider": "EAC / KfW", "type": "Scholarship", "coverage": "Full", "country": "Regional", "target": "Master's", "deadline": "Bi-annual", "link": "https://www.eac.int/",
-    "desc": "Scholarships for Master's students in Mathematics, Engineering, Informatics, Science, Technology and Business Science." }
+    "desc": "Scholarships for Master's students in Mathematics, Engineering, Informatics, Science, Technology and Business Science." },
+    { "id": "aid_016", "name": "ABE Initiative", "provider": "JICA", "type": "Scholarship", "coverage": "Full (Master's + Internship)", "country": "Regional", "target": "Master's", "deadline": "Annual", "link": "https://www.jica.go.jp/english/countries/africa/internship.html", "desc": "Master's Degree and Internship Program of African Business Education Initiative for Youth, bridging Africa-Japan industry networks." }
 ];
 
 // --- 48. Apprenticeship Frameworks ---
@@ -2091,8 +2218,7 @@ const apprenticeshipFrameworks = {
 // --- 49. AI Tools ---
 const aiTools = [
     { title: "ChatGPT / Claude", desc: "Drafting cover letters & interview practice.", link: "https://chat.openai.com/", icon: "message-square" },
-    { title: "Resume Worded", desc: "A
-        I scoring for your CV content.", link: "https://resumeworded.com/", icon: "file-text" },
+    { title: "Resume Worded", desc: "AI scoring for your CV content.", link: "https://resumeworded.com/", icon: "file-text" },
     { title: "CareerVillage Coach", desc: "Personalized AI Career Coach.", link: "https://www.careervillage.org/", icon: "user-check" },
     { title: "Interview Warmup", desc: "Google's AI interview practice tool.", link: "https://grow.google/certificates/interview-warmup/", icon: "mic" },
     { title: "TealHQ", desc: "AI Resume Builder & Job Tracker.", link: "https://www.tealhq.com/", icon: "briefcase" },
@@ -2121,3 +2247,32 @@ const alumniNetworks = [
     { name: "Sector Professionals EA", platform: "LinkedIn" },
     { name: "University Alumni Network", platform: "Portal" }
 ];
+
+// --- 53. Specific Mentors (Mock Data) ---
+const specificMentors = {
+    'Kenya': {
+        'agri': [
+            { name: "Dr. Jane Kamau", role: "Soil Scientist", company: "KALRO", bio: "20+ years in soil health and regenerative agriculture.", image: "https://i.pravatar.cc/150?u=jane" },
+            { name: "David Ochieng", role: "Agri-Tech Founder", company: "FarmSmart", bio: "Building digital market linkages for smallholders.", image: "https://i.pravatar.cc/150?u=david" }
+        ],
+        'energy': [
+            { name: "Sarah Wanjiku", role: "Solar Engineer", company: "SunKing", bio: "Specialist in mini-grid design and rural electrification.", image: "https://i.pravatar.cc/150?u=sarah" },
+            { name: "Eng. Peter Njoroge", role: "Grid Analyst", company: "KPLC", bio: "Expert in SCADA systems and grid stability.", image: "https://i.pravatar.cc/150?u=peter" }
+        ],
+        'digital': [
+            { name: "Wanjiru Ng'ang'a", role: "Senior Dev", company: "Safaricom", bio: "Backend architecture and fintech APIs.", image: "https://i.pravatar.cc/150?u=wanjiru" },
+            { name: "Kevin M.", role: "Product Manager", company: "Microsoft ADC", bio: "Leading cloud solutions for African markets.", image: "https://i.pravatar.cc/150?u=kevin" }
+        ]
+    },
+    'Rwanda': {
+        'digital': [
+            { name: "Jean-Paul M.", role: "CTO", company: "Irembo", bio: "Digitizing government services.", image: "https://i.pravatar.cc/150?u=jp" },
+            { name: "Grace U.", role: "Data Scientist", company: "Bank of Kigali", bio: "Fintech credit scoring models.", image: "https://i.pravatar.cc/150?u=grace" }
+        ]
+    },
+    'all': {
+        'agri': [{ name: "Regional Mentor", role: "Expert", company: "EAC", bio: "Cross-border trade specialist.", image: "https://i.pravatar.cc/150?u=reg" }],
+        'energy': [{ name: "Regional Mentor", role: "Expert", company: "EAPP", bio: "Power pool integration.", image: "https://i.pravatar.cc/150?u=reg2" }],
+        'digital': [{ name: "Regional Mentor", role: "Expert", company: "Smart Africa", bio: "Digital policy and infrastructure.", image: "https://i.pravatar.cc/150?u=reg3" }]
+    }
+};

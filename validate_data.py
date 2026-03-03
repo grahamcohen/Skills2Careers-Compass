@@ -22,7 +22,8 @@ FILES = {
     "res_dig": os.path.join(BASE_DIR, "resources_digital.json"),
     "res_agri": os.path.join(BASE_DIR, "resources_agri.json"),
     "res_energy": os.path.join(BASE_DIR, "resources_energy.json"),
-    "sector_data": os.path.join(BASE_DIR, "sector_data.json")
+    "sector_data": os.path.join(BASE_DIR, "sector_data.json"),
+    "scholarships": os.path.join(BASE_DIR, "scholarships.json")
 }
 
 EXPECTED_SECTORS = {"agri", "energy", "digital", "all", "Agriculture", "Renewables", "Digital/AI"} # Normalized in app.js, but checking raw
@@ -86,6 +87,7 @@ def validate():
     ventures = data_store.get("ventures", [])
     sector_data = data_store.get("sector_data", {})
     app_data = data_store.get("app_data", {})
+    scholarships = data_store.get("scholarships", [])
 
     # --- 1. Validate Wages ---
     if wages:
@@ -190,22 +192,40 @@ def validate():
         if "pathwayGoals" not in app_data:
              print(f"  ⚠️ App Data: Missing 'pathwayGoals'")
              errors += 1
-
-    # --- 7. URL Verification ---
-    print("\n🌐 Extracting and Verifying URLs (this may take a moment)...")
-    all_urls = set()
-    for key, data in data_store.items():
-        extract_urls(data, all_urls)
     
-    print(f"   Found {len(all_urls)} unique URLs. Checking status...")
+    # --- 7. Validate Scholarships ---
+    if scholarships:
+        print(f"📋 Checking Scholarships ({len(scholarships)} records)...")
+        for i, s in enumerate(scholarships):
+            if not s.get("name"):
+                print(f"  ⚠️ Scholarship[{i}]: Missing 'name'")
+                errors += 1
+            if not s.get("link"):
+                print(f"  ⚠️ Scholarship[{i}]: Missing 'link'")
+                errors += 1
+
+    # --- 8. URL Verification ---
+    print("\n🌐 Extracting and Verifying URLs (this may take a moment)...")
+    url_source_map = {} # Map URL to list of filenames
+
+    for key, data in data_store.items():
+        temp_urls = set()
+        extract_urls(data, temp_urls)
+        for url in temp_urls:
+            if url not in url_source_map:
+                url_source_map[url] = []
+            url_source_map[url].append(key)
+    
+    print(f"   Found {len(url_source_map)} unique URLs. Checking status...")
     
     url_errors = 0
     with ThreadPoolExecutor(max_workers=10) as executor:
-        future_to_url = {executor.submit(check_url, url): url for url in all_urls}
+        future_to_url = {executor.submit(check_url, url): url for url in url_source_map.keys()}
         for future in as_completed(future_to_url):
             url, code, msg = future.result()
             if code != 200:
-                print(f"  ❌ Broken Link: {url} -> {code} ({msg})")
+                sources = ", ".join(url_source_map.get(url, ["unknown"]))
+                print(f"  ❌ Broken Link in [{sources}]: {url} -> {code} ({msg})")
                 url_errors += 1
                 errors += 1
             # Optional: Print success for verbose mode

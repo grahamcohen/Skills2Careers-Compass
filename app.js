@@ -11,6 +11,8 @@ let pathwayState = { goal: null, constraints: {} }; // Store Pathway Builder sta
 let myPlan = { roles: new Set(), skills: new Set(), courses: new Set() }; // New My Plan State
 let favoriteVentures = new Set(); // Store favorite ventures
 let hubNavigationStack = []; // Navigation history for Unified Hub
+let showCrossSectorOnly = false; // Toggle for Cross-Sector Skills
+let isStudentpreneur = false; // Toggle for Studentpreneur Mode
 
 // --- CONFIGURATION ---
 const API_CONFIG = {
@@ -157,26 +159,51 @@ class DataManager {
     }
 
     normalizeData() {
-        // Normalize Venture Sectors
-        const normalize = (item) => {
-            // Support both PascalCase (legacy) and camelCase (new)
-            const sector = item.Sector || item.sector;
-            if (sector === 'Agriculture' || sector === 'Agritech') { item.Sector ? item.Sector = 'agri' : item.sector = 'agri'; }
-            if (sector === 'Renewables' || sector === 'Renewable Energy') { item.Sector ? item.Sector = 'energy' : item.sector = 'energy'; }
-            if (sector === 'Digital/AI' || sector === 'Digital') { item.Sector ? item.Sector = 'digital' : item.sector = 'digital'; }
+        // Helper to normalize keys to camelCase and standardize values
+        const normalizeItem = (item, keyMap) => {
+            // Remap keys
+            for (const [oldKey, newKey] of Object.entries(keyMap)) {
+                if (item[oldKey] !== undefined && item[newKey] === undefined) {
+                    item[newKey] = item[oldKey];
+                }
+            }
+            
+            // Normalize Sector
+            if (item.sector === 'Agriculture' || item.sector === 'Agritech') item.sector = 'agri';
+            if (item.sector === 'Renewables' || item.sector === 'Renewable Energy') item.sector = 'energy';
+            if (item.sector === 'Digital/AI' || item.sector === 'Digital') item.sector = 'digital';
+            
+            // Normalize Country
+            if (item.country === 'DRC' || item.country === 'Democratic Republic of Congo') item.country = 'DR Congo';
         };
 
-        if (this.ventures.length > 0) {
-            this.ventures.forEach(normalize);
-        }
-        // Normalize Top Occupations Sectors
-        if (this.topOccupations.length > 0) {
-             this.topOccupations.forEach(normalize);
-        }
-        // Normalize Top Skills Sectors
-        if (this.topSkills.length > 0) {
-            this.topSkills.forEach(normalize);
-        }
+        const ventureMap = {
+            'Venture_Title': 'title', 'Venture_Description': 'description', 'Rank': 'rank', 
+            'Country': 'country', 'Sector': 'sector', 'Key_Competencies': 'competencies', 
+            'Startup_Capital_Est': 'capital'
+        };
+        this.ventures.forEach(v => normalizeItem(v, ventureMap));
+
+        const wageMap = {
+            'Country': 'country', 'Occupation': 'occupation', 'Occ_ID': 'occId',
+            'P25_Monthly_Wage': 'p25MonthlyWage', 'P75_Monthly_Wage': 'p75MonthlyWage',
+            'Avg_Monthly_Wage': 'avgMonthlyWage', 'Currency': 'currency',
+            'Typical_Employers': 'typicalEmployers', 'Work_Setting': 'workSetting',
+            'OJA_Count': 'ojaCount', 'OJA_Reference': 'ojaReference'
+        };
+        this.wages.forEach(w => normalizeItem(w, wageMap));
+
+        const occMap = {
+            'Occupation_Role': 'occupationRole', 'Skills_Description': 'skillsDescription',
+            'Master_Occ_ID': 'masterOccId', 'Why_In_Demand': 'whyInDemand',
+            'Country': 'country', 'Sector': 'sector', 'Rank': 'rank'
+        };
+        this.topOccupations.forEach(o => normalizeItem(o, occMap));
+
+        const skillMap = {
+            'Skill': 'skill', 'Description': 'description', 'Narrative': 'narrative', 'Sector': 'sector'
+        };
+        this.topSkills.forEach(s => normalizeItem(s, skillMap));
     }
 
     linkData() {
@@ -197,14 +224,15 @@ class DataManager {
         
         // Try ID lookup first
         if (occId) {
-            const byId = this.wageMap.get(`${occId}-${searchCountry}`);
+            const byId = this.wageMap.get(`${occId}-${searchCountry}`); // wageMap logic in linkData might need update if keys changed, but linkData runs after normalizeData so it should use new keys if updated there. 
+            // Actually linkData runs after normalizeData, so we should update linkData to use camelCase too.
+            // But linkData uses w.occId || w.Occ_ID, which is fine.
             if (byId) return byId;
         }
 
         // Fallback to Name lookup
         return this.wages.find(d => 
-            (d.country === searchCountry || d.Country === searchCountry) && 
-            (d.occupation === occupation || d.Occupation === occupation)
+            d.country === searchCountry && d.occupation === occupation
         );
     }
 
@@ -214,8 +242,8 @@ class DataManager {
         if (searchCountry === 'DRC' || searchCountry === 'Democratic Republic of Congo') searchCountry = 'DR Congo';
 
         return this.ventures.filter(v => 
-            v.Sector === sectorId && 
-            (country === 'all' || v.Country === searchCountry || v.Country === 'All')
+            v.sector === sectorId && 
+            (country === 'all' || v.country === searchCountry || v.country === 'All')
         );
     }
     
@@ -224,32 +252,32 @@ class DataManager {
         if (searchCountry === 'DRC' || searchCountry === 'Democratic Republic of Congo') searchCountry = 'DR Congo';
 
         // Filter top occupations from external file
-        let occs = this.topOccupations.filter(o => (o.sector === sectorId || o.Sector === sectorId));
+        let occs = this.topOccupations.filter(o => o.sector === sectorId);
         
         if (occs.length > 0) {
             // Contextualize by country
             if (country !== 'all') {
-                 const countryOccs = occs.filter(o => (o.country === searchCountry || o.Country === searchCountry));
+                 const countryOccs = occs.filter(o => o.country === searchCountry);
                  if (countryOccs.length > 0) {
                      occs = countryOccs;
                  } else {
-                     const regionalOccs = occs.filter(o => (o.country === 'All' || o.Country === 'All' || o.country === 'Regional' || o.Country === 'Regional'));
+                     const regionalOccs = occs.filter(o => (o.country === 'All' || o.country === 'Regional'));
                      if (regionalOccs.length > 0) occs = regionalOccs;
                  }
             } else {
-                 const regionalOccs = occs.filter(o => (o.country === 'All' || o.Country === 'All' || o.country === 'Regional' || o.Country === 'Regional'));
+                 const regionalOccs = occs.filter(o => (o.country === 'All' || o.country === 'Regional'));
                  if (regionalOccs.length > 0) occs = regionalOccs;
             }
 
-            return occs.sort((a,b) => (a.rank || a.Rank) - (b.rank || b.Rank)).map(o => ({
-                name: o.occupationRole || o.Occupation_Role,
-                desc: (o.skillsDescription || o.Skills_Description) ? (o.skillsDescription || o.Skills_Description).split('.')[0] + '.' : (o.description || o.Description || 'Key role in sector.'),
-                isHot: (o.rank || o.Rank) <= 4,
-                id: o.masterOccId || o.Master_Occ_ID, // Keep ID for linking
-                why: o.whyInDemand || o.Why_In_Demand, // Capture Why in Demand
+            return occs.sort((a,b) => a.rank - b.rank).map(o => ({
+                name: o.occupationRole,
+                desc: o.skillsDescription ? o.skillsDescription.split('.')[0] + '.' : (o.description || 'Key role in sector.'),
+                isHot: o.rank <= 4,
+                id: o.masterOccId, // Keep ID for linking
+                why: o.whyInDemand, // Capture Why in Demand
                 escoCode: o.escoCode,  // Pass through ESCO
                 nationalStandards: o.nationalStandards || [], // Pass through National Standards
-                country: o.country || o.Country // Pass through Country
+                country: o.country // Pass through Country
             }));
         }
         return null; // Return null to fallback to baseSectorDetailData
@@ -257,13 +285,13 @@ class DataManager {
 
     getSkills(sectorId) {
         // Filter top skills from external file
-        const skills = this.topSkills.filter(s => (s.sector === sectorId || s.Sector === sectorId));
+        const skills = this.topSkills.filter(s => s.sector === sectorId);
         
         if (skills.length > 0) {
             return skills.map(s => ({
-                name: s.skill || s.Skill,
-                desc: s.description || s.Description,
-                narrative: s.narrative || s.Narrative,
+                name: s.skill,
+                desc: s.description,
+                narrative: s.narrative,
                 isHot: s.isHot || false
             }));
         }
@@ -276,10 +304,16 @@ class DataManager {
         
         const newCourses = [];
         
+        // Prepare skill keywords for inference
+        const skillKeywords = this.topSkills.map(s => (s.skill || s.name || "").toLowerCase()).filter(s => s.length > 1);
+        
         const mapToCourse = (res, sector, country) => {
             const desc = (res.desc || "").toLowerCase();
-            const title = (res.title || "").toLowerCase();
+            const title = (res.title || res.name || "").toLowerCase();
             const type = (res.type || "").toLowerCase();
+
+            // Deduplication: Skip if a course with this name already exists (prefer manual entry)
+            if (this.courses.some(c => (c.name || "").toLowerCase() === title)) return null;
 
             // Filter out invalid URLs
             if (!res.link || res.link === '#' || !res.link.startsWith('http')) return null;
@@ -294,13 +328,29 @@ class DataManager {
             let courseType = 'Short Course';
             if (type.includes('bootcamp') || desc.includes('bootcamp')) courseType = 'Bootcamp';
             else if (type.includes('degree') || desc.includes('degree')) courseType = 'Degree';
+            else if (type.includes('hub') || type.includes('lab') || type.includes('incubator') || title.includes('hub')) courseType = 'Innovation Hub';
             else if (type.includes('ecosystem') || type.includes('community')) courseType = 'Platform';
             else if (title.includes('academy') || desc.includes('academy')) courseType = 'Academy';
 
+            // Infer skills from title/desc
+            const inferredSkills = [];
+            const textToSearch = (title + " " + desc).toLowerCase();
+            
+            skillKeywords.forEach(k => {
+                try {
+                    const regex = new RegExp(`\\b${k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+                    if (regex.test(textToSearch)) {
+                        const original = this.topSkills.find(s => (s.skill || s.name || "").toLowerCase() === k);
+                        inferredSkills.push(original ? (original.skill || original.name) : k.charAt(0).toUpperCase() + k.slice(1));
+                    }
+                } catch(e) {}
+            });
+            const uniqueSkills = [...new Set(inferredSkills)];
+
             return {
                 id: `res_${Math.random().toString(36).substr(2, 9)}`,
-                name: res.title,
-                provider: res.title, 
+                name: res.title || res.name,
+                provider: res.title || res.name, 
                 type: courseType,
                 level: 'short',
                 duration: 'Self-paced',
@@ -309,7 +359,7 @@ class DataManager {
                 mode: 'Online',
                 sector: sector,
                 country: country,
-                skills: [], 
+                skills: uniqueSkills, 
                 url: res.link,
                 description: res.desc,
                 isResource: true,
@@ -385,12 +435,12 @@ function getOJAMetrics(roleTitle, country) {
 
     // 3. Find Entry using the precise occupation name
     const entry = dataManager.wages.find(d => 
-        (d.country === searchCountry || d.Country === searchCountry) && 
-        (d.occupation === targetOccupation || d.Occupation === targetOccupation)
+        d.country === searchCountry && 
+        d.occupation === targetOccupation
     );
 
     if (entry) {
-        return { count: entry.ojaCount || entry.OJA_Count || "N/A", ref: entry.ojaReference || entry.OJA_Reference || "UNESCO Global Skills Tracker" };
+        return { count: entry.ojaCount || "N/A", ref: entry.ojaReference || "UNESCO Global Skills Tracker" };
     }
     
     return null;
@@ -416,10 +466,10 @@ function getOJAMetrics(roleTitle, country) {
             // Salary Logic: Show currency code unless generic
             let salaryRange = "$500 - $1,200"; 
             
-            if (wageEntry && (wageEntry.p25MonthlyWage || wageEntry.P25_Monthly_Wage)) {
-                const p25 = wageEntry.p25MonthlyWage || wageEntry.P25_Monthly_Wage;
-                const p75 = wageEntry.p75MonthlyWage || wageEntry.P75_Monthly_Wage;
-                const curr = wageEntry.currency || wageEntry.Currency;
+            if (wageEntry && wageEntry.p25MonthlyWage) {
+                const p25 = wageEntry.p25MonthlyWage;
+                const p75 = wageEntry.p75MonthlyWage;
+                const curr = wageEntry.currency;
                 if (p25 !== "TBD") salaryRange = `${curr} ${p25} - ${p75}`;
             } else if (typeof countryData !== 'undefined' && countryData[activeCountry]) {
                 // Fallback to country default if specific wage not found
@@ -439,8 +489,8 @@ function getOJAMetrics(roleTitle, country) {
             // NEW: Check country overrides for sector-level hiring context
             const sectorOverrides = (typeof countryOverrides !== 'undefined' && countryOverrides[activeCountry] && countryOverrides[activeCountry][activeSectorId]) ? countryOverrides[activeCountry][activeSectorId] : null;
 
-            if (wageEntry && (wageEntry.Typical_Employers || wageEntry.typicalEmployers)) {
-                employers = wageEntry.Typical_Employers || wageEntry.typicalEmployers;
+            if (wageEntry && wageEntry.typicalEmployers) {
+                employers = wageEntry.typicalEmployers;
             } else if (typeof roleEmployers !== 'undefined' && roleEmployers[title]) {
                 employers = roleEmployers[title];
                 // Append country context if available
@@ -450,8 +500,8 @@ function getOJAMetrics(roleTitle, country) {
             }
             
             // Apply Work Setting if available
-            if (wageEntry && (wageEntry.Work_Setting || wageEntry.workSetting)) {
-                workMode = wageEntry.Work_Setting || wageEntry.workSetting;
+            if (wageEntry && wageEntry.workSetting) {
+                workMode = wageEntry.workSetting;
             }
 
             // --- Generate Typical Day Breakdown ---
@@ -664,6 +714,7 @@ function getOJAMetrics(roleTitle, country) {
                 
                 let scorecardHtml = '';
                 const isSaved = myPlan.courses.has(t.id);
+                const isNew = t.lastUpdated === '2025';
                 const saveIconClass = isSaved ? "fill-indigo-600 text-indigo-600" : "text-slate-300 hover:text-indigo-600";
 
                 // Trust Tags
@@ -786,6 +837,7 @@ function getOJAMetrics(roleTitle, country) {
                             <div class="pr-2">
                                 <a href="${t.url}" target="_blank" class="font-bold text-base text-indigo-700 hover:underline flex items-start gap-1 leading-tight">
                                     ${t.name} <i data-lucide="external-link" class="w-3 h-3 mt-1 shrink-0"></i>
+                                    ${isNew ? '<span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-100 text-rose-700 animate-pulse">NEW</span>' : ''}
                                 </a>
                                 <div class="text-xs text-slate-500 mt-0.5 flex items-center gap-1 flex-wrap">
                                     ${t.school}
@@ -845,6 +897,13 @@ function getOJAMetrics(roleTitle, country) {
                         ${scorecardHtml}
                         <div class="flex justify-between items-center mt-3">
                             <div class="text-[9px] text-slate-400 italic">Updated: ${t.lastUpdated || '2024'}</div>
+                        <div class="flex justify-between items-end mt-3 pt-2 border-t border-slate-50">
+                            <div class="flex flex-col gap-1">
+                                <div class="text-[9px] text-slate-400 italic">Updated: ${t.lastUpdated || '2024'}</div>
+                                <button onclick="event.stopPropagation(); window.open('mailto:support@ai4eac.org?subject=Broken Link Report: ${encodeURIComponent(t.name)}', '_blank')" class="text-[9px] text-rose-400 hover:text-rose-600 flex items-center gap-1 transition-colors" title="Report Broken Link">
+                                    <i data-lucide="flag" class="w-2.5 h-2.5"></i> Report Issue
+                                </button>
+                            </div>
                             <a href="${t.url}" target="_blank" class="px-4 py-2 text-xs font-bold text-white bg-indigo-600 rounded hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-1">
                                 Visit Site <i data-lucide="arrow-right" class="w-3 h-3"></i>
                             </a>
@@ -894,12 +953,12 @@ function getOJAMetrics(roleTitle, country) {
         }
 
         // --- NEW: Switch Sector inside PATHWAY ---
-        window.switchPATHWAYSector = function(sector) {
+        window.switchPathwaySector = function(sector) {
             // Use global setter to sync UI and state
             setGlobalSector(sector);
 
             // Re-render PATHWAY content
-            renderPATHWAYContent();
+            renderPathwayContent();
         }
 
         // --- NEW: Skill Gap Analysis Utility ---
@@ -967,12 +1026,12 @@ function getOJAMetrics(roleTitle, country) {
             // 1b. Analyze Evidence (Checkboxes) - NEW
             const evidenceInputs = document.querySelectorAll('input[name="profile_evidence"]:checked');
             // Map 0-5+ items to a 1-5 score roughly
-            const scoreEvidence = Math.min(Math.max(evidenceInputs.length, 1), 5);
+            const scoreEvidence = Math.min(evidenceInputs.length + 1, 5);
 
             // 1c. Analyze Qualifications (NEW)
             const qualChecks = document.querySelectorAll('input[name="qual_check"]');
             const qualChecked = document.querySelectorAll('input[name="qual_check"]:checked');
-            const scoreQuals = qualChecks.length > 0 ? (qualChecked.length / qualChecks.length) * 5 : 0;
+            const scoreQuals = qualChecks.length > 0 ? ((qualChecked.length / qualChecks.length) * 4) + 1 : 1;
 
             // Get Selected Role
             const roleSelect = document.getElementById('pp-role-selector');
@@ -1095,11 +1154,11 @@ function getOJAMetrics(roleTitle, country) {
                     <div class="flex flex-wrap justify-between items-center mb-3 gap-2">
                         <h3 class="font-bold text-slate-800 text-sm shrink-0">Assessment Results</h3>
                         <div class="flex items-center gap-2 shrink-0">
-                            <button onclick="renderPATHWAYContent('${selectedRole}')" class="text-[10px] font-bold text-slate-500 hover:text-indigo-600 flex items-center gap-1 bg-white border border-slate-200 px-2 py-1 rounded shadow-sm transition-colors"><i data-lucide="rotate-ccw" class="w-3 h-3"></i> Retake</button>
+                            <button onclick="renderPathwayContent('${selectedRole}')" class="text-[10px] font-bold text-slate-500 hover:text-indigo-600 flex items-center gap-1 bg-white border border-slate-200 px-2 py-1 rounded shadow-sm transition-colors"><i data-lucide="rotate-ccw" class="w-3 h-3"></i> Retake</button>
                             <span class="px-2 py-1 rounded-full bg-${matchColor}-100 text-${matchColor}-700 text-[10px] font-bold uppercase tracking-wider">${matchStatus}</span>
                         </div>
                     </div>
-                    <select onchange="renderPATHWAYContent(this.value)" class="w-full text-sm border-slate-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                    <select onchange="renderPathwayContent(this.value)" class="w-full text-sm border-slate-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2">
                         ${roleOptions}
                     </select>
                 </div>
@@ -1300,73 +1359,8 @@ function getOJAMetrics(roleTitle, country) {
             // --- SECTOR SPECIFIC RESOURCES (New Request) ---
             let sectorResourcesHtml = '';
             let empSectionNum = 3; // Default Employability to 3
-
-            // 1. Start with static data from data.js (if available)
-            let resources = (typeof sectorPathwayResources !== 'undefined' && sectorPathwayResources[sector]) ? [...sectorPathwayResources[sector]] : [];
-
-            // 2. Merge with dynamic data from digital_resources.json (via helper)
-            if (typeof getSectorCareerResources === 'function') {
-                const dynamicResources = getSectorCareerResources(sector);
-                if (dynamicResources) {
-                    // Add LMI (Market Intel)
-                    if (dynamicResources.lmi) {
-                        dynamicResources.lmi.slice(0, 2).forEach(r => {
-                            if (!resources.some(ex => ex.title === r.name)) {
-                                resources.push({ title: r.name, desc: r.desc, link: r.link, icon: 'line-chart' });
-                            }
-                        });
-                    }
-                    // Add Communities
-                    if (dynamicResources.communities) {
-                        dynamicResources.communities.slice(0, 2).forEach(r => {
-                            if (!resources.some(ex => ex.title === r.name)) {
-                                resources.push({ title: r.name, desc: r.desc, link: r.link, icon: 'users' });
-                            }
-                        });
-                    }
-                }
-            }
-
-            // Filter for valid links only
-            resources = resources.filter(r => r.link && r.link.startsWith('http'));
-
-            // Limit to 6 items for display
-            resources = resources.slice(0, 6);
-
-            if (resources.length > 0) {
-                const resourceItems = resources.map(r => {
-                    const hasLink = r.link && r.link !== '#';
-                    const tag = hasLink ? 'a' : 'div';
-                    const href = hasLink ? `href="${r.link}" target="_blank"` : '';
-                    const cursor = hasLink ? 'hover:shadow-sm cursor-pointer' : 'cursor-default opacity-75';
-                    const icon = hasLink ? `<i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-${theme}-500"></i>` : `<span class="text-[9px] text-slate-400 font-bold">N/A</span>`;
-
-                    return `
-                    <${tag} ${href} class="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg hover:border-${theme}-300 ${cursor} transition-all group">
-                        <div class="p-2 bg-${theme}-50 text-${theme}-600 rounded-lg shrink-0 group-hover:bg-${theme}-100"><i data-lucide="${r.icon}" class="w-4 h-4"></i></div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-xs font-bold text-slate-800 group-hover:text-${theme}-700 truncate">${r.title}</div>
-                            <div class="text-[10px] text-slate-500 truncate">${r.desc}</div>
-                        </div>
-                        ${icon}
-                    </${tag}>
-                `}).join('');
-
-                sectorResourcesHtml = `
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
-                            <span class="w-5 h-5 rounded-full bg-${theme}-100 text-${theme}-600 flex items-center justify-center text-xs">4</span> 
-                            Explore the Ecosystem
-                        </h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            ${resourceItems}
-                        </div>
-                    </div>
-                `;
-            }
-
             const headerTitle = `${pathwayFocus} Pathway`;
-            const headerDesc = "A recommended skilling and learning experience path for this role.";
+            const headerDesc = "A recommended technical skilling and foundational learning pathway for this role.";
 
             container.innerHTML = `
                 <div class="space-y-6 animate-fade-in pb-4">
@@ -1387,7 +1381,7 @@ function getOJAMetrics(roleTitle, country) {
                         <div class="flex justify-between items-end mb-3">
                             <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                                 <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs">1</span> 
-                                Level Up Your Skills
+                                Level Up Your Technical Skills
                             </h4>
                             <div class="flex gap-1 bg-slate-100 p-0.5 rounded-lg">
                                 <button onclick="renderPathwayCourseGrid('match')" class="pathway-sort-btn px-2 py-1 text-[10px] font-bold rounded-md transition-colors bg-white text-slate-600 border border-slate-200 shadow-sm" data-sort="match">Best Match</button>
@@ -1399,10 +1393,21 @@ function getOJAMetrics(roleTitle, country) {
                         </div>
                     </div>
 
-                    <!-- Step 2: Boost your Employability -->
+                    <!-- Step 2: Enhance your Interpersonal and Soft Skills -->
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-3">
+                            <span class="w-5 h-5 rounded-full bg-${theme}-100 text-${theme}-600 flex items-center justify-center text-xs">2</span> 
+                            Sharpen your Interpersonal & Soft Skills
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            ${proofHtml}
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Get Job Ready -->
                     <div>
                          <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
-                            <span class="w-5 h-5 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs">2</span> 
+                            <span class="w-5 h-5 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs">3</span> 
                             Get Job-Ready (${roleName})
                         </h4>
                         <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
@@ -1451,19 +1456,6 @@ function getOJAMetrics(roleTitle, country) {
                             </div>
                         </div>
                     </div>
-
-                    <!-- Step ${empSectionNum}: Enhance your Employability Skills -->
-                    <div>
-                        <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-3">
-                            <span class="w-5 h-5 rounded-full bg-${theme}-100 text-${theme}-600 flex items-center justify-center text-xs">${empSectionNum}</span> 
-                            Sharpen Soft Skills
-                        </h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            ${proofHtml}
-                        </div>
-                    </div>
-
-                    ${sectorResourcesHtml}
 
                 </div>
             `;
@@ -1565,7 +1557,7 @@ function getOJAMetrics(roleTitle, country) {
         }
 
         // --- Render PATHWAY Content (Restored & Attached to Window) ---
-        window.renderPATHWAYContent = function(preSelectedRole = null, preSelectedGoal = null) {
+        window.renderPathwayContent = function(preSelectedRole = null, preSelectedGoal = null) {
             const sector = activeSectorId;
             let themeColor = 'indigo';
             
@@ -1659,7 +1651,7 @@ function getOJAMetrics(roleTitle, country) {
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
                             <div class="mb-4">
                                 <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Target Role</label>
-                                <select id="pp-role-selector" onchange="renderPATHWAYContent(this.value)" class="w-full text-sm font-bold text-slate-700 border-slate-300 rounded-lg shadow-sm focus:border-${themeColor}-500 focus:ring-${themeColor}-500 p-2.5">
+                                <select id="pp-role-selector" onchange="renderPathwayContent(this.value)" class="w-full text-sm font-bold text-slate-700 border-slate-300 rounded-lg shadow-sm focus:border-${themeColor}-500 focus:ring-${themeColor}-500 p-2.5">
                                     ${roleOptions}
                                 </select>
                             </div>
@@ -1671,7 +1663,7 @@ function getOJAMetrics(roleTitle, country) {
                                 <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold">1</span> 
                                 Minimum Qualifications Check
                             </h3>
-                            <p class="text-[10px] text-slate-400 italic mb-3 ml-8">These are typical requirements. Specific employers may have different standards.</p>
+                            <p class="text-[10px] text-slate-400 italic mb-3 ml-8">These are typical requirements. Specific employers may request different qualifications or occupational standards.</p>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                                 <label class="p-3 border border-slate-200 rounded-lg cursor-pointer hover:border-${themeColor}-400 transition-all bg-white group relative">
                                     <input type="checkbox" name="qual_check" value="edu" class="peer sr-only">
@@ -1708,7 +1700,7 @@ function getOJAMetrics(roleTitle, country) {
                             <div>
                                 <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
                                     <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">3</span> 
-                                    Interpersonal and Soft Skills
+                                    Interpersonal & Soft Skills
                                 </h3>
                                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
                                     ${layerAInputs}
@@ -1898,7 +1890,7 @@ function getOJAMetrics(roleTitle, country) {
             container.innerHTML = `
                 <div class="max-w-3xl mx-auto py-6 animate-fade-in">
                     <div class="mb-6">
-                        <button onclick="renderPathwayStep1()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+                        <button onclick="renderPathwayStep1()" class="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 hover:border-indigo-200 hover:bg-indigo-100 text-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
                     </div>
                     <div class="text-center mb-8">
                         <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 mb-4">
@@ -1953,7 +1945,7 @@ function getOJAMetrics(roleTitle, country) {
             container.innerHTML = `
                 <div class="max-w-3xl mx-auto py-6 animate-fade-in">
                     <div class="mb-6">
-                        <button onclick="renderPathwayStep1()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+                        <button onclick="renderPathwayStep1()" class="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 hover:border-indigo-200 hover:bg-indigo-100 text-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
                     </div>
                     <div class="text-center mb-10">
                         <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 text-purple-600 mb-4">
@@ -2000,6 +1992,10 @@ function getOJAMetrics(roleTitle, country) {
             if(!container) return;
 
             const sector = activeSectorId;
+            let theme = 'indigo';
+            if (sector === 'agri') theme = 'green';
+            if (sector === 'energy') theme = 'orange';
+
             const options = (typeof pathwayQuizOptions !== 'undefined') ? (pathwayQuizOptions[sector] || pathwayQuizOptions['digital']) : [];
 
             // Get role descriptions
@@ -2016,10 +2012,10 @@ function getOJAMetrics(roleTitle, country) {
             container.innerHTML = `
                 <div class="max-w-3xl mx-auto py-4 animate-fade-in">
                     <div class="mb-4">
-                        <button onclick="renderPathwayQuiz()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+                        <button onclick="renderPathwayQuiz()" class="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 hover:border-indigo-200 hover:bg-indigo-100 text-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
                     </div>
                     <div class="text-center mb-6">
-                        <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 text-purple-600 mb-3">
+                        <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-${theme}-100 text-${theme}-600 mb-3">
                             <span class="font-bold text-base">2</span>
                         </div>
                         <h2 class="text-xl font-bold text-slate-900 mb-1">What sounds most like you?</h2>
@@ -2030,17 +2026,17 @@ function getOJAMetrics(roleTitle, country) {
                             const roleKey = roleKeyMap[opt.id];
                             const roleText = activeRoles[roleKey] || "Role examples unavailable.";
                             return `
-                            <button onclick="selectPathwayInterest('${opt.id}')" class="flex flex-col items-center text-center p-4 bg-white border border-slate-200 rounded-xl hover:border-purple-400 hover:shadow-md transition-all group h-full">
+                            <button onclick="selectPathwayInterest('${opt.id}')" class="flex flex-col items-center text-center p-4 bg-white border border-slate-200 rounded-xl hover:border-${theme}-400 hover:shadow-md transition-all group h-full">
                                 <div>
-                                    <div class="w-12 h-12 bg-slate-50 text-slate-600 rounded-full flex items-center justify-center mb-3 group-hover:bg-purple-50 group-hover:text-purple-600 transition-colors">
+                                    <div class="w-12 h-12 bg-slate-50 text-slate-600 rounded-full flex items-center justify-center mb-3 group-hover:bg-${theme}-50 group-hover:text-${theme}-600 transition-colors">
                                         <i data-lucide="${opt.icon}" class="w-6 h-6"></i>
                                     </div>
                                     <h3 class="font-bold text-base text-slate-800 mb-1">${opt.title}</h3>
                                     <p class="text-xs text-slate-500 leading-relaxed mb-3">${opt.desc}</p>
                                 </div>
-                                <div class="mt-auto pt-2 border-t border-slate-200 group-hover:border-purple-100 w-full">
+                                <div class="mt-auto pt-2 border-t border-slate-200 group-hover:border-${theme}-100 w-full">
                                     <div class="text-xs font-bold text-slate-500 uppercase mb-1">Example Roles</div>
-                                    <p class="text-xs text-purple-700 font-medium leading-snug">${roleText}</p>
+                                    <p class="text-xs text-${theme}-700 font-medium leading-snug">${roleText}</p>
                                 </div>
                             </button>
                         `}).join('')}
@@ -2082,7 +2078,7 @@ function getOJAMetrics(roleTitle, country) {
             container.innerHTML = `
                 <div class="max-w-2xl mx-auto py-4 animate-fade-in">
                     <div class="mb-4">
-                        <button onclick="renderPathwayQuiz()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+                        <button onclick="renderPathwayQuiz()" class="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 hover:border-indigo-200 hover:bg-indigo-100 text-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
                     </div>
                     <div class="text-center mb-6">
                         <h2 class="text-xl font-bold text-slate-900">Career Personality Assessment</h2>
@@ -2170,15 +2166,16 @@ function getOJAMetrics(roleTitle, country) {
 
             // Fallback if pathwayGoals is missing
             const goals = (typeof pathwayGoals !== 'undefined' && Array.isArray(pathwayGoals)) ? pathwayGoals : [
-                { "title": "Entry Level Job", "desc": "I want to find my first job or internship.", "icon": "briefcase" },
-                { "title": "Placement & Apprenticeship", "desc": "I want to learn on the job with a mentor.", "icon": "users" },
-                { "title": "Advancement & Lifelong Learning", "desc": "I want to strengthen my current skills.", "icon": "trending-up" },
+                { "title": "Employability and Workforce Entry", "desc": "I want to build core work-readiness skills and competencies.", "icon": "book-open" },
+                { "title": "Placements and Apprenticeships", "desc": "I want to learn on the job through a work placement or with a mentor.", "icon": "users" },
+                { "title": "Entry Level Job", "desc": "I want to find my first job or an internship.", "icon": "briefcase" },
+                { "title": "Upskilling & Lifelong Learning", "desc": "I want to strengthen my current skills or learn new ones.", "icon": "trending-up" },
                 ];
 
             container.innerHTML = `
                 <div class="max-w-3xl mx-auto py-6 animate-fade-in">
                     <div class="mb-6">
-                        <button onclick="renderQuickMatch()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+                        <button onclick="renderQuickMatch()" class="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 hover:border-indigo-200 hover:bg-indigo-100 text-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
                     </div>
                     <div class="text-center mb-8">
                         <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 mb-4">
@@ -2211,7 +2208,7 @@ function getOJAMetrics(roleTitle, country) {
             let targetSkills = [];
 
             // Goal-based Skill Selection
-            if (['Strengthen my current skills', 'Upskill', 'Advancement & Lifelong Learning'].includes(goal)) {
+            if (['Strengthen my current skills', 'Upskill', 'Upskilling & Lifelong Learning'].includes(goal)) {
                 targetSkills = allSkills.filter(s => s.isHot).slice(0, 5); // Hot/Advanced skills
             } else {
                 targetSkills = allSkills.slice(0, 4); // Foundational
@@ -2273,7 +2270,7 @@ function getOJAMetrics(roleTitle, country) {
             let blockCAction = "";
             let blockCOnclick = "";
 
-            if (goal === 'Apprenticeship') {
+            if (goal === 'Placements and Apprenticeships' || goal === 'Placements and Apprenticeship' || goal === 'Apprenticeship' || goal === 'Placements & Apprenticeship') {
                 blockBTitle = "Starter Kit";
                 blockBAction = "Launch Prep Checklist";
                 blockBOnclick = "renderApprenticeshipChecklist()";
@@ -2369,6 +2366,48 @@ function getOJAMetrics(roleTitle, country) {
                     nationalMentorships[activeCountry].forEach(m => mentorResources.push(m));
                 }
 
+                // --- NEW: Inject Dynamic Resources from JSON ---
+                if (dataManager.digitalResources) {
+                    const getDynamicResources = (list, keywords) => {
+                        return (list || []).filter(r => {
+                            const text = ((r.title || "") + " " + (r.desc || "") + " " + (r.type || "")).toLowerCase();
+                            return keywords.some(k => text.includes(k));
+                        });
+                    };
+
+                    const mentorKeywords = ['mentor', 'coaching', 'guidance', 'alumni'];
+                    const appKeywords = ['apprentice', 'placement', 'internship', 'vocational', 'tvet', 'attachment', 'work-readiness'];
+                    
+                    let jsonMentors = [];
+                    let jsonApps = [];
+                    let resourceKey = activeCountry === 'DRC' ? 'DR Congo' : activeCountry;
+
+                    const mergeFromSource = (sourceObj) => {
+                        if (!sourceObj) return;
+                        // Regional
+                        if (sourceObj.regional_multipliers) {
+                            jsonMentors.push(...getDynamicResources(sourceObj.regional_multipliers, mentorKeywords));
+                            jsonApps.push(...getDynamicResources(sourceObj.regional_multipliers, appKeywords));
+                        }
+                        // Country
+                        if (activeCountry !== 'all' && sourceObj.country_resources && sourceObj.country_resources[resourceKey]) {
+                            const cr = sourceObj.country_resources[resourceKey];
+                            if (cr.communities) jsonMentors.push(...getDynamicResources(cr.communities, mentorKeywords));
+                            if (cr.mentorship) jsonMentors.push(...cr.mentorship);
+                            if (cr.hubs) jsonApps.push(...getDynamicResources(cr.hubs, appKeywords));
+                            if (cr.education) jsonApps.push(...getDynamicResources(cr.education, appKeywords));
+                        }
+                    };
+
+                    // Merge General & Sector Specific
+                    mergeFromSource(dataManager.digitalResources);
+                    if (dataManager.digitalResources[sector]) mergeFromSource(dataManager.digitalResources[sector]);
+
+                    // Deduplicate and Add
+                    jsonMentors.forEach(m => { if (!mentorResources.some(ex => ex.title === m.title)) mentorResources.push({ title: m.title, desc: m.desc, link: m.link, icon: 'users' }); });
+                    jsonApps.forEach(a => { if (!appResources.some(ex => ex.title === a.title)) appResources.push({ title: a.title, desc: a.desc, link: a.link, icon: 'book-open' }); });
+                }
+
                 const appHtml = appResources.map(r => `
                     <a href="${r.link}" target="_blank" class="flex items-center gap-3 p-2 border border-slate-100 rounded-lg hover:bg-slate-50 group transition-colors bg-white">
                         <div class="p-1.5 bg-blue-100 text-blue-600 rounded shrink-0"><i data-lucide="${r.icon}" class="w-3 h-3"></i></div>
@@ -2448,7 +2487,7 @@ function getOJAMetrics(roleTitle, country) {
                         </div>
                     </div>
                 `;
-            } else if (['Entry Level Job', 'Internship'].includes(goal)) {
+            } else if (['Entry Level Job', 'Internship', 'Entry Level Job or Internship'].includes(goal)) {
                 blockBTitle = "Job Seeker Toolkit";
                 blockBAction = "Launch Job Readiness Scorecard";
                 blockBOnclick = "renderReadinessScorecard()";
@@ -2480,9 +2519,67 @@ function getOJAMetrics(roleTitle, country) {
                         </div>
                     </div>
                 `;
+            } else if (goal === 'Workforce Readiness & Employability' || goal === 'Employability and Workforce Entry') {
+                blockBTitle = "Resources Supporting Workforce Readiness";
+                blockCAction = "Browse Training";
+                blockCOnclick = "openUnifiedHub('pp-courses')";
+
+                // Fetch specific employability resources from dataManager
+                let employResources = [];
+                if (dataManager.digitalResources) {
+                    // Helper to extract skills resources
+                    const extractSkills = (list) => (list || []).filter(r => r.type === 'Skills' || r.type === 'Education' || (r.desc && r.desc.toLowerCase().includes('skills')));
+                    
+                    if (dataManager.digitalResources.regional_multipliers) {
+                        employResources.push(...extractSkills(dataManager.digitalResources.regional_multipliers));
+                    }
+                    if (dataManager.digitalResources.global_resources) {
+                        employResources.push(...extractSkills(dataManager.digitalResources.global_resources));
+                    }
+                    
+                    // Add country specific if available
+                    let resourceKey = activeCountry === 'DRC' ? 'DR Congo' : activeCountry;
+                    if (activeCountry !== 'all' && dataManager.digitalResources.country_resources && dataManager.digitalResources.country_resources[resourceKey]) {
+                         const cr = dataManager.digitalResources.country_resources[resourceKey];
+                         if(cr.hubs) employResources.push(...extractSkills(cr.hubs));
+                         if(cr.communities) employResources.push(...extractSkills(cr.communities));
+                    }
+                }
+                
+                // Filter for valid links and deduplicate
+                employResources = employResources.filter(r => r.link && r.link.startsWith('http'));
+                employResources = Array.from(new Set(employResources.map(r => JSON.stringify(r)))).map(s => JSON.parse(s)).slice(0, 6);
+
+                const resHtml = employResources.map(r => `
+                    <a href="${r.link}" target="_blank" class="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg hover:border-indigo-300 transition-colors group">
+                        <div class="p-2 bg-indigo-50 text-indigo-600 rounded shrink-0"><i data-lucide="book-open" class="w-4 h-4"></i></div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-xs font-bold text-slate-800 group-hover:text-indigo-700 truncate">${r.title}</div>
+                            <div class="text-[10px] text-slate-500 truncate">${r.desc}</div>
+                        </div>
+                        <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-indigo-500"></i>
+                    </a>
+                `).join('');
+
+                blockBContent = `
+                    <div class="mb-3">
+                        <p class="text-xs text-slate-600 mb-3">Curated resources to strengthen core competencies for job-readiness and employability.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            ${resHtml.length > 0 ? resHtml : '<div class="col-span-2 text-center text-slate-400 text-xs italic">No specific resources found.</div>'}
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-slate-100 grid grid-cols-2 gap-3">
+                         <button onclick="renderReadinessScorecard('pp-practice-content', 'renderPathwayStep3()')" class="py-2 bg-emerald-50 text-emerald-700 font-bold rounded-lg text-xs hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="clipboard-check" class="w-4 h-4"></i> Readiness Audit
+                        </button>
+                        <button onclick="closeModal('unified-hub-modal'); document.getElementById('career-hub-drawer').classList.remove('translate-x-full'); showCVResources();" class="py-2 bg-purple-50 text-purple-700 font-bold rounded-lg text-xs hover:bg-purple-100 transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="file-text" class="w-4 h-4"></i> CV Tools
+                        </button>
+                    </div>
+                `;
             } else {
-                // Upskill / Strengthen
-                blockBTitle = "Advancement & Lifelong Learning";
+                // Upskill / Strengthen / Employability
+                blockBTitle = "Upskilling & Lifelong Learning";
                 blockCAction = "Browse Courses";
                 blockCOnclick = "openUnifiedHub('pp-courses')";
                 
@@ -2517,30 +2614,36 @@ function getOJAMetrics(roleTitle, country) {
                 }
 
                 blockBContent = `
-                    <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 rounded-lg border border-indigo-100">
-                        <div class="flex items-start gap-3 mb-3">
-                            <div class="p-2 bg-white rounded-full text-indigo-600 shadow-sm shrink-0"><i data-lucide="infinity" class="w-5 h-5"></i></div>
-                            <div>
-                                <h4 class="text-sm font-bold text-indigo-900 mb-1">Lifelong Learning Strategy</h4>
-                                <p class="text-xs text-indigo-800 leading-relaxed italic">"Lifelong learning is the ongoing, voluntary, and self-motivated pursuit of knowledge."</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button onclick="openLifelongLearningGuides()" class="p-3 bg-purple-50 border border-purple-100 rounded-lg text-left hover:bg-purple-100 transition-colors group h-full">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="p-1.5 bg-white text-purple-600 rounded shadow-sm"><i data-lucide="compass" class="w-4 h-4"></i></div>
+                                <span class="text-xs font-bold text-purple-800">Career Strategy</span>
                             </div>
-                        </div>
-                        <div class="bg-white/60 rounded p-3 text-xs text-indigo-900">
-                            Stay competitive by dedicating time to micro-learning. 
-                        </div>
+                            <p class="text-[10px] text-purple-700 leading-snug">Guides on leadership, negotiation, and personal branding.</p>
+                        </button>
+
+                        <button onclick="openUnifiedHub('pp-courses')" class="p-3 bg-indigo-50 border border-indigo-100 rounded-lg text-left hover:bg-indigo-100 transition-colors group h-full">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="p-1.5 bg-white text-indigo-600 rounded shadow-sm"><i data-lucide="book-open" class="w-4 h-4"></i></div>
+                                <span class="text-xs font-bold text-indigo-800">Find Micro-credentials</span>
+                            </div>
+                            <p class="text-[10px] text-indigo-700 leading-snug">Short, focused courses to validate new skills quickly.</p>
+                        </button>
                     </div>
-                `;
+                    
+                    `;
             }
 
             // --- SECTION C: TRAINING (Bridge Skills and Knowledge Gaps) ---
             const catalogue = getMasterTrainingCatalogue('all', sector, activeCountry);
             let courses = [];
             
-            if (['Internship', 'Entry Level Job', 'Apprenticeship'].includes(goal)) {
+            if (['Internship', 'Entry Level Job', 'Apprenticeship', 'Placements & Apprenticeship', 'Placements and Apprenticeship', 'Placements and Apprenticeships', 'Workforce Readiness & Employability Training', 'Employability and Workforce Entry'].includes(goal)) {
                 courses = [...catalogue.short, ...catalogue.med];
-            } else if (['Strengthen my current skills', 'Upskill'].includes(goal)) {
+            } else if (['Strengthen my current skills', 'Upskill', 'Upskilling & Lifelong Learning'].includes(goal)) {
                 courses = [...catalogue.med, ...catalogue.long];
-            } else if (goal === 'Advancement & Lifelong Learning') {
+            } else if (goal === 'Upskilling & Lifelong Learning' || goal === 'Upskilling & Lifelong Learning') {
                 courses = [...catalogue.short, ...catalogue.med]; // Prioritize Micro-learning
             } else {
                 courses = [...catalogue.short, ...catalogue.med, ...catalogue.long];
@@ -2609,35 +2712,10 @@ function getOJAMetrics(roleTitle, country) {
                 `).join('');
             }
 
-            // --- SECTION E: ECOSYSTEM RESOURCES ---
-            let ecoResources = (typeof sectorPathwayResources !== 'undefined' && sectorPathwayResources[sector]) ? [...sectorPathwayResources[sector]] : [];
-            // Merge dynamic
-            if (typeof getSectorCareerResources === 'function') {
-                const dynamicResources = getSectorCareerResources(sector);
-                if (dynamicResources && dynamicResources.communities) {
-                    dynamicResources.communities.slice(0, 2).forEach(r => {
-                        if (!ecoResources.some(ex => ex.title === r.name)) {
-                            ecoResources.push({ title: r.name, desc: r.desc, link: r.link, icon: 'users' });
-                        }
-                    });
-                }
-            }
-            ecoResources = ecoResources.filter(r => r.link && r.link.startsWith('http')).slice(0, 4);
-            
-            const ecoHtml = ecoResources.map(r => `
-                <a href="${r.link}" target="_blank" class="flex items-center gap-3 p-2 bg-white border border-slate-200 rounded-lg hover:border-${theme}-300 transition-all group">
-                    <div class="p-1.5 bg-slate-50 text-slate-600 rounded shrink-0 group-hover:bg-${theme}-50 group-hover:text-${theme}-600"><i data-lucide="${r.icon}" class="w-4 h-4"></i></div>
-                    <div class="flex-1 min-w-0">
-                        <div class="text-xs font-bold text-slate-800 group-hover:text-${theme}-700 truncate">${r.title}</div>
-                        <div class="text-[10px] text-slate-500 truncate">${r.desc}</div>
-                    </div>
-                </a>
-            `).join('');
-
             // --- RENDER FINAL HTML ---
             container.innerHTML = `
                 <div class="animate-fade-in space-y-6 pb-8">
-                    <button onclick="renderPathwayGoal()" class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Options</button>
+                    <button onclick="renderPathwayGoal()" class="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 hover:border-indigo-200 hover:bg-indigo-100 text-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Options</button>
                     <!-- Header -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
                         <div>
@@ -2687,11 +2765,11 @@ function getOJAMetrics(roleTitle, country) {
                     </div>
 
                     <!-- C. Training -->
-                    ${goal !== 'Placement & Apprenticeship' ? `
+                    ${goal !== 'Placements & Apprenticeship' ? `
                     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3">
-                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">C</span> Quick Courses</h3>
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">C</span> Examples of Micro-learning</h3>
                             <div class="flex gap-2">
                                 ${blockCAction ? `<button onclick="${blockCOnclick}" class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded hover:bg-emerald-100 border border-emerald-100">${blockCAction}</button>` : ''}
                             </div>
@@ -2712,15 +2790,6 @@ function getOJAMetrics(roleTitle, country) {
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             ${blockDContentHtml || '<div class="text-xs text-slate-500 italic">No items found.</div>'}
-                        </div>
-                    </div>
-
-                    <!-- E. Ecosystem -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-slate-400"></div>
-                        <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-4"><span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold">E</span> Explore the Ecosystem</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            ${ecoHtml}
                         </div>
                     </div>
                 </div>
@@ -2822,7 +2891,11 @@ function getOJAMetrics(roleTitle, country) {
             if(!container) return;
 
             const isPathwayContext = targetId === 'pp-practice-content';
-            const optionsBtn = isPathwayContext ? `<button onclick="renderPathwayGoal()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> Options</button>` : '';
+            const optionsBtn = isPathwayContext ? `<button onclick="renderPathwayGoal()" class="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 hover:border-indigo-200 hover:bg-indigo-100 text-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> Options</button>` : '';
+
+            const backBtnClass = isPathwayContext 
+                ? "px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 hover:border-indigo-200 hover:bg-indigo-100 text-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"
+                : "px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm";
 
             const sections = [
                 {
@@ -2843,10 +2916,10 @@ function getOJAMetrics(roleTitle, country) {
                 <div class="max-w-3xl mx-auto py-4 animate-fade-in">
                     <div class="mb-6 flex justify-between items-center">
                         <div class="flex gap-4">
-                            <button onclick="${backAction}" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+                            <button onclick="${backAction}" class="${backBtnClass}"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
                             ${optionsBtn}
                         </div>
-                        <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">Placement & Apprenticeship Audit</div>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">Placements & Apprenticeship Audit</div>
                     </div>
                     
                     <div class="text-center mb-8">
@@ -2927,7 +3000,7 @@ function getOJAMetrics(roleTitle, country) {
             container.innerHTML = `
                 <div class="max-w-3xl mx-auto py-4 animate-fade-in">
                     <div class="mb-6 flex justify-between items-center">
-                        <button onclick="renderPathwayStep3()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Roadmap</button>
+                        <button onclick="renderPathwayStep3()" class="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 hover:border-indigo-200 hover:bg-indigo-100 text-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Pathways</button>
                         <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">Pivot Audit</div>
                     </div>
                     
@@ -2985,8 +3058,8 @@ function getOJAMetrics(roleTitle, country) {
             container.innerHTML = `
                 <div class="max-w-3xl mx-auto py-4 animate-fade-in">
                     <div class="mb-6 flex gap-4">
-                        <button onclick="renderPathwayStep3()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Roadmap</button>
-                        <button onclick="renderPathwayGoal()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> Options</button>
+                        <button onclick="renderPathwayStep3()" class="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 hover:border-indigo-200 hover:bg-indigo-100 text-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Pathways</button>
+                        <button onclick="renderPathwayGoal()" class="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 hover:border-indigo-200 hover:bg-indigo-100 text-indigo-700 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> Options</button>
                     </div>
                     <div class="text-center mb-8">
                         <h2 class="text-2xl font-bold text-slate-900 mb-2">Cold Outreach Scripts</h2>
@@ -3122,7 +3195,7 @@ function getOJAMetrics(roleTitle, country) {
                         </div>
                     </div>
                     <div>
-                        <div class="text-[10px] font-bold text-emerald-700 uppercase tracking-wide mb-2 border-b border-emerald-100 pb-1">Employability & Soft Skills</div>
+                        <div class="text-[10px] font-bold text-emerald-700 uppercase tracking-wide mb-2 border-b border-emerald-100 pb-1">Interpersonal & Soft Skills</div>
                         <div class="space-y-2">
                             ${empHtml}
                         </div>
@@ -3155,7 +3228,7 @@ function getOJAMetrics(roleTitle, country) {
             `;
             // Note: Ensure <div id="modal-standards-section"></div> exists in your HTML modal structure, or append it dynamically if needed.
 
-            // --- 3. Qualifications & Requirements (New Section 3) ---
+            // --- 3. Qualifications & Industry Standards (New Section 3) ---
             const qualData = (typeof roleQualifications !== 'undefined' && roleQualifications[title]) 
                 ? roleQualifications[title] 
                 : { 
@@ -3172,9 +3245,9 @@ function getOJAMetrics(roleTitle, country) {
             const qualHtml = `
                 <div class="mt-6 pt-6 border-t border-slate-100" id="modal-qualifications-section">
                     <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">3</span> Qualifications & Requirements
+                        <span class="w-6 h-6 rounded bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">3</span> Qualifications & Industry Standards
                     </h3>
-                    <p class="text-[10px] text-slate-400 italic mb-3 ml-8">This is a typical use case. Please check with employers for exact qualifications and years of experience required.</p>
+                    <p class="text-[10px] text-slate-400 italic mb-3 ml-8">This is a typical use case. Please check with employers for exact qualifications, industry standards and years of experience required.</p>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
                             <div class="flex items-center gap-2 mb-1"><i data-lucide="graduation-cap" class="w-4 h-4 text-indigo-500"></i><span class="text-[10px] font-bold text-slate-500 uppercase">Education</span></div>
@@ -3433,6 +3506,20 @@ function getOJAMetrics(roleTitle, country) {
                 }
             });
 
+            // Close Left Drawer (App Menu)
+            if (exceptId !== 'about-drawer') {
+                const el = document.getElementById('about-drawer');
+                if (el && !el.classList.contains('-translate-x-full')) {
+                    el.classList.add('-translate-x-full');
+                }
+            }
+            if (exceptId !== 'users-drawer') {
+                const el = document.getElementById('users-drawer');
+                if (el && !el.classList.contains('-translate-x-full')) {
+                    el.classList.add('-translate-x-full');
+                }
+            }
+
             // 2. Close Centered Modals
             const modals = [
                 'occupation-modal',
@@ -3581,8 +3668,8 @@ function getOJAMetrics(roleTitle, country) {
             // Check if this is a specific tab request (not default dashboard)
             const specificTabRequest = startTab !== 'pp-diagnostic';
 
-            if(specificRequest && typeof window.renderPATHWAYContent === 'function') {
-                window.renderPATHWAYContent(roleName, pathwayGoal);
+            if(specificRequest && typeof window.renderPathwayContent === 'function') {
+                window.renderPathwayContent(roleName, pathwayGoal);
             }
             drawer.classList.remove('translate-x-full');
             
@@ -3633,7 +3720,7 @@ function getOJAMetrics(roleTitle, country) {
             // Reset Header Title
             const headerTitle = document.getElementById('pp-header-title');
             if (headerTitle) {
-                headerTitle.innerHTML = `<i data-lucide="layers" class="w-6 h-6 text-indigo-600"></i> Skills & Training Hub`;
+                headerTitle.innerHTML = `<i data-lucide="layers" class="w-6 h-6 text-indigo-600"></i> Skills Matching & Training Pathways`;
             }
 
             // Hide other views
@@ -3684,25 +3771,25 @@ function getOJAMetrics(roleTitle, country) {
                     <button onclick="openSkillsView('pp-diagnostic')" class="p-6 bg-emerald-50 border border-emerald-100 rounded-xl hover:border-emerald-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-emerald-100 text-emerald-600 rounded-lg w-fit mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><i data-lucide="clipboard-check" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">SkillsMatch</h3>
-                        <p class="text-sm text-slate-600">Check your skills, find your gaps, and see if you're ready for the job.</p>
+                        <p class="text-sm text-slate-600">Do you have the right skills for high growth occupations in <strong>${sectorName}</strong>? Identify your skills strengths and gaps. Upskill through locally relevant training options.</p>
                     </button>
 
                     <button onclick="openSkillsView('pp-practice')" class="p-6 bg-indigo-50 border border-indigo-100 rounded-xl hover:border-indigo-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-indigo-100 text-indigo-600 rounded-lg w-fit mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><i data-lucide="map" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">Career Roadmap</h3>
-                        <p class="text-sm text-slate-600">Build a step-by-step plan to reach your career goals in <strong>${sectorName}</strong>.</p>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Pathway Builder</h3>
+                        <p class="text-sm text-slate-600">Generate a personalized plan to take you through the next steps in <strong>${sectorName}</strong> based on your skills strengths, career preferences and goals.</p>
                     </button>
                     
                     <button onclick="openSkillsView('pp-courses')" class="p-6 bg-blue-50 border border-blue-100 rounded-xl hover:border-blue-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-blue-100 text-blue-600 rounded-lg w-fit mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-6 h-6"></i></div>
                         <h3 class="font-bold text-slate-800 text-lg mb-1">Find Courses</h3>
-                        <p class="text-sm text-slate-600">Search for trusted training providers and certifications.</p>
+                        <p class="text-sm text-slate-600">Search for training providers based on your skills needs and level, time, cost and location.</p>
                     </button>
 
                     <button onclick="openSkillsView('pp-recommendations')" class="p-6 bg-teal-50 border border-teal-100 rounded-xl hover:border-teal-300 hover:bg-white hover:shadow-md text-left transition-all group">
                         <div class="p-3 bg-teal-100 text-teal-600 rounded-lg w-fit mb-4 group-hover:bg-teal-600 group-hover:text-white transition-colors"><i data-lucide="compass" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-800 text-lg mb-1">Explore Roles</h3>
-                        <p class="text-sm text-slate-600">See quick ideas for careers and learning paths in <strong>${sectorName}</strong>.</p>
+                        <h3 class="font-bold text-slate-800 text-lg mb-1">Still not sure?</h3>
+                        <p class="text-sm text-slate-600">View snapshots of skilling and careers pathways in <strong>${sectorName}</strong>.</p>
                     </button>
             `;
             if(window.lucide) lucide.createIcons();
@@ -3732,6 +3819,17 @@ function getOJAMetrics(roleTitle, country) {
                                 <select id="filter-skill" onchange="renderProviderTable()" class="w-full text-xs border-slate-300 rounded-lg p-2 focus:ring-indigo-500 bg-indigo-50/50 border-indigo-200 text-indigo-900 font-medium">
                                     <option value="all">All Skills</option>
                                     <!-- Populated dynamically -->
+                                </select>
+                            </div>
+
+                            <!-- Level -->
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Level</label>
+                                <select id="filter-difficulty" onchange="renderProviderTable()" class="w-full text-xs border-slate-300 rounded-lg p-2 focus:ring-indigo-500">
+                                    <option value="all">All Levels</option>
+                                    <option value="Beginner">Beginner</option>
+                                    <option value="Intermediate">Intermediate</option>
+                                    <option value="Advanced">Advanced</option>
                                 </select>
                             </div>
 
@@ -3795,6 +3893,7 @@ function getOJAMetrics(roleTitle, country) {
                                     <option value="cert">Certificate</option>
                                     <option value="degree">Degree/Diploma</option>
                                     <option value="bootcamp">Bootcamp</option>
+                                    <option value="hubs">Hubs & Labs</option>
                                 </select>
                             </div>
                         </div>
@@ -3865,13 +3964,13 @@ function getOJAMetrics(roleTitle, country) {
                     } else if (viewId === 'pp-finance') {
                         headerTitle.innerHTML = `<i data-lucide="banknote" class="w-6 h-6 text-emerald-600"></i> Financial Aid and Scholarships`;
                     } else {
-                        headerTitle.innerHTML = `<i data-lucide="layers" class="w-6 h-6 text-indigo-600"></i> Skills & Training Hub`;
+                        headerTitle.innerHTML = `<i data-lucide="layers" class="w-6 h-6 text-indigo-600"></i> Skills Matching & Training Pathways`;
                     }
                 }
                 
                 // Trigger specific render logic if needed (Render FIRST, then inject nav)
                 if(viewId === 'pp-diagnostic') {
-                    if (!preserveState) renderPATHWAYContent();
+                    if (!preserveState) renderPathwayContent();
                 } else if (viewId === 'pp-practice') {
                      if (!preserveState) initPathwayWizard();
                 } else if (viewId === 'pp-courses') {
@@ -3896,7 +3995,7 @@ function getOJAMetrics(roleTitle, country) {
                         target.insertBefore(nav, target.firstChild);
                     }
                     const backLabel = (hubNavigationStack.length === 0) ? "Back to Hub" : "Back";
-                    nav.innerHTML = `<button onclick="navigateBackInHub()" class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 font-medium"><i data-lucide="arrow-left" class="w-4 h-4"></i> ${backLabel}</button>`;
+                    nav.innerHTML = `<button onclick="navigateBackInHub()" class="px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm"><i data-lucide="arrow-left" class="w-4 h-4"></i> ${backLabel}</button>`;
                 }
 
                 // Scroll to top
@@ -4004,7 +4103,7 @@ function getOJAMetrics(roleTitle, country) {
 
             container.innerHTML = `
                 <div class="animate-fade-in flex flex-col h-full">
-                    <button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 shrink-0"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+                    <button onclick="resetCareerHub()" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm shrink-0 w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
                     
                     <div class="flex-1 flex flex-col items-center justify-center text-center space-y-6">
                         <div class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-2 animate-pulse">
@@ -4045,7 +4144,7 @@ function getOJAMetrics(roleTitle, country) {
                 const container = document.getElementById('career-hub-content');
                 container.innerHTML = `
                     <div class="animate-fade-in space-y-4">
-                        <button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+                        <button onclick="resetCareerHub()" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
                         
                         <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
                             <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-500"></i> Feedback Report</h3>
@@ -4084,7 +4183,7 @@ function getOJAMetrics(roleTitle, country) {
             
             container.innerHTML = `
                 <div class="animate-fade-in space-y-4">
-                    <button onclick="simulateInterviewResponse()" class="mb-2 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Results</button>
+                    <button onclick="simulateInterviewResponse()" class="mb-2 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Results</button>
                     
                     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
                         <div class="flex justify-between items-start mb-4">
@@ -4499,6 +4598,7 @@ window.showTrainingHubView = function(view) {
                                 <option value="tvet">TVET courses</option>
                                 <option value="university">University courses</option>
                                 <option value="bootcamp">Bootcamps</option>
+                                <option value="hubs">Hubs & Labs</option>
                             </select>
                         </div>
                         <div>
@@ -4560,7 +4660,7 @@ window.showTrainingHubView = function(view) {
                 <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg shrink-0"><i data-lucide="banknote" class="w-5 h-5"></i></div>
                 <div>
                     <h3 class="font-bold text-indigo-900 text-sm">Scholarships & Loans</h3>
-                    <p class="text-xs text-indigo-700 mt-1">Find financial support for your education across East Africa.</p>
+                    <p class="text-xs text-indigo-700 mt-1">Find financial support for your education and skills training across East Africa.</p>
                 </div>
             </div>
             <div class="flex flex-col sm:flex-row gap-2">
@@ -4577,7 +4677,7 @@ window.showTrainingHubView = function(view) {
 
     container.innerHTML = `
         <div class="animate-fade-in space-y-4">
-            <button onclick="resetTrainingHub()" class="mb-2 flex items-center gap-2 text-sm text-slate-500 hover:text-emerald-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
+            <button onclick="resetTrainingHub()" class="mb-2 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
             ${content}
         </div>
     `;
@@ -4667,15 +4767,15 @@ window.showTrainingRecommendations = function(targetId = 'training-hub-content',
 
     // Only show back button if NOT in Unified Hub (pp-recommendations)
     const showBackBtn = !targetId.startsWith('pp-');
-    const backBtnHtml = showBackBtn ? `<button onclick="${backAction}" class="mb-2 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>` : '';
+    const backBtnHtml = showBackBtn ? `<button onclick="${backAction}" class="mb-2 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>` : '';
 
     container.innerHTML = `
         <div class="animate-fade-in space-y-4">
             ${backBtnHtml}
             
             <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100">
-                <h2 class="text-lg font-bold text-indigo-900 mb-2">Career Pathways: ${sectorName}</h2>
-                <p class="text-sm text-indigo-700">Typical skills, education, and credentialing paths for top occupations in <strong>${countryName}</strong>.</p>
+                <h2 class="text-lg font-bold text-indigo-900 mb-2">Skilling and Career Pathways: ${sectorName}</h2>
+                <p class="text-sm text-indigo-700">Typical skills, education, and credentialing pathways for top occupations in <strong>${countryName}</strong>.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -4779,6 +4879,43 @@ window.toggleCareerHub = function() {
                 ? skillHotspots[activeSectorId][skillName]
                 : defaultHotspotText;
 
+            // --- NEW: Cross-Sector Matrix Logic ---
+            const matrix = (typeof crossSectorSkillMatrix !== 'undefined') ? crossSectorSkillMatrix[skillName] : null;
+            let matrixHtml = '';
+            
+            if (matrix) {
+                matrixHtml = `
+                    <div class="mt-6 pt-6 border-t border-slate-100">
+                        <h3 class="font-bold text-slate-900 text-sm mb-3 uppercase tracking-wide flex items-center gap-2">
+                            <i data-lucide="layers" class="w-4 h-4 text-slate-500"></i> Cross-Sector Application
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div class="p-3 bg-green-50 border border-green-100 rounded-lg">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <i data-lucide="leaf" class="w-3 h-3 text-green-600"></i>
+                                    <span class="text-[10px] font-bold text-green-700 uppercase">Smart Agriculture</span>
+                                </div>
+                                <p class="text-xs text-slate-700 leading-snug">${matrix.agri}</p>
+                            </div>
+                            <div class="p-3 bg-orange-50 border border-orange-100 rounded-lg">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <i data-lucide="zap" class="w-3 h-3 text-orange-600"></i>
+                                    <span class="text-[10px] font-bold text-orange-700 uppercase">Energy / Grid</span>
+                                </div>
+                                <p class="text-xs text-slate-700 leading-snug">${matrix.energy}</p>
+                            </div>
+                            <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-lg">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <i data-lucide="cpu" class="w-3 h-3 text-indigo-600"></i>
+                                    <span class="text-[10px] font-bold text-indigo-700 uppercase">Digital Economy</span>
+                                </div>
+                                <p class="text-xs text-slate-700 leading-snug">${matrix.digital}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
             // Replace Challenge Content
             document.getElementById('skill-challenge-container').innerHTML = `
                 <div class="flex items-start gap-3">
@@ -4792,6 +4929,7 @@ window.toggleCareerHub = function() {
                         </p>
                     </div>
                 </div>
+                ${matrixHtml}
             `;
             // Remove assessment result hidden block as it was part of challenge
             document.getElementById('assessment-result').classList.add('hidden');
@@ -5034,7 +5172,7 @@ window.toggleCareerHub = function() {
             const sectorMap = { 'agri': 'Agriculture', 'energy': 'Renewables', 'digital': 'Digital/AI' };
             const targetSector = sectorMap[activeSectorId];
             const ventures = dataManager.getVentures(activeSectorId, activeCountry)
-                .sort((a, b) => a.Rank - b.Rank)
+                .sort((a, b) => a.rank - b.rank)
                 .slice(0, 10);
 
             // --- Split Data for View All ---
@@ -5044,8 +5182,26 @@ window.toggleCareerHub = function() {
             const topSkills = data.skills.slice(0, 4);
             const moreSkills = data.skills.slice(4, 10);
 
-            const topVentures = ventures.slice(0, 4);
-            const moreVentures = ventures.slice(4, 10);
+            // Helper for Cross-Sector Badge
+            const getCrossSectorBadge = (name) => {
+                const matrixEntry = (typeof crossSectorSkillMatrix !== 'undefined') ? crossSectorSkillMatrix[name] : null;
+                if (matrixEntry) {
+                    // Gold styling for high versatility
+                    const badgeColor = "bg-amber-50 text-amber-700 border-amber-200 group-hover:bg-amber-100 group-hover:border-amber-300";
+                    const iconColor = "text-amber-600";
+
+                    return `
+                    <div class="flex items-center gap-1 mt-1.5">
+                        <span title="This skill applies to multiple sectors" class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[8px] font-bold ${badgeColor} border transition-colors">
+                            <i data-lucide="layers" class="w-2.5 h-2.5 ${iconColor}"></i> Cross-Sector
+                        </span>
+                    </div>`;
+                }
+                return '';
+            };
+
+            const topVentures = ventures.slice(0, 5);
+            const moreVentures = ventures.slice(5, 15);
 
             // Helper for local badge
             const getLocalBadge = (roleCountry) => {
@@ -5063,23 +5219,23 @@ window.toggleCareerHub = function() {
                         <h3 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="rocket" class="w-4 h-4 text-slate-500"></i> Top 10 Entrepreneurship Opportunities</h3>
                         <p class="text-xs text-slate-500 mt-1">High-growth opportunities tailored to your region.</p>
                     </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                         ${topVentures.map(v => `
-                            <button onclick="openVentureModal('${v.Venture_Title.replace(/'/g, "\\'")}')" title="${v.Venture_Title}" class="px-3 py-2 bg-white border border-${themeColor}-200 rounded-lg text-left hover:bg-${themeColor}-100 hover:border-${themeColor}-300 transition-all group">
+                            <button onclick="openVentureModal('${v.title.replace(/'/g, "\\'")}')" title="${v.title}" class="px-3 py-2 bg-white border border-${themeColor}-200 rounded-lg text-left hover:bg-${themeColor}-100 hover:border-${themeColor}-300 transition-all group">
                                 <div class="font-bold text-xs text-${themeColor}-800 mb-0.5 flex items-center gap-1 min-w-0">
-                                    <span class="truncate">${v.Venture_Title}</span>
+                                    <span class="truncate">${v.title}</span>
                                     <span title="High Demand" class="ml-0.5 shrink-0">🔥</span>
                                 </div>
-                                <div class="text-[10px] text-${themeColor}-700/80 leading-tight truncate">${v.Venture_Description}</div>
+                                <div class="text-[10px] text-${themeColor}-700/80 leading-tight truncate">${v.description}</div>
                             </button>
                         `).join('')}
                         <div id="more-ventures" class="col-span-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0">
                             ${moreVentures.map(v => `
-                                <button onclick="openVentureModal('${v.Venture_Title.replace(/'/g, "\\'")}')" title="${v.Venture_Title}" class="px-3 py-2 bg-white border border-${themeColor}-200 rounded-lg text-left hover:bg-${themeColor}-100 hover:border-${themeColor}-300 transition-all group">
+                                <button onclick="openVentureModal('${v.title.replace(/'/g, "\\'")}')" title="${v.title}" class="px-3 py-2 bg-white border border-${themeColor}-200 rounded-lg text-left hover:bg-${themeColor}-100 hover:border-${themeColor}-300 transition-all group">
                                     <div class="font-bold text-xs text-${themeColor}-800 mb-0.5 flex items-center gap-1 min-w-0">
-                                        <span class="truncate">${v.Venture_Title}</span>
+                                        <span class="truncate">${v.title}</span>
                                     </div>
-                                    <div class="text-[10px] text-${themeColor}-700/80 leading-tight truncate">${v.Venture_Description}</div>
+                                    <div class="text-[10px] text-${themeColor}-700/80 leading-tight truncate">${v.description}</div>
                                 </button>
                             `).join('')}
                         </div>
@@ -5146,13 +5302,23 @@ window.toggleCareerHub = function() {
 
                     </div>
 
+                    <!-- Market Intelligence Button -->
+                    <button onclick="showMarketIntelView('sector', 'sector-hub-results', 'renderOccupationsView()')" class="w-full p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                        <div class="p-3 bg-slate-100 text-slate-600 rounded-lg shrink-0 group-hover:bg-slate-600 group-hover:text-white transition-colors"><i data-lucide="line-chart" class="w-6 h-6"></i></div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-800 text-sm group-hover:text-slate-700">Market Intelligence</h4>
+                            <p class="text-xs text-slate-500 mt-0.5">Access sector reports, global trends, and data insights.</p>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-slate-500"></i>
+                    </button>
+
                     <div class="bg-white rounded-xl p-4 sm:p-6 border border-slate-200 shadow-sm">
                         <div class="mb-4">
                             <h3 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-slate-500"></i> Top Occupations in this Sector</h3>
-                            <p class="text-xs text-slate-500 mt-1">Click to view salary data, daily tasks, and required qualifications.</p>
+                            <p class="text-xs text-slate-500 mt-1">Click to view salary data, role snapshots, typical skills and qualifications required, and similar roles.</p>
                         </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                            ${topOccs.map(role => `
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                            ${data.occupations.slice(0, 5).map(role => `
                                 <button onclick="openOccupationModal('${role.name}')" title="${role.name}" class="px-3 py-2 ${cardBgColor} border ${cardBorderColor} rounded-lg text-left ${cardHoverBg} ${cardHoverBorder} transition-all group">
                                     <div class="w-full">
                                         <div class="font-bold text-xs ${cardTitleColor} mb-0.5 flex items-center gap-1 min-w-0">
@@ -5165,7 +5331,7 @@ window.toggleCareerHub = function() {
                                 </button>
                             `).join('')}
                             <div id="more-occs" class="col-span-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0">
-                                ${moreOccs.map(role => `
+                                ${data.occupations.slice(5, 15).map(role => `
                                     <button onclick="openOccupationModal('${role.name}')" title="${role.name}" class="px-3 py-2 ${cardBgColor} border ${cardBorderColor} rounded-lg text-left ${cardHoverBg} ${cardHoverBorder} transition-all group">
                                         <div class="w-full">
                                             <div class="font-bold text-xs ${cardTitleColor} mb-0.5 flex items-center gap-1 min-w-0">
@@ -5178,36 +5344,62 @@ window.toggleCareerHub = function() {
                                     </button>
                                 `).join('')}
                             </div>
-                            ${moreOccs.length > 0 ? `
+                            ${data.occupations.length > 5 ? `
                             <button onclick="toggleGrid('more-occs', this, 'Occupations')" class="col-span-full text-left text-xs font-bold text-indigo-600 hover:text-indigo-700 mt-2 flex items-center gap-1">
                                 View All Occupations <i data-lucide="chevron-down" class="w-3 h-3"></i>
                             </button>` : ''}
                         </div>
                     </div>
 
+                    <!-- Filtered Skills Logic -->
+                    ${(() => {
+                        let displaySkills = data.skills;
+                        if (showCrossSectorOnly) {
+                            displaySkills = displaySkills.filter(s => {
+                                const name = s.name || s.skill;
+                                return typeof crossSectorSkillMatrix !== 'undefined' && crossSectorSkillMatrix[name];
+                            });
+                        }
+                        const topSkills = displaySkills.slice(0, 5);
+                        const moreSkills = displaySkills.slice(5, 15);
+                        
+                        return `
                     <div class="bg-white rounded-xl p-4 sm:p-6 border border-slate-200 shadow-sm">
-                        <div class="mb-4">
-                            <h3 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="cpu" class="w-4 h-4 text-slate-500"></i> Top Skills sought by Employers</h3>
-                            <p class="text-xs text-slate-500 mt-1">Click to see proficiency levels, training providers, and related jobs.</p>
+                        <div class="mb-4 flex flex-wrap justify-between items-end gap-2">
+                            <div>
+                                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2"><i data-lucide="cpu" class="w-4 h-4 text-slate-500"></i> Top Skills sought by Employers</h3>
+                                <p class="text-xs text-slate-500 mt-1">Click to see skills definitions and proficiency levels, skills pairings and cross sector applications.</p>
+                            </div>
+                            <button onclick="toggleCrossSectorFilter()" class="text-[10px] font-bold px-3 py-1.5 rounded-full border transition-colors flex items-center gap-1 ${showCrossSectorOnly ? 'bg-amber-100 text-amber-800 border-amber-200 shadow-inner' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 shadow-sm'}">
+                                ${showCrossSectorOnly ? '<i data-lucide="check" class="w-3 h-3"></i> Cross-Sector Only' : '<i data-lucide="filter" class="w-3 h-3"></i> Filter: Cross-Sector'}
+                            </button>
                         </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                            ${topSkills.map(skill => `
-                                <button onclick="openSkillModal('${skill.name.replace(/'/g, "\\'")}')" class="px-3 py-2 ${cardBgColor} border ${cardBorderColor} rounded-lg text-left ${cardHoverBg} ${cardHoverBorder} transition-all group">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                            ${topSkills.map(skill => {
+                                const skillName = skill.name || skill.skill;
+                                const skillDesc = skill.desc || skill.description || 'Key competency';
+                                return `
+                                <button onclick="openSkillModal('${skillName.replace(/'/g, "\\'")}')" class="px-3 py-2 ${cardBgColor} border ${cardBorderColor} rounded-lg text-left ${cardHoverBg} ${cardHoverBorder} transition-all group">
                                     <div class="font-bold text-xs ${cardTitleColor} mb-0.5 flex items-center gap-1 truncate">
-                                        ${skill.name} ${skill.isHot ? '<span title="Critical Demand" class="ml-1 cursor-help">🔥</span>' : ''}
+                                        ${skillName} ${skill.isHot ? '<span title="Critical Demand" class="ml-1 cursor-help">🔥</span>' : ''}
                                     </div>
-                                    <div class="text-[10px] ${cardDescColor} leading-tight truncate">${skill.desc || 'Key competency'}</div>
+                                    <div class="text-[10px] ${cardDescColor} leading-tight truncate">${skillDesc}</div>
+                                    ${getCrossSectorBadge(skillName)}
                                 </button>
-                            `).join('')}
+                            `}).join('')}
                             <div id="more-skills" class="col-span-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0">
-                                ${moreSkills.map(skill => `
-                                    <button onclick="openSkillModal('${skill.name.replace(/'/g, "\\'")}')" class="px-3 py-2 ${cardBgColor} border ${cardBorderColor} rounded-lg text-left ${cardHoverBg} ${cardHoverBorder} transition-all group">
+                                ${moreSkills.map(skill => {
+                                    const skillName = skill.name || skill.skill;
+                                    const skillDesc = skill.desc || skill.description || 'Key competency';
+                                    return `
+                                    <button onclick="openSkillModal('${skillName.replace(/'/g, "\\'")}')" class="px-3 py-2 ${cardBgColor} border ${cardBorderColor} rounded-lg text-left ${cardHoverBg} ${cardHoverBorder} transition-all group">
                                         <div class="font-bold text-xs ${cardTitleColor} mb-0.5 flex items-center gap-1 truncate">
-                                            ${skill.name} ${skill.isHot ? '<span title="Critical Demand" class="ml-1 cursor-help">🔥</span>' : ''}
+                                            ${skillName} ${skill.isHot ? '<span title="Critical Demand" class="ml-1 cursor-help">🔥</span>' : ''}
                                         </div>
-                                        <div class="text-[10px] ${cardDescColor} leading-tight truncate">${skill.desc || 'Key competency'}</div>
+                                        <div class="text-[10px] ${cardDescColor} leading-tight truncate">${skillDesc}</div>
+                                        ${getCrossSectorBadge(skillName)}
                                     </button>
-                                `).join('')}
+                                `}).join('')}
                             </div>
                             ${moreSkills.length > 0 ? `
                             <button onclick="toggleGrid('more-skills', this, 'Skills')" class="col-span-full text-left text-xs font-bold text-indigo-600 hover:text-indigo-700 mt-2 flex items-center gap-1">
@@ -5215,6 +5407,7 @@ window.toggleCareerHub = function() {
                             </button>` : ''}
                         </div>
                     </div>
+                    `})()}
 
                     <!-- Venture Pathways Section -->
                     ${ventureHtml}
@@ -5223,6 +5416,12 @@ window.toggleCareerHub = function() {
             
             container.innerHTML = html;
             if(window.lucide) lucide.createIcons();
+        }
+
+        // --- NEW: Toggle Cross-Sector Filter ---
+        window.toggleCrossSectorFilter = function() {
+            showCrossSectorOnly = !showCrossSectorOnly;
+            renderOccupationsView();
         }
 
         // --- NEW: Render Specific Venture in Launchpad ---
@@ -5238,7 +5437,7 @@ window.toggleCareerHub = function() {
             const panel = document.getElementById('venture-modal-panel');
             
             // Find data
-            const venture = dataManager.ventures.find(v => v.Venture_Title === title);
+            const venture = dataManager.ventures.find(v => v.title === title);
             if (!venture) return;
 
             document.body.classList.add('overflow-hidden');
@@ -5256,7 +5455,7 @@ window.toggleCareerHub = function() {
             }
 
             const modalTitle = document.getElementById('venture-modal-title');
-            modalTitle.innerHTML = `${venture.Venture_Title} ${venture.Rank <= 3 ? '<span title="High Demand" class="ml-2">🔥</span>' : ''}`;
+            modalTitle.innerHTML = `${venture.title} ${venture.rank <= 3 ? '<span title="High Demand" class="ml-2">🔥</span>' : ''}`;
 
             // Determine Theme based on Sector
             const themeConfig = (typeof sectorThemes !== 'undefined') ? sectorThemes[activeSectorId] : { color: 'indigo' };
@@ -5271,7 +5470,7 @@ window.toggleCareerHub = function() {
             const ctx = vContext[activeSectorId] || vContext['digital'];
             
             // Entry Level Logic based on Capital
-            let capitalLevel = venture.Startup_Capital_Est || "Medium";
+            let capitalLevel = venture.capital || "Medium";
             let techLevel = "Moderate";
             if (capitalLevel.includes('High')) techLevel = "High";
 
@@ -5280,13 +5479,13 @@ window.toggleCareerHub = function() {
             badge.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-${theme}-100 text-${theme}-700`;
             badge.innerText = activeSectorId === 'agri' ? 'Agritech Venture' : activeSectorId === 'energy' ? 'Energy Venture' : 'Digital Venture';
 
-            const skills = Array.isArray(venture.Key_Competencies) ? venture.Key_Competencies : (venture.Key_Competencies ? venture.Key_Competencies.split(',').map(s => s.trim()) : []);
+            const skills = Array.isArray(venture.competencies) ? venture.competencies : (venture.competencies ? venture.competencies.split(',').map(s => s.trim()) : []);
             
             // Regulatory & Licensing Map
-            const regulations = (typeof ventureRegulations !== 'undefined') ? (ventureRegulations[venture.Venture_Title] || "Standard Business Permit (Local Authority)") : "Standard Business Permit";
+            const regulations = (typeof ventureRegulations !== 'undefined') ? (ventureRegulations[venture.title] || "Standard Business Permit (Local Authority)") : "Standard Business Permit";
 
             // Challenges Map
-            const challenges = (typeof ventureChallenges !== 'undefined') ? (ventureChallenges[venture.Venture_Title] || "Market competition; Customer acquisition costs.") : "Market competition.";
+            const challenges = (typeof ventureChallenges !== 'undefined') ? (ventureChallenges[venture.title] || "Market competition; Customer acquisition costs.") : "Market competition.";
 
             // 1. At a Glance (Snapshot)
             const snapshotHtml = `
@@ -5345,7 +5544,7 @@ window.toggleCareerHub = function() {
                         <span class="w-6 h-6 rounded bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">1</span> Opportunity Description
                     </h3>
                     <div class="text-slate-800 text-base leading-relaxed font-medium">
-                        ${venture.Venture_Description}
+                        ${venture.description}
                     </div>
                 </section>
             `;
@@ -5390,7 +5589,7 @@ window.toggleCareerHub = function() {
 
             // 5. CTA
             const ctaHtml = `
-                <div class="bg-gradient-to-r from-slate-900 to-indigo-900 rounded-xl p-5 text-white shadow-lg relative overflow-hidden group cursor-pointer hover:shadow-xl transition-all mt-6" onclick="openVentureLaunchpad('${venture.Venture_Title.replace(/'/g, "\\'")}');">
+                <div class="bg-gradient-to-r from-slate-900 to-indigo-900 rounded-xl p-5 text-white shadow-lg relative overflow-hidden group cursor-pointer hover:shadow-xl transition-all mt-6" onclick="openVentureLaunchpad('${venture.title.replace(/'/g, "\\'")}');">
                     <div class="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10 blur-2xl group-hover:bg-white/10 transition-colors"></div>
                     <div class="relative z-10 flex items-center justify-between">
                         <div>
@@ -5460,6 +5659,7 @@ window.toggleCareerHub = function() {
             if (!sectorData.entrepreneurship.funding) sectorData.entrepreneurship.funding = [];
             if (!sectorData.entrepreneurship.tools) sectorData.entrepreneurship.tools = [];
             if (!sectorData.entrepreneurship.competitions) sectorData.entrepreneurship.competitions = [];
+            if (!sectorData.entrepreneurship.research) sectorData.entrepreneurship.research = [];
 
             // Inject Country Specific Resources
             let resourceKey = activeCountry;
@@ -5470,33 +5670,40 @@ window.toggleCareerHub = function() {
             if (dataManager.digitalResources.country_resources && dataManager.digitalResources.country_resources[resourceKey]) {
                 const genCr = dataManager.digitalResources.country_resources[resourceKey];
                 if (genCr.policy) {
-                    sectorData.lmi.push(...genCr.policy.map(p => ({ name: p.title, desc: p.desc, link: p.link, type: 'National Policy' })));
+                    sectorData.lmi.push(...genCr.policy.map(p => ({ name: p.title || p.name, desc: p.desc, link: p.link, type: 'National Policy' })));
                     // NEW: Also map to tools for Launchpad (Market Access/Registration)
-                    sectorData.entrepreneurship.tools.push(...genCr.policy.map(p => ({ name: p.title, desc: p.desc, link: p.link, type: 'Public Service' })));
+                    sectorData.entrepreneurship.tools.push(...genCr.policy.map(p => ({ name: p.title || p.name, desc: p.desc, link: p.link, type: 'Public Service' })));
                 }
                 if (genCr.hubs) {
-                    sectorData.entrepreneurship.incubators.push(...genCr.hubs.map(h => ({ name: h.title, desc: h.desc, link: h.link })));
+                    genCr.hubs.forEach(h => {
+                        const text = ((h.title || h.name) + " " + h.desc).toLowerCase();
+                        if (text.includes('lab') || text.includes('research') || text.includes('innovation') || text.includes('science')) {
+                             sectorData.entrepreneurship.research.push({ name: h.title || h.name, desc: h.desc, link: h.link });
+                        } else {
+                             sectorData.entrepreneurship.incubators.push({ name: h.title || h.name, desc: h.desc, link: h.link });
+                        }
+                    });
                 }
                 if (genCr.jobs) {
-                    sectorData.jobs.push(...genCr.jobs.map(j => ({ title: j.title, company: j.desc, type: "National", link: j.link })));
+                    sectorData.jobs.push(...genCr.jobs.map(j => ({ title: j.title || j.name, company: j.desc, type: "National", link: j.link })));
                 }
                 if (genCr.communities) {
-                    sectorData.communities.push(...genCr.communities.map(c => ({ name: c.title, desc: c.desc, link: c.link, type: "General Community" })));
+                    sectorData.communities.push(...genCr.communities.map(c => ({ name: c.title || c.name, desc: c.desc, link: c.link, type: c.type || "General Community" })));
                 }
                 if (genCr.tools) {
-                    sectorData.entrepreneurship.tools.push(...genCr.tools.map(t => ({ name: t.title, desc: t.desc, link: t.link, icon: 'wrench' })));
+                    sectorData.entrepreneurship.tools.push(...genCr.tools.map(t => ({ name: t.title || t.name, desc: t.desc, link: t.link, icon: 'wrench' })));
                 }
                 if (genCr.mentorship) {
-                    sectorData.communities.push(...genCr.mentorship.map(m => ({ name: m.title, desc: m.desc, link: m.link, type: 'Mentorship' })));
+                    sectorData.communities.push(...genCr.mentorship.map(m => ({ name: m.title || m.name, desc: m.desc, link: m.link, type: 'Mentorship' })));
                 }
                 if (genCr.events) {
-                    sectorData.communities.push(...genCr.events.map(e => ({ name: e.title, desc: e.desc, link: e.link, type: 'Event' })));
+                    sectorData.communities.push(...genCr.events.map(e => ({ name: e.title || e.name, desc: e.desc, link: e.link, type: 'Event' })));
                 }
                 if (genCr.competitions) {
-                    sectorData.entrepreneurship.competitions.push(...genCr.competitions.map(c => ({ name: c.title, desc: c.desc, link: c.link })));
+                    sectorData.entrepreneurship.competitions.push(...genCr.competitions.map(c => ({ name: c.title || c.name, desc: c.desc, link: c.link })));
                 }
                 if (genCr.funding) {
-                    sectorData.entrepreneurship.funding.push(...genCr.funding.map(f => ({ name: f.title, desc: f.desc, link: f.link, type: 'National Funding' })));
+                    sectorData.entrepreneurship.funding.push(...genCr.funding.map(f => ({ name: f.title || f.name, desc: f.desc, link: f.link, type: 'National Funding' })));
                 }
             }
 
@@ -5504,34 +5711,41 @@ window.toggleCareerHub = function() {
             if (sourceData && sourceData.country_resources && sourceData.country_resources[resourceKey]) {
                 const cr = sourceData.country_resources[resourceKey];
                 if (cr.policy) {
-                    sectorData.lmi.unshift(...cr.policy.map(p => ({ name: p.title, desc: p.desc, link: p.link, type: 'National Policy' })));
+                    sectorData.lmi.unshift(...cr.policy.map(p => ({ name: p.title || p.name, desc: p.desc, link: p.link, type: 'National Policy' })));
                 }
                 if (cr.hubs) {
-                    sectorData.entrepreneurship.incubators.unshift(...cr.hubs.map(h => ({ name: h.title, desc: h.desc, link: h.link })));
+                    cr.hubs.forEach(h => {
+                        const text = ((h.title || h.name) + " " + h.desc).toLowerCase();
+                        if (text.includes('lab') || text.includes('research') || text.includes('innovation') || text.includes('science')) {
+                             sectorData.entrepreneurship.research.unshift({ name: h.title || h.name, desc: h.desc, link: h.link });
+                        } else {
+                             sectorData.entrepreneurship.incubators.unshift({ name: h.title || h.name, desc: h.desc, link: h.link });
+                        }
+                    });
                 }
                 if (cr.jobs) {
-                    sectorData.jobs.unshift(...cr.jobs.map(j => ({ title: j.title, company: j.desc, type: "National", link: j.link })));
+                    sectorData.jobs.unshift(...cr.jobs.map(j => ({ title: j.title || j.name, company: j.desc, type: "National", link: j.link })));
                 }
                 if (cr.data) {
-                    sectorData.lmi.unshift(...cr.data.map(d => ({ name: d.title, desc: d.desc, link: d.link, type: 'National Data' })));
+                    sectorData.lmi.unshift(...cr.data.map(d => ({ name: d.title || d.name, desc: d.desc, link: d.link, type: 'National Data' })));
                 }
                 if (cr.education) {
-                    sectorData.lmi.unshift(...cr.education.map(e => ({ name: e.title, desc: e.desc, link: e.link, type: 'Accreditation' })));
+                    sectorData.lmi.unshift(...cr.education.map(e => ({ name: e.title || e.name, desc: e.desc, link: e.link, type: 'Accreditation' })));
                 }
                 if (cr.communities) {
-                    sectorData.communities.unshift(...cr.communities.map(c => ({ name: c.title, desc: c.desc, link: c.link, type: 'Local Community' })));
+                    sectorData.communities.unshift(...cr.communities.map(c => ({ name: c.title || c.name, desc: c.desc, link: c.link, type: 'Local Community' })));
                 }
                 if (cr.tools) {
-                    sectorData.entrepreneurship.tools.unshift(...cr.tools.map(t => ({ name: t.title, desc: t.desc, link: t.link, icon: 'wrench' })));
+                    sectorData.entrepreneurship.tools.unshift(...cr.tools.map(t => ({ name: t.title || t.name, desc: t.desc, link: t.link, icon: 'wrench' })));
                 }
                 if (cr.mentorship) {
-                    sectorData.communities.unshift(...cr.mentorship.map(m => ({ name: m.title, desc: m.desc, link: m.link, type: 'Mentorship' })));
+                    sectorData.communities.unshift(...cr.mentorship.map(m => ({ name: m.title || m.name, desc: m.desc, link: m.link, type: 'Mentorship' })));
                 }
                 if (cr.events) {
-                    sectorData.communities.unshift(...cr.events.map(e => ({ name: e.title, desc: e.desc, link: e.link, type: 'Event' })));
+                    sectorData.communities.unshift(...cr.events.map(e => ({ name: e.title || e.name, desc: e.desc, link: e.link, type: 'Event' })));
                 }
                 if (cr.competitions) {
-                    sectorData.entrepreneurship.competitions.unshift(...cr.competitions.map(c => ({ name: c.title, desc: c.desc, link: c.link })));
+                    sectorData.entrepreneurship.competitions.unshift(...cr.competitions.map(c => ({ name: c.title || c.name, desc: c.desc, link: c.link })));
                 }
             }
             
@@ -5543,12 +5757,12 @@ window.toggleCareerHub = function() {
                 const regionalFunding = dataManager.digitalResources.regional_multipliers.filter(r => r.type === 'Funding');
                 const regionalSkills = dataManager.digitalResources.regional_multipliers.filter(r => r.type === 'Skills');
                 
-                sectorData.lmi.push(...regionalPolicy.map(p => ({ name: p.title, desc: p.desc, link: p.link, type: 'Regional Policy', gsa_member: p.gsa_member })));
-                sectorData.communities.push(...regionalEcosystem.map(e => ({ name: e.title, desc: e.desc, type: "Regional Hub", link: e.link, gsa_member: e.gsa_member })));
+                sectorData.lmi.push(...regionalPolicy.map(p => ({ name: p.title || p.name, desc: p.desc, link: p.link, type: 'Regional Policy', gsa_member: p.gsa_member })));
+                sectorData.communities.push(...regionalEcosystem.map(e => ({ name: e.title || e.name, desc: e.desc, type: "Regional Hub", link: e.link, gsa_member: e.gsa_member })));
                 
                 // Inject Funding & Skills
-                sectorData.entrepreneurship.funding.push(...regionalFunding.map(f => ({ name: f.title, desc: f.desc, link: f.link, gsa_member: f.gsa_member })));
-                sectorData.communities.push(...regionalSkills.map(s => ({ name: s.title, desc: s.desc, type: "Learning Community", link: s.link, gsa_member: s.gsa_member })));
+                sectorData.entrepreneurship.funding.push(...regionalFunding.map(f => ({ name: f.title || f.name, desc: f.desc, link: f.link, gsa_member: f.gsa_member })));
+                sectorData.communities.push(...regionalSkills.map(s => ({ name: s.title || s.name, desc: s.desc, type: "Learning Community", link: s.link, gsa_member: s.gsa_member })));
             }
 
             // Inject relevant Global Resources
@@ -5560,20 +5774,20 @@ window.toggleCareerHub = function() {
                 const globalCommunities = dataManager.digitalResources.global_resources.filter(r => r.type === 'Community');
                 const globalPolicy = dataManager.digitalResources.global_resources.filter(r => r.type === 'Policy/Regulation');
 
-                sectorData.entrepreneurship.funding.push(...globalFunding.map(f => ({ name: f.title, desc: f.desc, link: f.link, gsa_member: f.gsa_member })));
-                sectorData.jobs.push(...globalJobs.map(j => ({ title: j.title, company: j.desc, type: "Global", link: j.link, gsa_member: j.gsa_member })));
-                sectorData.lmi.push(...globalData.map(d => ({ name: d.title, desc: d.desc, link: d.link, type: 'Global Data', gsa_member: d.gsa_member })));
+                sectorData.entrepreneurship.funding.push(...globalFunding.map(f => ({ name: f.title || f.name, desc: f.desc, link: f.link, gsa_member: f.gsa_member })));
+                sectorData.jobs.push(...globalJobs.map(j => ({ title: j.title || j.name, company: j.desc, type: "Global", link: j.link, gsa_member: j.gsa_member })));
+                sectorData.lmi.push(...globalData.map(d => ({ name: d.title || d.name, desc: d.desc, link: d.link, type: 'Global Data', gsa_member: d.gsa_member })));
                 sectorData.communities.push(...globalEcosystem.map(m => ({ 
-                    name: m.title, 
+                    name: m.title || m.name, 
                     desc: m.desc, 
-                    type: (m.title.includes('Mentor') || m.title.includes('ADPList')) ? "Mentorship" : "Global Ecosystem", 
+                    type: ((m.title || m.name).includes('Mentor') || (m.title || m.name).includes('ADPList')) ? "Mentorship" : "Global Ecosystem", 
                     link: m.link, 
                     gsa_member: m.gsa_member 
                 })));
                 
                 // Inject Global Communities & Policy
-                sectorData.communities.push(...globalCommunities.map(c => ({ name: c.title, desc: c.desc, type: "Global Community", link: c.link, gsa_member: c.gsa_member })));
-                sectorData.lmi.push(...globalPolicy.map(p => ({ name: p.title, desc: p.desc, link: p.link, type: 'Global Policy', gsa_member: p.gsa_member })));
+                sectorData.communities.push(...globalCommunities.map(c => ({ name: c.title || c.name, desc: c.desc, type: "Global Community", link: c.link, gsa_member: c.gsa_member })));
+                sectorData.lmi.push(...globalPolicy.map(p => ({ name: p.title || p.name, desc: p.desc, link: p.link, type: 'Global Policy', gsa_member: p.gsa_member })));
             }
 
             // --- NEW: Inject National Mentorships ---
@@ -5591,6 +5805,47 @@ window.toggleCareerHub = function() {
                     }
                 });
             }
+
+            // --- NEW: Heuristic Scan for Launchpad Resources (Dynamic) ---
+            // Ensure any relevant resource (startup, funding, etc.) from regional/global lists is surfaced in Launchpad
+            if (dataManager.digitalResources) {
+                const categorizeEnt = (item) => {
+                    const text = ((item.title || item.name || "") + " " + (item.desc || "") + " " + (item.type || "")).toLowerCase();
+                    if (text.includes('research') || text.includes('satreps') || text.includes('africa-ai-japan') || text.includes('innovation lab') || text.includes('living lab') || text.includes('science')) return 'research';
+                    if (text.includes('fund') || text.includes('invest') || text.includes('grant') || text.includes('capital') || text.includes('equity') || text.includes('venture capital')) return 'funding';
+                    if (text.includes('incubator') || text.includes('accelerator') || text.includes('startup') || text.includes('venture builder') || text.includes('entrepreneurship center') || text.includes('hub')) return 'incubators';
+                    if (text.includes('competition') || text.includes('challenge') || text.includes('prize') || text.includes('hackathon') || text.includes('award')) return 'competitions';
+                    return null;
+                };
+
+                const injectIfNew = (list, item, typeLabel) => {
+                    if (!list.some(x => x.name === (item.title || item.name))) {
+                        list.push({ name: item.title || item.name, desc: item.desc, link: item.link, type: item.type || typeLabel, gsa_member: item.gsa_member, deadline: item.deadline });
+                    }
+                };
+
+                const scanLists = [
+                    dataManager.digitalResources.regional_multipliers,
+                    dataManager.digitalResources.global_resources
+                ];
+
+                scanLists.forEach(list => {
+                    if (list) {
+                        list.forEach(item => {
+                            const cat = categorizeEnt(item);
+                            if (cat) injectIfNew(sectorData.entrepreneurship[cat], item, 'Global/Regional');
+                        });
+                    }
+                });
+            }
+
+            // --- NEW: Inject Gig/Informal LMI (Static for Prototype) ---
+            const gigLmi = [
+                { name: "Platform Livelihoods (Caribou Digital)", desc: "Research on how digital platforms are shaping work in East Africa.", link: "https://www.cariboudigital.net/platform-livelihoods", type: "Gig Economy" },
+                { name: "ILO: Informal Economy in Africa", desc: "Statistics and policy analysis on the informal sector.", link: "https://www.ilo.org/africa/areas-of-work/informal-economy/lang--en/index.htm", type: "Informal Sector" },
+                { name: "Mastercard Fdn: Youth Employment", desc: "Insights on youth transitions into gig and informal work.", link: "https://mastercardfdn.org/research/", type: "Gig Economy" }
+            ];
+            sectorData.lmi.push(...gigLmi);
 
             // --- NEW: Merge Static Data from data.js (Safety Net) ---
             // This ensures the Careers Hub is populated even if digital_resources.json is sparse/missing
@@ -5612,6 +5867,10 @@ window.toggleCareerHub = function() {
                         if (!sectorData.entrepreneurship.incubators.some(i => i.name === res.title)) {
                             sectorData.entrepreneurship.incubators.push({ name: res.title, desc: res.desc, link: res.link });
                         }
+                    } else if (lowerTitle.includes('research') || lowerDesc.includes('research') || lowerTitle.includes('innovation') || lowerDesc.includes('innovation')) {
+                        if (!sectorData.entrepreneurship.research.some(r => r.name === res.title)) {
+                            sectorData.entrepreneurship.research.push({ name: res.title, desc: res.desc, link: res.link });
+                        }
                     } else if (!lowerTitle.includes('academy') && !lowerTitle.includes('learning') && !lowerDesc.includes('training')) {
                         // Default to Community/Ecosystem (excluding pure training which belongs in Training Hub)
                         if (!sectorData.communities.some(c => c.name === res.title)) {
@@ -5631,33 +5890,42 @@ window.toggleCareerHub = function() {
 
         window.showCommunitiesView = function(activeFilter = 'all') { 
             const sectorData = getSectorCareerResources(activeSectorId);
-            const container = document.getElementById('career-hub-content');
+            const container = document.getElementById('community-hub-content');
             
-            // 1. Consolidate Data
-            let allItems = [...(sectorData.communities || [])];
+            // 1. Consolidate Data & Deduplicate
+            const uniqueItems = new Map();
+            
+            // Helper to add unique items
+            const addUnique = (items) => {
+                items.forEach(item => {
+                    if (item && item.name && !uniqueItems.has(item.name)) {
+                        uniqueItems.set(item.name, item);
+                    }
+                });
+            };
+
+            addUnique(sectorData.communities || []);
 
             // Add Alumni (Static Data)
             const alumniData = {
                 agri: [
                     { name: "CGIAR Alumni Network", link: "https://www.cgiar.org/", type: "Alumni", desc: "Global network of agricultural researchers." },
-                    { name: "AWAK (Women in Ag)", link: "https://awak.co.ke/", type: "Alumni", desc: "Association of Women in Agriculture Kenya." },
-                    { name: "YPARD", link: "https://ypard.net/", type: "Alumni", desc: "Young Professionals for Agricultural Development." }
+                    { name: "AWAK (Women in Ag)", link: "https://awak.co.ke/", type: "Community", desc: "Association of Women in Agriculture Kenya." },
+                    { name: "YPARD", link: "https://ypard.net/", type: "Community", desc: "Young Professionals for Agricultural Development." }
                 ],
                 energy: [
-                    { name: "WIRE (Women in Renewable Energy)", link: "https://wire-africa.org/", type: "Alumni", desc: "Network for women in the energy sector." },
-                    { name: "AFSIA Members", link: "http://www.afsiasolar.com/", type: "Alumni", desc: "Solar industry association members." },
-                    { name: "IEEE PES", link: "https://www.ieee-pes.org/", type: "Alumni", desc: "Power & Energy Society professionals." }
+                    { name: "WIRE (Women in Renewable Energy)", link: "https://wire-africa.org/", type: "Community", desc: "Network for women in the energy sector." },
+                    { name: "AFSIA Members", link: "http://www.afsiasolar.com/", type: "Community", desc: "Solar industry association members." },
+                    { name: "IEEE PES", link: "https://www.ieee-pes.org/", type: "Community", desc: "Power & Energy Society professionals." }
                 ],
                 digital: [
                     { name: "ALX Fellowship", link: "https://www.alxafrica.com/", type: "Alumni", desc: "Community of ALX graduates." },
-                    { name: "Google Developer Groups", link: "https://developers.google.com/community/gdg", type: "Alumni", desc: "Local groups of developers interested in Google's developer technology." },
-                    { name: "Women in Tech Africa", link: "https://www.womenintechafrica.com/", type: "Alumni", desc: "Supporting women in technology across Africa." }
+                    { name: "Google Developer Groups", link: "https://developers.google.com/community/gdg", type: "Community", desc: "Local groups of developers interested in Google's developer technology." },
+                    { name: "Women in Tech Africa", link: "https://www.womenintechafrica.com/", type: "Community", desc: "Supporting women in technology across Africa." }
                 ]
             };
             const sectorAlumni = alumniData[activeSectorId] || alumniData.digital;
-            sectorAlumni.forEach(a => {
-                if (!allItems.some(i => i.name === a.name)) allItems.push(a);
-            });
+            addUnique(sectorAlumni);
 
             // Add Mock Events
             const events = [
@@ -5665,9 +5933,9 @@ window.toggleCareerHub = function() {
                 { name: "Sankalp Africa Summit", desc: "Nairobi • Feb 2025", type: "Event", link: "https://sankalpforum.com/", sector: 'agri' },
                 { name: "Solar Africa Expo", desc: "KICC • June 2025", type: "Event", link: "https://www.solarafricaexpo.com/", sector: 'energy' }
             ].filter(e => e.sector === activeSectorId);
-             events.forEach(e => {
-                if (!allItems.some(i => i.name === e.name)) allItems.push(e);
-            });
+            addUnique(events);
+
+            let allItems = Array.from(uniqueItems.values());
 
             // 2. Categorization Logic
             const getCategory = (item) => {
@@ -5675,10 +5943,20 @@ window.toggleCareerHub = function() {
                 const n = (item.name || '').toLowerCase();
                 const d = (item.desc || '').toLowerCase();
 
+                // Alumni & Fellowships
                 if (t.includes('alumni') || n.includes('alumni') || n.includes('fellowship') || n.includes('graduates') || d.includes('alumni')) return 'Alumni';
+                
+                // Mentorship & Coaching
                 if (t.includes('mentor') || n.includes('mentor') || d.includes('mentor') || t.includes('advice') || n.includes('coach') || d.includes('coach')) return 'Mentorship';
-                if (t.includes('event') || t.includes('summit') || t.includes('conf') || t.includes('expo')) return 'Events';
-                return 'Networks'; // Default
+                
+                // Events & Conferences
+                if (t.includes('event') || t.includes('summit') || t.includes('conf') || t.includes('expo') || t.includes('hackathon') || t.includes('meetup') || t.includes('webinar')) return 'Events';
+                
+                // Ecosystem (Hubs, Labs, Incubators)
+                if (t.includes('ecosystem') || t.includes('hub') || t.includes('lab') || t.includes('incubator') || t.includes('accelerator') || t.includes('space') || t.includes('center') || d.includes('hub') || d.includes('lab') || d.includes('incubator')) return 'Ecosystem';
+                
+                // Networks (Communities, Associations) - Default
+                return 'Networks'; 
             };
 
             const hasJobs = (item) => {
@@ -5691,6 +5969,9 @@ window.toggleCareerHub = function() {
             if (activeFilter !== 'all') {
                 filteredItems = allItems.filter(item => getCategory(item) === activeFilter);
             }
+
+            // Sort Alphabetically
+            filteredItems.sort((a, b) => (a.name || "").toLowerCase().localeCompare((b.name || "").toLowerCase()));
 
             // 4. Render
             const getBtnClass = (filter) => activeFilter === filter 
@@ -5725,16 +6006,40 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in flex flex-col h-full">
-                    <button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
-                    
-                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-blue-500"></i> Communities & Networks</h3>
+                    <div class="bg-pink-50/50 p-3 rounded-xl border border-pink-100 grid grid-cols-2 gap-3 mb-4 shrink-0">
+                        <div>
+                            <label class="block text-[10px] font-bold text-pink-900 mb-1">Location</label>
+                            <select onchange="setGlobalCountry(this.value); showCommunitiesView('${activeFilter}');" class="w-full text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 cursor-pointer">
+                                <option value="all" ${activeCountry === 'all' ? 'selected' : ''}>Regional</option>
+                                <option value="Kenya" ${activeCountry === 'Kenya' ? 'selected' : ''}>Kenya</option>
+                                <option value="Uganda" ${activeCountry === 'Uganda' ? 'selected' : ''}>Uganda</option>
+                                <option value="Tanzania" ${activeCountry === 'Tanzania' ? 'selected' : ''}>Tanzania</option>
+                                <option value="Rwanda" ${activeCountry === 'Rwanda' ? 'selected' : ''}>Rwanda</option>
+                                <option value="Burundi" ${activeCountry === 'Burundi' ? 'selected' : ''}>Burundi</option>
+                                <option value="South Sudan" ${activeCountry === 'South Sudan' ? 'selected' : ''}>South Sudan</option>
+                                <option value="DRC" ${activeCountry === 'DRC' ? 'selected' : ''}>DR Congo</option>
+                                <option value="Somalia" ${activeCountry === 'Somalia' ? 'selected' : ''}>Somalia</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-pink-900 mb-1">Sector</label>
+                            <select onchange="setGlobalSector(this.value); showCommunitiesView('${activeFilter}');" class="w-full text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 cursor-pointer">
+                                <option value="agri" ${activeSectorId === 'agri' ? 'selected' : ''}>Agritech</option>
+                                <option value="energy" ${activeSectorId === 'energy' ? 'selected' : ''}>Renewable Energy</option>
+                                <option value="digital" ${activeSectorId === 'digital' ? 'selected' : ''}>Digital Economy</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-pink-500"></i> Communities & Networks</h3>
 
                     <div class="flex gap-2 mb-4 overflow-x-auto pb-1 shrink-0 no-scrollbar">
                         <button onclick="showCommunitiesView('all')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('all')}">All</button>
+                        <button onclick="showCommunitiesView('Ecosystem')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('Ecosystem')}">Ecosystem</button>
                         <button onclick="showCommunitiesView('Networks')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('Networks')}">Networks</button>
+                        <button onclick="showCommunitiesView('Events')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('Events')}">Events</button>
                         <button onclick="showCommunitiesView('Mentorship')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('Mentorship')}">Mentorship</button>
                         <button onclick="showCommunitiesView('Alumni')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('Alumni')}">Alumni</button>
-                        <button onclick="showCommunitiesView('Events')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('Events')}">Events</button>
                     </div>
 
                     <div class="space-y-3 overflow-y-auto pr-1 pb-4">
@@ -5745,17 +6050,34 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
-        window.showMarketIntelView = function(activeTab = 'sector') {
+        window.showMarketIntelView = function(activeTab = 'sector', targetId = 'career-hub-content', backAction = 'resetCareerHub()') {
             const sectorData = getSectorCareerResources(activeSectorId);
-            const container = document.getElementById('career-hub-content');
+            const container = document.getElementById(targetId);
             
             const lmi = sectorData.lmi || [];
+            const research = sectorData.entrepreneurship ? (sectorData.entrepreneurship.research || []) : [];
             
             let filteredLmi = [];
-            if (activeTab === 'sector') {
+            if (activeTab === 'national') {
                 filteredLmi = lmi.filter(l => {
                     const t = (l.type || '').toLowerCase();
-                    return !t.includes('global') && !t.includes('regional');
+                    return t.includes('national');
+                });
+            } else if (activeTab === 'gig') {
+                filteredLmi = lmi.filter(l => {
+                    const t = (l.type || '').toLowerCase();
+                    return t.includes('gig') || t.includes('informal') || t.includes('platform');
+                });
+            } else if (activeTab === 'research') {
+                filteredLmi = research.map(r => ({...r, type: r.type || 'Research & Innovation'}));
+                filteredLmi.push(...lmi.filter(l => {
+                    const t = (l.type || '').toLowerCase();
+                    return t.includes('data') || t.includes('research') || t.includes('report') || t.includes('innovation');
+                }));
+            } else if (activeTab === 'sector') {
+                filteredLmi = lmi.filter(l => {
+                    const t = (l.type || '').toLowerCase();
+                    return !t.includes('global') && !t.includes('regional') && !t.includes('national') && !t.includes('gig') && !t.includes('informal');
                 });
             } else {
                 filteredLmi = lmi.filter(l => {
@@ -5768,32 +6090,67 @@ window.toggleCareerHub = function() {
                 ? "bg-slate-800 text-white shadow-sm" 
                 : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50";
 
-            const contentHtml = filteredLmi.length > 0 ? filteredLmi.map(l => `
-                <a href="${l.link}" target="_blank" class="block p-3 border border-slate-200 rounded-lg bg-white hover:border-slate-400 hover:shadow-sm transition-all group">
-                    <div class="flex justify-between items-start mb-1">
-                        <div class="font-bold text-sm text-slate-800 group-hover:text-slate-900 flex items-center gap-1">
-                            ${l.name}
-                            ${l.gsa_member ? '<span class="text-[9px] bg-blue-100 text-blue-700 px-1 rounded border border-blue-200">UNESCO</span>' : ''}
+            // Grouping Logic
+            const groupedItems = filteredLmi.reduce((groups, item) => {
+                const type = item.type || 'General Resources';
+                if (!groups[type]) {
+                    groups[type] = [];
+                }
+                groups[type].push(item);
+                return groups;
+            }, {});
+
+            // Sort types alphabetically
+            const sortedTypes = Object.keys(groupedItems).sort();
+
+            let contentHtml = '';
+            if (sortedTypes.length > 0) {
+                contentHtml = sortedTypes.map(type => {
+                    const items = groupedItems[type];
+                    const itemsHtml = items.map(l => `
+                        <a href="${l.link}" target="_blank" class="block p-3 border border-slate-200 rounded-lg bg-white hover:border-slate-400 hover:shadow-sm transition-all group">
+                            <div class="flex justify-between items-start mb-1">
+                                <div class="font-bold text-sm text-slate-800 group-hover:text-slate-900 flex items-center gap-1">
+                                    ${l.name}
+                                    ${l.gsa_member ? '<span class="text-[9px] bg-blue-100 text-blue-700 px-1 rounded border border-blue-200">UNESCO</span>' : ''}
+                                </div>
+                                <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-slate-500"></i>
+                            </div>
+                            <div class="text-xs text-slate-500">${l.desc}</div>
+                        </a>
+                    `).join('');
+
+                    return `
+                        <div class="mb-5 last:mb-0">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2 border-b border-slate-100 pb-1 flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span> ${type}
+                            </h4>
+                            <div class="space-y-3">
+                                ${itemsHtml}
+                            </div>
                         </div>
-                        <i data-lucide="external-link" class="w-3 h-3 text-slate-300 group-hover:text-slate-500"></i>
-                    </div>
-                    <div class="text-xs text-slate-500 mb-2">${l.desc}</div>
-                    <span class="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded border border-slate-200">${l.type || 'Report'}</span>
-                </a>
-            `).join('') : '<p class="text-sm text-slate-500 italic">No reports found for this category.</p>';
+                    `;
+                }).join('');
+            } else {
+                contentHtml = '<p class="text-sm text-slate-500 italic">No reports found for this category.</p>';
+            }
+
+            const nationalLabel = activeCountry !== 'all' ? activeCountry : 'National';
 
             container.innerHTML = `
                 <div class="animate-fade-in">
-                    <button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
+                    <button onclick="${backAction}" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
                     
                     <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="line-chart" class="w-5 h-5 text-slate-600"></i> Market Intelligence</h3>
 
-                    <div class="flex gap-2 mb-4">
-                        <button onclick="showMarketIntelView('sector')" class="flex-1 py-2 rounded-lg text-xs font-bold transition-colors ${getBtnClass('sector')}">Sector Specific</button>
-                        <button onclick="showMarketIntelView('global')" class="flex-1 py-2 rounded-lg text-xs font-bold transition-colors ${getBtnClass('global')}">Regional & Global</button>
+                    <div class="flex gap-2 mb-4 overflow-x-auto pb-1 no-scrollbar">
+                        <button onclick="showMarketIntelView('sector', '${targetId}', '${backAction}')" class="flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('sector')}">Sector Specific</button>
+                        <button onclick="showMarketIntelView('gig', '${targetId}', '${backAction}')" class="flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('gig')}">Gig & Informal</button>
+                        <button onclick="showMarketIntelView('national', '${targetId}', '${backAction}')" class="flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('national')}">${nationalLabel}</button>
+                        <button onclick="showMarketIntelView('global', '${targetId}', '${backAction}')" class="flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('global')}">Regional & Global</button>
                     </div>
 
-                    <div class="space-y-3">
+                    <div class="space-y-1">
                         ${contentHtml}
                     </div>
                 </div>
@@ -5807,8 +6164,8 @@ window.toggleCareerHub = function() {
             const resources = (typeof libraryResources !== 'undefined') ? libraryResources : [];
             
             const backBtn = backAction 
-                ? `<button onclick="${backAction}" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Pathway</button>`
-                : `<button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>`;
+                ? `<button onclick="${backAction}" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Pathway</button>`
+                : `<button onclick="resetCareerHub()" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>`;
 
             const resourcesHtml = resources.map(r => `
                 <a href="${r.link}" target="_blank" class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:border-rose-300 bg-white group transition-all">
@@ -5836,7 +6193,7 @@ window.toggleCareerHub = function() {
         // --- NEW: Helper to restore Pathway from Career Guides ---
         window.restorePathwayFromGuides = function() {
             openUnifiedHub('pp-practice');
-            pathwayState.goal = 'Advancement & Lifelong Learning';
+            pathwayState.goal = 'Upskilling & Lifelong Learning';
             renderPathwayStep3();
         }
 
@@ -5875,7 +6232,7 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in">
-                    <button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
+                    <button onclick="resetCareerHub()" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
                     <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5 text-purple-500"></i> CV & Portfolio Tools</h3>
                     
                     <!-- NEW: Internal Generator CTA -->
@@ -5903,7 +6260,7 @@ window.toggleCareerHub = function() {
             const container = document.getElementById('career-hub-content');
             container.innerHTML = `
                 <div class="animate-fade-in space-y-4">
-                    <button onclick="showCVResources()" class="mb-2 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Tools</button>
+                    <button onclick="showCVResources()" class="mb-2 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Tools</button>
                     
                     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
                         <div class="flex justify-between items-start mb-4">
@@ -6159,7 +6516,7 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in space-y-6">
-                    <button onclick="resetCareerHub()" class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
+                    <button onclick="resetCareerHub()" class="px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
                     
                     <div>
                         <h3 class="font-bold text-lg text-slate-900 mb-1 flex items-center gap-2"><i data-lucide="handshake" class="w-5 h-5 text-pink-600"></i> Employer Connect</h3>
@@ -6172,7 +6529,7 @@ window.toggleCareerHub = function() {
                         <div class="space-y-2">
                             ${partnersHtml}
                         </div>
-                        <div class="mt-2 text-[10px] text-slate-400 italic text-center">Curated partners offering internships & apprenticeships.</div>
+                        <div class="mt-2 text-[10px] text-slate-400 italic text-center">Curated partners and industry associations offering internships & apprenticeships.</div>
                     </div>
 
                     <!-- 2. Industry Fairs -->
@@ -6235,11 +6592,11 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in">
-                    <button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
+                    <button onclick="resetCareerHub()" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
                     
                     <div class="mb-4">
-                        <h3 class="font-bold text-slate-800 mb-1 flex items-center gap-2"><i data-lucide="briefcase" class="w-5 h-5 text-cyan-600"></i> Opportunity Aggregator</h3>
-                        <p class="text-xs text-slate-500">Curated listings across the ecosystem.</p>
+                        <h3 class="font-bold text-slate-800 mb-1 flex items-center gap-2"><i data-lucide="briefcase" class="w-5 h-5 text-cyan-600"></i> Opportunities Hub</h3>
+                        <p class="text-xs text-slate-500">Curated listings across the ecosystem. Aggregates internships, jobs, and freelance gigs.</p>
                     </div>
 
                     <div class="flex gap-2 mb-4 overflow-x-auto pb-1 shrink-0">
@@ -6295,7 +6652,7 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in space-y-5">
-                    <button ${backBtnCode} class="flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> ${backLabel}</button>
+                    <button ${backBtnCode} class="px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> ${backLabel}</button>
                     
                     <div class="text-center">
                         <div class="w-12 h-12 bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -6351,32 +6708,50 @@ window.toggleCareerHub = function() {
             // Safety checks
             const courses = dataManager.courses || [];
             const courseCount = courses.length;
+            
+            // Calculate Certified Courses
+            const certifiedCount = courses.filter(c => {
+                const isAccredited = c.outcomeData && c.outcomeData.accreditation === 'Accredited';
+                const isCertType = c.type && /Degree|Diploma|Certificate|License|Certification|Professional/.test(c.type);
+                return isAccredited || isCertType;
+            }).length;
+
             const providerCount = new Set(courses.map(c => c.provider)).size;
             const occCount = (dataManager.topOccupations || []).length;
             const skillCount = (dataManager.topSkills || []).length;
             
-            let datasetCount = 0;
-            if (dataManager.digitalResources) {
-                if (Array.isArray(dataManager.digitalResources.evidence_providers)) datasetCount += dataManager.digitalResources.evidence_providers.length;
-                ['agri', 'energy', 'digital'].forEach(sector => {
-                    if (dataManager.digitalResources[sector] && Array.isArray(dataManager.digitalResources[sector].lmi)) datasetCount += dataManager.digitalResources[sector].lmi.length;
-                });
-            }
-
             const now = new Date();
             const dateStr = now.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
             statsContainer.innerHTML = `
-                <div class="mt-4 pt-2 border-t border-slate-200/60 animate-fade-in w-full">
-                    <div class="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-2 text-[10px] text-slate-500 font-medium px-2">
-                        <div class="flex items-center gap-1" title="Training Courses"><i data-lucide="book-open" class="w-3 h-3 text-indigo-400"></i> <span>${courseCount} Courses</span></div>
-                        <span class="text-slate-300 hidden sm:inline">•</span>
-                        <div class="flex items-center gap-1" title="Training Providers"><i data-lucide="building-2" class="w-3 h-3 text-indigo-400"></i> <span>${providerCount} Providers</span></div>
-                        <span class="text-slate-300 hidden sm:inline">•</span>
-                        <div class="flex items-center gap-1" title="Mapped Occupations"><i data-lucide="briefcase" class="w-3 h-3 text-indigo-400"></i> <span>${occCount} Roles</span></div>
-                        <span class="text-slate-300 hidden sm:inline">•</span>
-                        <div class="flex items-center gap-1" title="Tracked Skills"><i data-lucide="cpu" class="w-3 h-3 text-indigo-400"></i> <span>${skillCount} Skills</span></div>
-                        <span class="ml-2 text-[9px] text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100 hidden sm:inline-block">Updated ${dateStr}</span>
+                <div class="w-full flex flex-col items-center">
+                    <div class="mt-4 md:mt-8 grid grid-cols-4 gap-2 md:gap-8 w-full max-w-3xl mx-auto animate-fade-in">
+                        <div class="flex flex-col items-center justify-center group cursor-default w-full p-1">
+                            <i data-lucide="graduation-cap" class="w-5 h-5 md:w-8 md:h-8 text-indigo-500 mb-1 md:mb-3 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-lg md:text-3xl font-bold text-slate-800 leading-tight">${courseCount}</span>
+                            <span class="text-[9px] md:text-xs font-bold text-slate-500 uppercase tracking-wide mt-0.5 md:mt-1 text-center leading-tight">Courses</span>
+                        </div>
+
+                        <div class="flex flex-col items-center justify-center group cursor-default w-full p-1">
+                            <i data-lucide="landmark" class="w-5 h-5 md:w-8 md:h-8 text-indigo-500 mb-1 md:mb-3 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-lg md:text-3xl font-bold text-slate-800 leading-tight">${providerCount}</span>
+                            <span class="text-[9px] md:text-xs font-bold text-slate-500 uppercase tracking-wide mt-0.5 md:mt-1 text-center leading-tight">Providers</span>
+                        </div>
+
+                        <div class="flex flex-col items-center justify-center group cursor-default w-full p-1">
+                            <i data-lucide="briefcase" class="w-5 h-5 md:w-8 md:h-8 text-indigo-500 mb-1 md:mb-3 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-lg md:text-3xl font-bold text-slate-800 leading-tight">${occCount}</span>
+                            <span class="text-[9px] md:text-xs font-bold text-slate-500 uppercase tracking-wide mt-0.5 md:mt-1 text-center leading-tight">Occupations</span>
+                        </div>
+
+                        <div class="flex flex-col items-center justify-center group cursor-default w-full p-1">
+                            <i data-lucide="lightbulb" class="w-5 h-5 md:w-8 md:h-8 text-indigo-500 mb-1 md:mb-3 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-lg md:text-3xl font-bold text-slate-800 leading-tight">${skillCount}</span>
+                            <span class="text-[9px] md:text-xs font-bold text-slate-500 uppercase tracking-wide mt-0.5 md:mt-1 text-center leading-tight">Skills</span>
+                        </div>
+                    </div>
+                    <div class="mt-6 md:mt-8 text-center w-full">
+                        <span class="text-[10px] md:text-xs text-slate-400 italic block">Data Updated: ${dateStr}</span>
                     </div>
                 </div>
             `;
@@ -6410,7 +6785,7 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in">
-                    <button onclick="resetCareerHub()" class="mb-4 flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
+                    <button onclick="resetCareerHub()" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
                     <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="cpu" class="w-5 h-5 text-indigo-500"></i> AI Career Tools</h3>
                     
                     <!-- Internal Tool Feature -->
@@ -6473,115 +6848,85 @@ window.toggleCareerHub = function() {
                         </div>
                     </div>
 
-                    <!-- Section 1: Opportunities (Primary Goal) -->
+                    <!-- Phase 1: Work Readiness (Prepare) -->
                     <div>
                         <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2">
-                            <span class="w-5 h-5 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center text-[10px]">1</span> Find Opportunities
+                            <span class="w-5 h-5 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-[10px]">1</span> Work Readiness
                         </h3>
-                        <div class="grid grid-cols-1 gap-3">
-                            <button onclick="showJobBoardView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-cyan-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
-                                <div class="p-3 bg-cyan-50 text-cyan-600 rounded-lg shrink-0 group-hover:bg-cyan-600 group-hover:text-white transition-colors"><i data-lucide="briefcase" class="w-6 h-6"></i></div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button onclick="renderReadinessScorecard('career-hub-content', 'resetCareerHub()')" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-emerald-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><i data-lucide="clipboard-list" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-cyan-700">Jobs Board</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">A sample of job boards.</p>
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-emerald-700">Readiness Audit</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Checklist for job search.</p>
                                 </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-cyan-500"></i>
                             </button>
-                            
-                            <button onclick="showEmployerConnectView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-pink-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
-                                <div class="p-3 bg-pink-50 text-pink-600 rounded-lg shrink-0 group-hover:bg-pink-600 group-hover:text-white transition-colors"><i data-lucide="handshake" class="w-6 h-6"></i></div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-pink-700">Employer Connect</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Links to platforms for finding internships, job placements & career fairs.</p>
-                                </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-pink-500"></i>
-                            </button>
-                        </div>
-                    </div>
 
-                    <!-- Section 2: Preparation Toolkit -->
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2">
-                            <span class="w-5 h-5 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-[10px]">2</span> Prep Toolkit
-                        </h3>
-                        <div class="grid grid-cols-1 gap-3">
                             <button onclick="showCVResources()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-purple-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
                                 <div class="p-3 bg-purple-50 text-purple-600 rounded-lg shrink-0 group-hover:bg-purple-600 group-hover:text-white transition-colors"><i data-lucide="file-text" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
                                     <h4 class="font-bold text-slate-800 text-sm group-hover:text-purple-700">CV Builder</h4>
                                     <p class="text-xs text-slate-500 mt-0.5">Templates & ATS tools.</p>
                                 </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-purple-500"></i>
                             </button>
 
                             <button onclick="showAIToolsView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-indigo-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
                                 <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><i data-lucide="cpu" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-indigo-700">AI Coach</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Interview prep & feedback.</p>
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-indigo-700">AI Interview Coach</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Practice & feedback.</p>
                                 </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-indigo-500"></i>
                             </button>
 
                             <button onclick="renderApplicationKit('all', 'resetCareerHub()')" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-cyan-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
                                 <div class="p-3 bg-cyan-50 text-cyan-600 rounded-lg shrink-0 group-hover:bg-cyan-600 group-hover:text-white transition-colors"><i data-lucide="briefcase" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
                                     <h4 class="font-bold text-slate-800 text-sm group-hover:text-cyan-700">Applications Kit</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Templates & guides.</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">Guides for Internships & Jobs.</p>
                                 </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-cyan-500"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Phase 2: Employer Connections (Connect) -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-[10px]">2</span> Employer Connections
+                        </h3>
+                        <div class="grid grid-cols-1 gap-3">
+                            <button onclick="showEmployerConnectView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-pink-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-pink-50 text-pink-600 rounded-lg shrink-0 group-hover:bg-pink-600 group-hover:text-white transition-colors"><i data-lucide="handshake" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-pink-700">Employer Connect</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Direct links to hiring partners, industry associations, and career fairs.</p>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-pink-500"></i>
                             </button>
                             
-                            <button onclick="renderReadinessScorecard('career-hub-content', 'resetCareerHub()')" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-emerald-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
-                                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><i data-lucide="clipboard-list" class="w-6 h-6"></i></div>
+                            <button onclick="toggleCommunityHub()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-orange-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-orange-50 text-orange-600 rounded-lg shrink-0 group-hover:bg-orange-600 group-hover:text-white transition-colors"><i data-lucide="users" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-emerald-700">Applications Checklist</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Audit your assets & strategy.</p>
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-orange-700">Communities & Networks</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Find mentors and alumni networks.</p>
                                 </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-emerald-500"></i>
-                            </button>
-
-                            <button onclick="showCareerGuides()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-rose-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
-                                <div class="p-3 bg-rose-50 text-rose-600 rounded-lg shrink-0 group-hover:bg-rose-600 group-hover:text-white transition-colors"><i data-lucide="library" class="w-6 h-6"></i></div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-rose-700">Career Guides</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Expert advice & tips.</p>
-                                </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-rose-500"></i>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-orange-500"></i>
                             </button>
                         </div>
                     </div>
-                    
-                    <!-- Section 3: Communities -->
+
+                    <!-- Phase 3: Opportunities (Apply) -->
                     <div>
                         <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2">
-                            <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px]">3</span> Communities
+                            <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px]">3</span> Find Opportunities
                         </h3>
                         <div class="grid grid-cols-1 gap-3">
-                            <button onclick="showCommunitiesView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
-                                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="users" class="w-6 h-6"></i></div>
+                            <button onclick="showJobBoardView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="search" class="w-6 h-6"></i></div>
                                 <div class="flex-1">
-                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-blue-700">Communities & Alumni</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Communities of Practice & Alumni Networks.</p>
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-blue-700">Opportunities Hub</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Aggregated job boards, internships, and freelance gigs.</p>
                                 </div>
                                 <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-blue-500"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Section 4: Market Intel -->
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2">
-                            <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[10px]">4</span> Market Intel
-                        </h3>
-                        <div class="grid grid-cols-1 gap-3">
-                            <button onclick="showMarketIntelView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
-                                <div class="p-3 bg-slate-100 text-slate-600 rounded-lg shrink-0 group-hover:bg-slate-600 group-hover:text-white transition-colors"><i data-lucide="line-chart" class="w-6 h-6"></i></div>
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-slate-700">Market Intelligence</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Sector reports & global trends.</p>
-                                </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 ml-auto group-hover:text-slate-500"></i>
                             </button>
                         </div>
                     </div>
@@ -6607,7 +6952,7 @@ window.toggleCareerHub = function() {
         }
 
         window.clearCourseFilters = function() {
-            const inputs = ['filter-search', 'filter-country', 'filter-skill', 'filter-duration', 'filter-mode', 'filter-cost', 'filter-type', 'filter-lang', 'filter-feature', 'filter-sort'];
+            const inputs = ['filter-search', 'filter-country', 'filter-skill', 'filter-difficulty', 'filter-duration', 'filter-mode', 'filter-cost', 'filter-type', 'filter-lang', 'filter-feature', 'filter-sort'];
             inputs.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = id === 'filter-search' ? '' : 'all';
@@ -6667,6 +7012,10 @@ window.toggleCareerHub = function() {
                 .sort((a, b) => a.localeCompare(b));
             
             let html = `<option value="all">All Skills</option>`;
+            html += `<option value="leadership_special">Leadership & Management</option>`;
+            if (sector === 'digital' || sector === 'all') {
+                html += `<option value="ai_special">✨ AI & Machine Learning</option>`;
+            }
             uniqueSkills.forEach(name => {
                 html += `<option value="${name}">${name}</option>`;
             });
@@ -6679,6 +7028,7 @@ window.toggleCareerHub = function() {
             const countryFilter = document.getElementById('filter-country') ? document.getElementById('filter-country').value : activeCountry;
             const secFilter = document.getElementById('filter-sector') ? document.getElementById('filter-sector').value : activeSectorId;
             const skillFilter = document.getElementById('filter-skill') ? document.getElementById('filter-skill').value : 'all';
+            const difficultyFilter = document.getElementById('filter-difficulty') ? document.getElementById('filter-difficulty').value : 'all';
             const durationFilter = document.getElementById('filter-duration') ? document.getElementById('filter-duration').value : 'all';
             const modeFilter = document.getElementById('filter-mode') ? document.getElementById('filter-mode').value : 'all';
             const costFilter = document.getElementById('filter-cost') ? document.getElementById('filter-cost').value : 'all';
@@ -6699,18 +7049,31 @@ window.toggleCareerHub = function() {
 
             const filtered = courses.filter(c => {
                 const matchCountry = countryFilter === 'all' || c.country === 'all' || c.country === countryFilter;
-                const matchSector = secFilter === 'all' || c.sector === secFilter;
+                const matchSector = secFilter === 'all' || c.sector === 'all' || c.sector === secFilter;
                 
                 let matchSkill = true;
                 if (skillFilter !== 'all') {
-                    if (c.skills && Array.isArray(c.skills)) {
-                        matchSkill = c.skills.some(s => s.toLowerCase() === skillFilter.toLowerCase());
+                    if (skillFilter === 'ai_special') {
+                        const aiKeywords = ['ai', 'artificial intelligence', 'machine learning', 'deep learning', 'neural networks', 'generative ai', 'gpt', 'llm', 'nlp', 'computer vision', 'robotics'];
+                        const skillText = (c.skills || []).join(' ').toLowerCase();
+                        const nameText = (c.name || '').toLowerCase();
+                        matchSkill = aiKeywords.some(k => skillText.includes(k) || nameText.includes(k));
+                    } else if (skillFilter === 'leadership_special') {
+                        const leadKeywords = ['leadership', 'management', 'entrepreneurship', 'business', 'strategy', 'civic'];
+                        const skillText = (c.skills || []).join(' ').toLowerCase();
+                        const nameText = (c.name || '').toLowerCase();
+                        matchSkill = leadKeywords.some(k => skillText.includes(k) || nameText.includes(k));
                     } else {
-                        matchSkill = false;
+                        if (c.skills && Array.isArray(c.skills)) {
+                            matchSkill = c.skills.some(s => s.toLowerCase() === skillFilter.toLowerCase());
+                        } else {
+                            matchSkill = false;
+                        }
                     }
                 }
 
                 const matchMode = modeFilter === 'all' || (c.mode && c.mode.toLowerCase() === modeFilter.toLowerCase()) || (modeFilter.toLowerCase() === 'hybrid' && (c.mode === 'Blended' || c.mode === 'Hybrid'));
+                const matchDifficulty = difficultyFilter === 'all' || (c.difficulty && c.difficulty === difficultyFilter);
                 
                 let matchDuration = true;
                 if (durationFilter !== 'all') {
@@ -6737,6 +7100,7 @@ window.toggleCareerHub = function() {
                     else if (typeFilter === 'bootcamp') matchType = t.includes('bootcamp') || t.includes('initiative') || t.includes('short') || t.includes('path');
                     else if (typeFilter === 'tvet') matchType = t.includes('tvet') || t.includes('polytechnic');
                     else if (typeFilter === 'platform') matchType = t.includes('platform') || t.includes('community') || t.includes('provider') || t.includes('academy');
+                    else if (typeFilter === 'hubs') matchType = t.includes('incubator') || t.includes('hub') || t.includes('lab') || (c.provider && (c.provider.toLowerCase().includes('hub') || c.provider.toLowerCase().includes('lab')));
                 }
 
                 let matchFeature = true;
@@ -6748,7 +7112,7 @@ window.toggleCareerHub = function() {
                     (c.provider && c.provider.toLowerCase().includes(searchFilter)) ||
                     (c.skills && Array.isArray(c.skills) && c.skills.some(s => s.toLowerCase().includes(searchFilter)));
 
-                return matchCountry && matchSector && matchSkill && matchDuration && matchMode && matchCost && matchLang && matchType && matchFeature && matchSearch;
+                return matchCountry && matchSector && matchSkill && matchDuration && matchMode && matchCost && matchLang && matchType && matchFeature && matchSearch && matchDifficulty;
             });
 
             if (filtered.length === 0) {
@@ -6868,6 +7232,9 @@ window.toggleCareerHub = function() {
                                     <div class="font-mono font-bold text-xs ${metricDisplay === 'No Data' ? 'text-slate-300' : 'text-blue-600'}">
                                         ${metricDisplay}
                                     </div>
+                                    <button onclick="event.stopPropagation(); window.open('mailto:support@ai4eac.org?subject=Broken Link Report: ${encodeURIComponent(c.name)}', '_blank')" class="text-[9px] text-rose-400 hover:text-rose-600 flex items-center gap-1 mt-1" title="Report Broken Link">
+                                        <i data-lucide="flag" class="w-2.5 h-2.5"></i> Report
+                                    </button>
                                 </div>
                                 ${c.url ? `
                                 <a href="${c.url}" target="_blank" class="flex items-center gap-1 px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-xs font-bold transition-colors">
@@ -6912,6 +7279,15 @@ window.toggleCareerHub = function() {
                             <a href="${c.url}" target="_blank" class="text-slate-400 hover:text-blue-600 transition">
                                 <i data-lucide="external-link" class="w-3 h-3"></i>
                             </a>` : `<span class="text-[10px] text-slate-300 cursor-not-allowed">N/A</span>`}
+                            <div class="flex items-center justify-end gap-3">
+                                <button onclick="event.stopPropagation(); window.open('mailto:support@ai4eac.org?subject=Broken Link Report: ${encodeURIComponent(c.name)}', '_blank')" class="text-slate-300 hover:text-rose-500 transition" title="Report Broken Link">
+                                    <i data-lucide="flag" class="w-3 h-3"></i>
+                                </button>
+                                ${c.url ? `
+                                <a href="${c.url}" target="_blank" class="text-slate-400 hover:text-blue-600 transition">
+                                    <i data-lucide="external-link" class="w-3 h-3"></i>
+                                </a>` : `<span class="text-[10px] text-slate-300 cursor-not-allowed">N/A</span>`}
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -7048,7 +7424,7 @@ window.toggleCareerHub = function() {
                     <div class="bg-purple-50 rounded-xl p-5 border border-purple-100 flex items-start gap-4">
                         <div class="p-3 bg-purple-100 text-purple-600 rounded-xl shrink-0 shadow-sm"><i data-lucide="banknote" class="w-6 h-6"></i></div>
                         <div>
-                            <p class="text-sm text-purple-700 mt-1 leading-relaxed">Find scholarships and funding opportunities to support your higher education, skilling and careers pathway.</p>
+                            <p class="text-sm text-purple-700 mt-1 leading-relaxed">Find scholarships and funding opportunities to support your education, skilling and careers pathway.</p>
                         </div>
                     </div>
 
@@ -7209,7 +7585,7 @@ window.toggleCareerHub = function() {
 
             const filtered = courses.filter(c => {
                 const matchCountry = countryFilter === 'all' || c.country === 'all' || c.country === countryFilter;
-                const matchSector = secFilter === 'all' || c.sector === secFilter;
+                const matchSector = secFilter === 'all' || c.sector === 'all' || c.sector === secFilter;
                 const matchLang = langFilter === 'all' || (c.language && c.language.includes(langFilter));
                 const matchMode = modeFilter === 'all' || (c.mode && c.mode.toLowerCase() === modeFilter.toLowerCase()) || (modeFilter.toLowerCase() === 'hybrid' && (c.mode === 'Blended' || c.mode === 'Hybrid'));
                 
@@ -7221,6 +7597,7 @@ window.toggleCareerHub = function() {
                     else if (typeFilter === 'tvet') matchType = t.includes('tvet') || t.includes('diploma');
                     else if (typeFilter === 'university') matchType = t.includes('degree') || t.includes('bachelor') || t.includes('master');
                     else if (typeFilter === 'bootcamp') matchType = t.includes('bootcamp');
+                    else if (typeFilter === 'hubs') matchType = t.includes('incubator') || t.includes('hub') || t.includes('lab') || (c.provider && (c.provider.toLowerCase().includes('hub') || c.provider.toLowerCase().includes('lab')));
                 }
 
                 let matchBudget = true;
@@ -7238,6 +7615,11 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
+        window.toggleStudentpreneurMode = function() {
+            isStudentpreneur = !isStudentpreneur;
+            renderLaunchpadTab();
+        }
+
         // --- NEW: Render Launchpad Resources List (Filtered) ---
         window.renderLaunchpadResources = function(filter = 'all') {
             const container = document.getElementById('launchpad-resources-list');
@@ -7250,26 +7632,62 @@ window.toggleCareerHub = function() {
             const tc = themeConfig.color;
 
             // Re-construct opportunities list
-            let opportunities = [
-                ...(data.incubators || []).map(i => ({ ...i, type: 'Incubator', deadline: 'Rolling' })),
-                ...(data.funding || []).map(f => ({ ...f, type: 'Grant/Fund', deadline: 'Rolling' })),
-                ...(data.competitions || []).map(c => ({ ...c, type: 'Competition', deadline: 'See Details' })),
-                ...(data.tools || []).map(t => ({ ...t, type: 'Gov/Tool', deadline: 'N/A' }))
-            ];
+            let opportunities = [];
+            const communities = sectorData.communities || [];
+
+            // Helper to add items
+            const add = (list, type, defaultCat) => {
+                (list || []).forEach(item => {
+                    opportunities.push({
+                        ...item,
+                        type: item.type || type,
+                        deadline: item.deadline || 'Rolling',
+                        category: defaultCat
+                    });
+                });
+            };
+
+            add(data.incubators, 'Incubator', 'Resources & Funding');
+            add(data.funding, 'Grant/Fund', 'Resources & Funding');
+            add(data.competitions, 'Competition', 'Events & Competitions');
+            add(data.tools, 'Gov/Tool', 'Resources & Funding');
+            
+            // Add Communities for Mentorship/Networking and Events
+            communities.forEach(c => {
+                let cat = 'Mentorship & Networking';
+                if (c.type === 'Event') cat = 'Events & Competitions';
+                opportunities.push({
+                    ...c,
+                    type: c.type || 'Community',
+                    deadline: 'Open',
+                    category: cat
+                });
+            });
 
             if (opportunities.length < 4) {
-                opportunities.push({ name: "Annual Sector Prize", desc: "Seed funding for early stage.", link: "#", type: "Competition", deadline: "Nov 15, 2025" });
+                opportunities.push({ name: "Annual Sector Prize", desc: "Seed funding for early stage.", link: "#", type: "Competition", deadline: "Nov 15, 2025", category: "Events & Competitions" });
             }
 
             // Filter
             if (filter !== 'all') {
-                if (filter === 'Funding') {
-                    opportunities = opportunities.filter(o => o.type === 'Grant/Fund' || o.type === 'Competition');
-                } else if (filter === 'Incubators') {
-                    opportunities = opportunities.filter(o => o.type === 'Incubator');
-                } else if (filter === 'Tools') {
-                    opportunities = opportunities.filter(o => o.type === 'Gov/Tool');
+                if (filter === 'Mentorship') {
+                    opportunities = opportunities.filter(o => o.category === 'Mentorship & Networking' || (o.type && (o.type.includes('Mentor') || o.type.includes('Community') || o.type.includes('Alumni'))));
+                } else if (filter === 'Training') {
+                    opportunities = opportunities.filter(o => o.type === 'Incubator' || (o.desc && (o.desc.toLowerCase().includes('training') || o.desc.toLowerCase().includes('workshop'))));
+                } else if (filter === 'Events') {
+                    opportunities = opportunities.filter(o => o.category === 'Events & Competitions' || o.type === 'Event' || o.type === 'Competition');
+                } else if (filter === 'Resources') {
+                    opportunities = opportunities.filter(o => o.category === 'Resources & Funding' || o.type === 'Grant/Fund' || o.type === 'Gov/Tool' || o.type === 'Incubator');
                 }
+            }
+
+            // Studentpreneur Filter
+            if (isStudentpreneur) {
+                const keywords = ['student', 'youth', 'campus', 'university', 'young', 'sprint up', 'dot', 'ceda', 'elisa', 'scenius', 'jhub', 'yaden', 'commonwealth alliance'];
+                opportunities = opportunities.filter(o => {
+                    const text = (o.name + " " + o.desc + " " + o.type).toLowerCase();
+                    return keywords.some(k => text.includes(k));
+                });
             }
 
             // Update Buttons State
@@ -7283,7 +7701,8 @@ window.toggleCareerHub = function() {
             });
 
             if (opportunities.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs italic">No resources found for this category.</div>`;
+                const msg = isStudentpreneur ? "No specific studentpreneur resources found for this category. Try turning off Studentpreneur Mode." : "No resources found for this category.";
+                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs italic">${msg}</div>`;
                 return;
             }
 
@@ -7392,13 +7811,21 @@ window.toggleCareerHub = function() {
             const countryPb = sectorPlaybook[activeCountry] || {};
             const pb = { ...basePb, ...countryPb };
 
+            const studentToggleClass = isStudentpreneur ? "bg-indigo-600 justify-end" : "bg-slate-300 justify-start";
+
             container.innerHTML = `
                 <div class="animate-fade-in space-y-8">
                     <!-- Header -->
                     <div class="bg-${tc}-50 rounded-xl p-6 border border-${tc}-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
-                            <div class="flex items-center gap-2 mb-2">
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-white text-${tc}-700 border border-${tc}-200 shadow-sm">${title} Sector</span>
+                                <div class="flex items-center gap-2 bg-white px-2 py-0.5 rounded-full border border-slate-200 shadow-sm ml-2">
+                                    <span class="text-[10px] font-bold text-slate-600">Studentpreneur Mode</span>
+                                    <button onclick="toggleStudentpreneurMode()" class="w-8 h-4 rounded-full p-0.5 flex items-center transition-colors ${studentToggleClass}">
+                                        <div class="w-3 h-3 bg-white rounded-full shadow-sm"></div>
+                                    </button>
+                                </div>
                                 ${activeCountry !== 'all' ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-white text-slate-600 border border-slate-200 shadow-sm"><i data-lucide="map-pin" class="w-3 h-3 inline mr-1"></i> ${activeCountry}</span>` : ''}
                             </div>
                             <p class="text-sm text-${tc}-800 mt-1 max-w-xl">From idea to investment: Your sector-specific venture building toolkit.</p>
@@ -7442,10 +7869,11 @@ window.toggleCareerHub = function() {
                             </div>
                             <div class="flex gap-2 overflow-x-auto pb-1 shrink-0 no-scrollbar w-full sm:w-auto">
                                 <button onclick="renderLaunchpadResources('all')" class="launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-${tc}-600 text-white shadow-sm" data-filter="all">All</button>
-                                <button onclick="renderLaunchpadResources('Funding')" class="launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-50" data-filter="Funding">Funding</button>
-                                <button onclick="renderLaunchpadResources('Incubators')" class="launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-50" data-filter="Incubators">Incubators</button>
-                                <button onclick="renderLaunchpadResources('Tools')" class="launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-50" data-filter="Tools">Tools</button>
-                            </div>
+                                <button onclick="renderLaunchpadResources('Resources')" class="launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-50" data-filter="Resources">Funding & Resources</button>
+                                <button onclick="renderLaunchpadResources('Mentorship')" class="launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-50" data-filter="Mentorship">Mentorship & Networking</button>
+                                <button onclick="renderLaunchpadResources('Training')" class="launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-50" data-filter="Training">Training & Workshops</button>
+                                <button onclick="renderLaunchpadResources('Events')" class="launchpad-filter-btn px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap bg-white text-slate-600 border border-slate-200 hover:bg-slate-50" data-filter="Events">Events & Competitions</button>
+                                </div>
                         </div>
                         <div id="launchpad-resources-list" class="space-y-3">
                             <!-- Injected via renderLaunchpadResources -->
@@ -7556,6 +7984,8 @@ window.toggleCareerHub = function() {
             }
 
             injectSectorDrawer(); // Inject the new Sector Drawer
+            injectCommunityDrawer(); // Inject Community Drawer
+            injectUsersDrawer(); // Inject Users Drawer
             renderMainLanding(); // Render the 3-Pillar Dashboard
             if(window.lucide) lucide.createIcons();
             setGlobalSector('agri');
@@ -7706,6 +8136,41 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
+        window.injectCommunityDrawer = function() {
+            if (document.getElementById('community-hub-drawer')) return;
+
+            const drawer = document.createElement('div');
+            drawer.id = 'community-hub-drawer';
+            drawer.className = 'fixed inset-y-0 right-0 w-full md:w-[600px] bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-[60] overflow-y-auto flex flex-col';
+            
+            drawer.innerHTML = `
+                <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 z-10">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="users" class="w-5 h-5 text-pink-600"></i> Communities & Networks
+                    </h2>
+                    <button onclick="toggleCommunityHub()" class="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                        <i data-lucide="x" class="w-5 h-5 text-slate-500"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-6 flex-1 overflow-y-auto bg-slate-50/50" id="community-hub-content">
+                    <!-- Content Injected Here -->
+                </div>
+            `;
+            document.body.appendChild(drawer);
+        }
+
+        window.toggleCommunityHub = function() {
+            closeAllModals('community-hub-drawer');
+            const drawer = document.getElementById('community-hub-drawer');
+            if (drawer) {
+                drawer.classList.toggle('translate-x-full');
+                if (!drawer.classList.contains('translate-x-full')) {
+                    showCommunitiesView();
+                }
+            }
+            if(window.lucide) lucide.createIcons();
+        }
+
         // --- NEW: Persistence & Sharing Logic ---
         function saveMyPlan() {
             const serialized = {
@@ -7767,92 +8232,217 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-                    <!-- Block 1: High Growth Sectors -->
-                        <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-gradient-to-br from-purple-50 to-fuchsia-100 border border-emerald-200 rounded-2xl p-6 hover:border-emerald-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-6 opacity-30 group-hover:opacity-40 transition-opacity">
-                            <i data-lucide="map" class="w-32 h-32 text-purple-900/20"></i>
+                    <!-- Block 1: Sector Growth and Demand Signals -->
+                        <button onclick="toggleSectorHub()" class="flex flex-col text-left h-full bg-white border border-slate-300 rounded-2xl p-6 hover:border-purple-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <i data-lucide="trending-up" class="w-32 h-32 text-purple-600"></i>
                         </div>
                         <div class="flex items-center gap-4 mb-5 relative z-10">
-                            <div class="w-12 h-12 bg-white text-purple-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md ring-1 ring-purple-100">
+                            <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                                 <i data-lucide="bar-chart-2" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-purple-900 transition-colors">High growth Sectors</h3>
+                            <h3 class="text-lg font-bold text-slate-900 group-hover:text-purple-700 transition-colors">Sector Growth and Demand Signals</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Find out which sectors are booming in East Africa right now. See where the jobs and investments are.</p>
-                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-purple-700 group-hover:gap-3 transition-all relative z-10">
+                        <p class="text-sm text-slate-500 mb-6 flex-1 leading-relaxed relative z-10">Discover up-to-date information on sector investments, hiring and entrepreneurship trends. Browse high value skills sought by employers.</p>
+                        <div class="mt-auto flex items-center gap-2 text-xs font-bold text-purple-600 uppercase tracking-wide group-hover:gap-3 transition-all relative z-10">
                             Start Navigating <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
                     </button>
 
-                    <!-- Block 2: Skills & Training Hub -->
-                        <button onclick="openUnifiedHub()" class="flex flex-col text-left h-full bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-2xl p-6 hover:border-blue-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-6 opacity-30 group-hover:opacity-40 transition-opacity">
-                            <i data-lucide="book-open" class="w-32 h-32 text-blue-900/20"></i>
+                    <!-- Block 2: Skills Matching & Training Pathways -->
+                        <button onclick="openUnifiedHub()" class="flex flex-col text-left h-full bg-white border border-slate-300 rounded-2xl p-6 hover:border-blue-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <i data-lucide="award" class="w-32 h-32 text-blue-600"></i>
                         </div>
                         <div class="flex items-center gap-4 mb-5 relative z-10">
-                            <div class="w-12 h-12 bg-white text-blue-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md ring-1 ring-blue-100">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                                 <i data-lucide="graduation-cap" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-blue-900 transition-colors">Skills & Training</h3>
+                            <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-700 transition-colors">Skills Matching & Training Pathways</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Check if you have the right skills for the job. Find training to level up and build your career path.</p>
-                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-blue-700 group-hover:gap-3 transition-all relative z-10">
+                        <p class="text-sm text-slate-500 mb-6 flex-1 leading-relaxed relative z-10">Use the SkillsMatch tool to check if you have the right skills for the job. Chart a training or work readiness pathway based on your preferences. Find training.</p>
+                        <div class="mt-auto flex items-center gap-2 text-xs font-bold text-blue-600 uppercase tracking-wide group-hover:gap-3 transition-all relative z-10">
                             Find Training <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
                     </button>
 
-                    <!-- Block 3: Financial Aid and Scholarships-->
-                    <button onclick="openUnifiedHub('pp-finance')" class="flex flex-col text-left h-full bg-gradient-to-br from-emerald-50 to-teal-100 border border-emerald-200 rounded-2xl p-6 hover:border-emerald-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-6 opacity-30 group-hover:opacity-40 transition-opacity">
-                            <i data-lucide="banknote" class="w-32 h-32 text-emerald-900/20"></i>
+                     <!-- Block 3: Career & Community Tools -->
+                    <button onclick="toggleCareerHub()" class="flex flex-col text-left h-full bg-white border border-slate-300 rounded-2xl p-6 hover:border-indigo-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <i data-lucide="briefcase" class="w-32 h-32 text-indigo-600"></i>
                         </div>
                         <div class="flex items-center gap-4 mb-5 relative z-10">
-                            <div class="w-12 h-12 bg-white text-emerald-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md ring-1 ring-emerald-100">
+                            <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
+                                <i data-lucide="handshake" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 group-hover:text-indigo-700 transition-colors">Career Tools</h3>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-6 flex-1 leading-relaxed relative z-10">Access careers guidance, CV builders, and interview prep tools to improve your recruitment prospects.</p>
+                        <div class="mt-auto flex items-center gap-2 text-xs font-bold text-indigo-600 uppercase tracking-wide group-hover:gap-3 transition-all relative z-10">
+                            Access Tools <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </div>
+                    </button>
+                    
+                    <!-- Block 4: Financial Aid and Scholarships-->
+                    <button onclick="openUnifiedHub('pp-finance')" class="flex flex-col text-left h-full bg-white border border-slate-300 rounded-2xl p-6 hover:border-emerald-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <i data-lucide="landmark" class="w-32 h-32 text-emerald-600"></i>
+                        </div>
+                        <div class="flex items-center gap-4 mb-5 relative z-10">
+                            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                                 <i data-lucide="coins" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-emerald-900 transition-colors">Financial Aid & Scholarships</h3>
+                            <h3 class="text-lg font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">Financial Aid & Scholarships</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Get funding for your education and skills training. Find scholarships, loans, and grants.</p>
-                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-emerald-700 group-hover:gap-3 transition-all relative z-10">
+                        <p class="text-sm text-slate-500 mb-6 flex-1 leading-relaxed relative z-10">Search for grants, scholarships and financing relevant to your education, skilling and training needs.</p>
+                        <div class="mt-auto flex items-center gap-2 text-xs font-bold text-emerald-600 uppercase tracking-wide group-hover:gap-3 transition-all relative z-10">
                             Find Funding <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
                     </button>
 
-                    <!-- Block 4: Founder's Launchpad -->
-                    <button onclick="openUnifiedHub('pp-launchpad')" class="flex flex-col text-left h-full bg-gradient-to-br from-orange-50 to-amber-100 border border-orange-200 rounded-2xl p-6 hover:border-orange-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-6 opacity-30 group-hover:opacity-40 transition-opacity">
-                            <i data-lucide="rocket" class="w-32 h-32 text-orange-900/20"></i>
+                    <!-- Block 5: Founder's Launchpad -->
+                    <button onclick="openUnifiedHub('pp-launchpad')" class="flex flex-col text-left h-full bg-white border border-slate-300 rounded-2xl p-6 hover:border-orange-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <i data-lucide="lightbulb" class="w-32 h-32 text-orange-600"></i>
                         </div>
                         <div class="flex items-center gap-4 mb-5 relative z-10">
-                            <div class="w-12 h-12 bg-white text-orange-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md ring-1 ring-orange-100">
+                            <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                                 <i data-lucide="zap" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-orange-900 transition-colors">Start Your Business</h3>
+                            <h3 class="text-lg font-bold text-slate-900 group-hover:text-orange-700 transition-colors">Founders Launchpad</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Get the tools, guides, and funding you need to launch your own venture.</p>
-                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-orange-700 group-hover:gap-3 transition-all relative z-10">
+                        <p class="text-sm text-slate-500 mb-6 flex-1 leading-relaxed relative z-10">Develop your game plan and access a directory of start-up resources to launch your own venture.</p>
+                        <div class="mt-auto flex items-center gap-2 text-xs font-bold text-orange-600 uppercase tracking-wide group-hover:gap-3 transition-all relative z-10">
                             Launch Venture <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
                     </button>
 
-                    <!-- Block 5: Career & Community Tools -->
-                    <button onclick="toggleCareerHub()" class="flex flex-col text-left h-full bg-gradient-to-br from-purple-50 to-fuchsia-100 border border-purple-200 rounded-2xl p-6 hover:border-purple-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-6 opacity-30 group-hover:opacity-40 transition-opacity">
-                            <i data-lucide="users" class="w-32 h-32 text-purple-900/20"></i>
+                    <!-- Block 6: Communities & Networks -->
+                    <button onclick="toggleCommunityHub()" class="flex flex-col text-left h-full bg-white border border-slate-300 rounded-2xl p-6 hover:border-pink-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <i data-lucide="users" class="w-32 h-32 text-pink-600"></i>
                         </div>
                         <div class="flex items-center gap-4 mb-5 relative z-10">
-                            <div class="w-12 h-12 bg-white text-purple-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md ring-1 ring-purple-100">
-                                <i data-lucide="handshake" class="w-6 h-6"></i>
+                            <div class="w-12 h-12 bg-pink-50 text-pink-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm">
+                                <i data-lucide="users" class="w-6 h-6"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-900 group-hover:text-purple-900 transition-colors">Career Tools & Networks</h3>
+                            <h3 class="text-lg font-bold text-slate-900 group-hover:text-pink-700 transition-colors">Communities & Networks</h3>
                         </div>
-                        <p class="text-sm text-slate-600 mb-6 flex-1 leading-relaxed relative z-10">Get career advice, CV templates, and connect with people who can help you succeed.</p>
-                        <div class="mt-auto flex items-center gap-2 text-sm font-bold text-purple-700 group-hover:gap-3 transition-all relative z-10">
-                            Access Tools <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        <p class="text-sm text-slate-500 mb-6 flex-1 leading-relaxed relative z-10">Connect with networks, mentors and alumni in your sector. Find events and professional networks.</p>
+                        <div class="mt-auto flex items-center gap-2 text-xs font-bold text-pink-600 uppercase tracking-wide group-hover:gap-3 transition-all relative z-10">
+                            Join Community <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </div>
                     </button>
                 </div>
             `;
+            if(window.lucide) lucide.createIcons();
+        }
+
+        window.injectAboutDrawer = function() {
+            if (document.getElementById('about-drawer')) return;
+
+            const drawer = document.createElement('div');
+            drawer.id = 'about-drawer';
+            drawer.className = 'fixed inset-y-0 left-0 w-80 bg-white shadow-2xl transform -translate-x-full transition-transform duration-300 z-[70] overflow-y-auto flex flex-col';
+            
+            drawer.innerHTML = `
+                <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="info" class="w-5 h-5 text-indigo-600"></i> About
+                    </h2>
+                    <button onclick="toggleAboutDrawer()" class="p-2 hover:bg-slate-200 rounded-full transition-colors">
+                        <i data-lucide="x" class="w-5 h-5 text-slate-500"></i>
+                    </button>
+                </div>
+                
+            `;
+            document.body.appendChild(drawer);
+        }
+
+        window.injectUsersDrawer = function() {
+            if (document.getElementById('users-drawer')) return;
+
+            const drawer = document.createElement('div');
+            drawer.id = 'users-drawer';
+            drawer.className = 'fixed inset-y-0 left-0 w-80 bg-white shadow-2xl transform -translate-x-full transition-transform duration-300 z-[70] overflow-y-auto flex flex-col';
+            
+            drawer.innerHTML = `
+                <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="users" class="w-5 h-5 text-indigo-600"></i> Compass Users
+                    </h2>
+                    <button onclick="toggleUsersDrawer()" class="p-2 hover:bg-slate-200 rounded-full transition-colors">
+                        <i data-lucide="x" class="w-5 h-5 text-slate-500"></i>
+                    </button>
+                </div>
+                <div class="p-5 space-y-8 flex-1 overflow-y-auto">
+                    <div>
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="graduation-cap" class="w-3 h-3"></i> Graduates</div>
+                                <p class="text-xs text-slate-600 leading-snug">Students, graduates and trainees can unlock skills training and workforce readiness opportunities in key employment and entrepreneurship sectors.</p>
+                            </div>
+                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="user-check" class="w-3 h-3"></i> Career Specialists</div>
+                                <p class="text-xs text-slate-600 leading-snug">Careers advisors and specialists can use the Compass for evidence-based guidance and clearer progression routes to every learner.</p>
+                            </div>
+                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="book-open" class="w-3 h-3"></i> Educators & Trainers</div>
+                                <p class="text-xs text-slate-600 leading-snug">Educators and institutions can translate emerging occupational and skills trends into pedagogical and curriculum updates, micro-credential design, and modernized training offers.</p>
+                            </div>
+                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="briefcase" class="w-3 h-3"></i> Employers</div>
+                                <p class="text-xs text-slate-600 leading-snug">Employers can identify relevant training providers, more clearly articulate skill needs, and build stronger recruitment and partnership pipelines.</p>
+                            </div>
+                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="landmark" class="w-3 h-3"></i> Policymakers</div>
+                                <p class="text-xs text-slate-600 leading-snug">Decision-makers can align investments to skills in specific value chains poised for job growth, benefitting from comparable data across sectors and countries.</p>
+                            </div>
+                    
+                            <!-- Feedback Section -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                            Feedback
+                        </h3>
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScMkRMgF8TE-nr_xvRuCZ5nF1H-J3uQiM4_-TBUbPycxFQv9Q/viewform?usp=header" class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors group">
+                            <div class="p-2 bg-indigo-50 text-indigo-600 rounded shrink-0"><i data-lucide="message-square" class="w-4 h-4"></i></div>
+                            <div>
+                                <div class="font-bold text-sm text-slate-800 group-hover:text-indigo-700">Share Feedback</div>
+                                <div class="text-xs text-slate-500">Help us improve the Compass.</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(drawer);
+        }
+
+        window.toggleAboutDrawer = function() {
+            const drawer = document.getElementById('about-drawer');
+            if (drawer) {
+                closeAllModals('about-drawer');
+                const isClosed = drawer.classList.contains('-translate-x-full');
+                if (isClosed) {
+                    drawer.classList.remove('-translate-x-full');
+                } else {
+                    drawer.classList.add('-translate-x-full');
+                }
+            }
+            if(window.lucide) lucide.createIcons();
+        }
+
+        window.toggleUsersDrawer = function() {
+            const drawer = document.getElementById('users-drawer');
+            if (drawer) {
+                closeAllModals('users-drawer');
+                const isClosed = drawer.classList.contains('-translate-x-full');
+                if (isClosed) {
+                    drawer.classList.remove('-translate-x-full');
+                } else {
+                    drawer.classList.add('-translate-x-full');
+                }
+            }
             if(window.lucide) lucide.createIcons();
         }
 
@@ -7866,7 +8456,7 @@ window.toggleCareerHub = function() {
             drawer.innerHTML = `
                 <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 z-10">
                     <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-600"></i> Market Intelligence
+                        <i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-600"></i> Sector Growth and Demand Signals
                     </h2>
                     <button onclick="toggleSectorHub()" class="p-2 hover:bg-slate-100 rounded-full transition-colors">
                         <i data-lucide="x" class="w-5 h-5 text-slate-500"></i>
@@ -7878,7 +8468,7 @@ window.toggleCareerHub = function() {
                         <div>
                             <h3 class="text-base font-bold text-slate-800 mb-1">Navigate High Growth Sectors</h3>
                             <p class="text-xs text-slate-500 leading-relaxed">
-                                Select a sector and country to access real-time labour market data and investment trends. Open tabs for details on occupations and skills in demand, as well as emerging entrepreneurship opportunities.
+                                Select a sector and country to access real-time labour market data and investment trends. Open tabs for sector-specific market intelligence, details on occupations and skills in demand, and emerging entrepreneurship opportunities.
                              </p>
                         </div>
                         

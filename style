@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap'); /* For Certificates */
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter';
     background-color: #ffffff;
     color: #0f172a; /* Slate 900 */
 }

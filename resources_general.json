@@ -2,6 +2,8 @@
   "regional_multipliers": [
     { "title": "EAC Secretariat", "desc": "Regional integration priorities & programmes.", "link": "https://www.eac.int", "type": "Policy/Regulation" },
     { "title": "East African Business Council (EABC)", "desc": "Private-sector policy dialogue & regional network.", "link": "https://www.eabc.info/", "type": "Ecosystem" },
+    { "title": "EAC Common Market Protocol", "desc": "Rights to free movement of workers & mutual recognition.", "link": "https://www.eac.int/common-market", "type": "Policy/Regulation" },
+    { "title": "EAQFHE (Qualifications Framework)", "desc": "Regional framework for harmonizing higher education & TVET qualifications.", "link": "https://www.iucea.org/", "type": "Policy/Regulation" },
     { "title": "East African Communications Organization (EACO)", "desc": "Regional coordination for communications regulators.", "link": "https://eaco.int/", "type": "Policy/Regulation" },
     { "title": "Smart Africa Alliance", "desc": "Pan-African digital transformation initiatives.", "link": "https://smartafrica.org/", "type": "Policy/Regulation" },
     { "title": "Smart Africa Digital Academy (SADA)", "desc": "Digital skills training programmes.", "link": "https://smartafrica.org/digital-academy/", "type": "Skills" },
@@ -10,6 +12,7 @@
     { "title": "Alliance for Affordable Internet (A4AI)", "desc": "Connectivity policy research & affordability insights.", "link": "https://a4ai.org/", "type": "Policy/Regulation" },
     { "title": "Africa Fintech Network", "desc": "Fintech ecosystem network & policy engagement.", "link": "https://africafintechnetwork.com/", "type": "Ecosystem" },
     { "title": "GSMA Innovation Fund", "desc": "Catalytic funding for mobile/digital innovation.", "link": "https://www.gsma.com/mobilefordevelopment/", "type": "Funding" },
+    { "title": "AfDB ENABLE Youth", "desc": "Empowering Novel Agri-Business-Led Employment for Youth.", "link": "https://www.afdb.org/en/topics-and-sectors/initiatives-partnerships/enable-youth", "type": "Funding" },
     { "title": "VC4A", "desc": "Africa startup ecosystem platform & funding.", "link": "https://vc4a.com/", "type": "Funding" },
     { "title": "Seedstars", "desc": "Acceleration, investment & events.", "link": "https://www.seedstars.com/", "type": "Funding" },
     { "title": "Zindi", "desc": "Data science & AI competitions in Africa.", "link": "https://zindi.africa/", "type": "Skills" },
@@ -36,7 +39,20 @@
     { "title": "Orange Corners", "desc": "Incubation & entrepreneurship support.", "link": "https://www.orangecorners.com/", "type": "Ecosystem" },
     { "title": "WITIA", "desc": "Women in Technology in Africa.", "link": "https://witia.org/", "type": "Ecosystem" },
     { "title": "Smart Africa Women & Girls", "desc": "ICT mentorship platform.", "link": "https://smartafrica.org/", "type": "Skills" },
-    { "title": "EAC Youth Policy", "desc": "Framework guiding Partner States on youth programming.", "link": "https://www.eac.int/", "type": "Policy/Regulation" }
+    { "title": "EAC Youth Policy", "desc": "Framework guiding Partner States on youth programming.", "link": "https://www.eac.int/", "type": "Policy/Regulation" },
+    { "title": "dSkills@EA", "desc": "Digital skills & innovation ecosystem for EAC.", "link": "https://dskills.iucea.org", "type": "Ecosystem" },
+    { "title": "Energy Regulation Centre (ERCE)", "desc": "Regional training in energy regulation & law.", "link": "https://www.eac.int/", "type": "Education" },
+    { "title": "Africa-ai-JAPAN Project", "desc": "Strengthening research & innovation capacity (JKUAT/PAUSTI).", "link": "https://www.jica.go.jp/project/english/kenya/021/index.html", "type": "Ecosystem" },
+    { "title": "SATREPS", "desc": "International joint research funding for global issues.", "link": "https://www.jst.go.jp/global/english/", "type": "Funding" },
+    { "title": "JICA AI Cooperation", "desc": "AI talent development & curriculum support.", "link": "https://www.jica.go.jp/english/", "type": "Skills" },
+    { "title": "JICA KCCP", "desc": "Technical training in ICT, digital policy & project planning.", "link": "https://www.jica.go.jp/english/our_work/types_of_assistance/tech/acceptance/index.html", "type": "Skills" },
+    { "title": "Studentpreneur Africa Network", "desc": "Platform supporting student-led startups with mentorship & funding.", "link": "https://studentpreneurafrica.com/", "type": "Ecosystem" },
+    { "title": "YADEN East Africa", "desc": "Youth, Arts, Development & Entrepreneurship Network.", "link": "https://yaden.org/", "type": "Ecosystem" },
+    { "title": "East Africa Entrepreneurs Association", "desc": "Regional network for entrepreneurs across EAC.", "link": "https://eaentrepreneurs.org/", "type": "Ecosystem" },
+    { "title": "Commonwealth Alliance of Young Entrepreneurs", "desc": "Connecting young entrepreneurs across East Africa.", "link": "https://thecommonwealth.org/caye", "type": "Ecosystem" },
+    { "title": "dSkills@EA Innovators Sprint Up", "desc": "Regional entrepreneurial training for students.", "link": "https://dskills.iucea.org/", "type": "Skills" },
+    { "title": "ANDE Global East Africa", "desc": "Network of development entrepreneurs.", "link": "https://andeglobal.org/", "type": "Ecosystem" },
+    { "title": "Digital Opportunity Trust (DOT)", "desc": "Youth entrepreneurship & leadership training.", "link": "https://www.dotrust.org/", "type": "Skills" }
   ],
   "global_resources": [
     { "title": "ITU", "desc": "Telecom/ICT standards & policy.", "link": "https://www.itu.int/", "type": "Policy/Regulation", "gsa_member": true },
@@ -54,7 +70,6 @@
     { "title": "ADPList", "desc": "Free mentorship platform.", "link": "https://adplist.org/", "type": "Ecosystem" },
     { "title": "MicroMentor", "desc": "Business mentoring by Mercy Corps.", "link": "https://micromentor.org/", "type": "Ecosystem" },
     { "title": "CareerVillage", "desc": "Crowdsourced career advice.", "link": "https://www.careervillage.org/", "type": "Ecosystem" },
-    { "title": "AIESEC", "desc": "Youth leadership development.", "link": "https://aiesec.org/", "type": "Ecosystem" },
     { "title": "AIESEC", "desc": "Youth leadership development and peer coaching.", "link": "https://aiesec.org/", "type": "Ecosystem" },
     { "title": "KPMG Mentoring", "desc": "Cohort-based professional mentoring.", "link": "https://home.kpmg/xx/en/home/insights/2022/03/unesco-and-kpmg-join-forces.html", "type": "Ecosystem", "gsa_member": true },
     { "title": "Tony Elumelu Foundation", "desc": "Entrepreneurship funding & training.", "link": "https://www.tonyelumelufoundation.org/", "type": "Funding" },
@@ -85,12 +100,16 @@
     { "title": "GSMA Mobile Economy", "desc": "Mobile industry data.", "link": "https://www.gsma.com/mobileeconomy/", "type": "Data/Research" },
     { "title": "UN Data", "desc": "Global statistics.", "link": "https://data.un.org/", "type": "Data/Research" },
     { "title": "YouthForesight", "desc": "Knowledge platform by GenU & Decent Jobs for Youth.", "link": "https://www.youthforesight.org/", "type": "Data/Research" },
+    { "title": "World Bank Skills Data", "desc": "Skills demand and labor market indicators.", "link": "https://datatopics.worldbank.org/education/w/skills", "type": "Data/Research" },
+    { "title": "UNESCO UIS", "desc": "Institute for Statistics: Education & Science data.", "link": "http://uis.unesco.org/", "type": "Data/Research" },
     { "title": "Decent Jobs for Youth", "desc": "Global alliance for youth employment.", "link": "https://www.decentjobsforyouth.org/", "type": "Ecosystem" },
+    { "title": "ILO Youth Employment", "desc": "Toolkits for skills mismatch & apprenticeships.", "link": "https://www.ilo.org/global/topics/youth-employment/lang--en/index.htm", "type": "Policy/Regulation" },
     { "title": "S4YE Knowledge Repository", "desc": "World Bank youth employment tools.", "link": "https://www.s4ye.org/", "type": "Data/Research" },
     { "title": "ILO SIYB", "desc": "Start and Improve Your Business training.", "link": "https://www.ilo.org/empent/areas/start-and-improve-your-business/lang--en/index.htm", "type": "Skills" },
     { "title": "Passport to Success", "desc": "IYF life skills curriculum.", "link": "https://passporttosuccess.org/", "type": "Skills" },
     { "title": "Hult Prize", "desc": "Student entrepreneurship competition.", "link": "https://www.hultprize.org/", "type": "Funding" },
-    { "title": "TechWomen", "desc": "Mentorship for women in STEM.", "link": "https://www.techwomen.org/", "type": "Ecosystem" }
+    { "title": "TechWomen", "desc": "Mentorship for women in STEM.", "link": "https://www.techwomen.org/", "type": "Ecosystem" },
+    { "title": "Oracle Academy", "desc": "Global philanthropic tech education program.", "link": "https://academy.oracle.com/", "type": "Ecosystem" }
   ],
   "country_resources": {
     "Kenya": {
@@ -111,7 +130,9 @@
         { "title": "Junior Achievement Kenya", "desc": "Youth entrepreneurship education.", "link": "https://jakenya.org/" },
         { "title": "Kenya Skills Hub", "desc": "Post-training & skills development portal.", "link": "https://posttraining.go.ke/" },
         { "title": "Ustawi Africa", "desc": "Entrepreneurship & employability training.", "link": "https://ustawiafrica.org/" },
-        { "title": "KeNIA", "desc": "Kenya National Innovation Agency mentorship.", "link": "https://www.innovationagency.go.ke/" }
+        { "title": "KeNIA", "desc": "Kenya National Innovation Agency mentorship.", "link": "https://www.innovationagency.go.ke/" },
+        { "title": "EldoHub", "desc": "Innovation hub & digital skills academy in Eldoret.", "link": "https://eldohub.co.ke/", "type": "Ecosystem" },
+        { "title": "Kenya Private Sector Alliance (KEPSA)", "desc": "Apex body for private sector, implementing Ajira Digital for youth employment." }
       ],
       "communities": [
         { "title": "Kenya Youth Mentorship Assoc.", "desc": "Youth mentorship network.", "link": "https://kyma.co.ke/" },
@@ -121,7 +142,8 @@
         { "title": "Amref Int. Univ. Alumni", "desc": "Health and development alumni network.", "link": "https://amref.ac.ke/" },
         { "title": "Chevening Alumni Kenya", "desc": "UK government scholarship alumni.", "link": "https://www.chevening.org/alumni/" },
         { "title": "KUCCPS Career Guidance", "desc": "Placement & career guidance resources.", "link": "https://students.kuccps.net/" },
-        { "title": "Women in STEAM Initiative", "desc": "Mentorship & clubs for girls.", "link": "https://womeninsteam.co.ke/" }
+        { "title": "Women in STEAM Initiative", "desc": "Mentorship & clubs for girls.", "link": "https://womeninsteam.co.ke/" },
+        { "title": "Sasakazi", "desc": "Tech mentorship & job placement network.", "link": "https://sasakazi.com/", "type": "Mentorship" }
       ],
       "funding": [
         { "title": "Hustler Fund", "desc": "Digital financial inclusion for individuals and MSMEs.", "link": "https://hustlerfund.go.ke/" },
@@ -138,13 +160,20 @@
         { "title": "Topowa Youth Mentoring", "desc": "Youth empowerment & mentorship.", "link": "https://www.topowayouth.org/" },
         { "title": "Trailblazers Mentoring", "desc": "Girl child empowerment.", "link": "https://trailblazersuganda.org/" },
         { "title": "LeadMinds Africa", "desc": "Leadership & mentorship.", "link": "https://leadmindsafrica.org/" },
+        { "title": "CEDA International", "desc": "Youth leadership & entrepreneurship training.", "link": "https://ceda-international.org/" },
         { "title": "Chevening Alumni Uganda", "desc": "UK Govt scholarships alumni.", "link": "https://www.chevening.org/alumni/" },
         { "title": "Peer to Peer Uganda", "desc": "Youth mentorship program.", "link": "https://peertopeerug.org/" },
         { "title": "YALI Uganda", "desc": "Leadership & alumni network.", "link": "https://yaliuganda.org/" },
-        { "title": "Makerere SPH Mentorship", "desc": "Public health & research mentorship.", "link": "https://sph.mak.ac.ug/" }
+        { "title": "Makerere SPH Mentorship", "desc": "Public health & research mentorship.", "link": "https://sph.mak.ac.ug/" },
+        { "title": "Refactory Academy", "desc": "Tech skilling, mentorship & placement hub.", "link": "https://refactory.academy/", "type": "Mentorship" }
       ],
       "hubs": [
-        { "title": "Ntawo Youth Skills Center", "desc": "Vocational skills training.", "link": "https://mglsd.go.ug/" }
+        { "title": "Ntawo Youth Skills Center", "desc": "Vocational skills training.", "link": "https://mglsd.go.ug/" },
+        { "title": "Groundbreaker Talents", "desc": "Residential tech hub for women.", "link": "https://groundbreaker.org/", "type": "Skills" },
+        { "title": "UNEDI", "desc": "Entrepreneurship development institute.", "link": "https://mglsd.go.ug/", "type": "Ecosystem" },
+        { "title": "The Innovation Village", "desc": "Entrepreneurship & skilling ecosystem.", "link": "https://innovationvillage.co.ug/", "type": "Ecosystem" },
+        { "title": "Makerere Innovation Support Center", "desc": "University hub for research commercialization.", "link": "https://misc.mak.ac.ug/", "type": "Ecosystem" },
+        { "title": "Private Sector Foundation Uganda (PSFU)", "desc": "Apex body for private sector, implementing GROW and SDF projects.", "link": "https://www.psfuganda.org/", "type": "Ecosystem" }
       ],
       "funding": [
         { "title": "Emyooga", "desc": "Presidential initiative on wealth and job creation.", "link": "https://msc.co.ug/emyooga/" },
@@ -172,7 +201,8 @@
       "hubs": [
         { "title": "Skills for Employment (SET)", "desc": "Swiss contact project.", "link": "https://www.swisscontact.org/en/projects/set" },
         { "title": "Helvetas YES Project", "desc": "Youth Employment through Skills Enhancement.", "link": "https://www.helvetas.org/en/tanzania/what-we-do/youth-employment" },
-        { "title": "Empower Academy", "desc": "Skills development & corporate training.", "link": "https://empower.co.tz/", "type": "Skills" }
+        { "title": "Empower Academy", "desc": "Skills development & corporate training.", "link": "https://empower.co.tz/", "type": "Skills" },
+        { "title": "Buni Hub", "desc": "Innovation & technology hub.", "link": "https://bunihub.or.tz/", "type": "Ecosystem" }
       ],
       "funding": [
         { "title": "Youth Development Fund", "desc": "Loans for youth groups and entrepreneurs.", "link": "https://www.kazi.go.tz/" }
@@ -192,7 +222,10 @@
       "hubs": [
         { "title": "Akazi Kanoze Access", "desc": "Employability skills & links to work.", "link": "https://akazikanoze.org/" },
         { "title": "Harambee Rwanda", "desc": "Youth employment accelerator.", "link": "https://www.harambee.rw/" },
-        { "title": "YEGO Centers", "desc": "Youth Empowerment for Global Opportunity.", "link": "https://www.nyc.gov.rw/" }
+        { "title": "YEGO Centers", "desc": "Youth Empowerment for Global Opportunity.", "link": "https://www.nyc.gov.rw/" },
+        { "title": "kLab", "desc": "Tech innovation & mentorship hub.", "link": "https://klab.rw/", "type": "Ecosystem" },
+        { "title": "FabLab Rwanda", "desc": "Digital fabrication and innovation lab.", "link": "http://www.fablab.rw/", "type": "Ecosystem" },
+        { "title": "Private Sector Federation (PSF)", "desc": "Umbrella organization for private sector, offering business development services.", "link": "https://psf.org.rw/", "type": "Ecosystem" }
       ],
       "communities": [
         { "title": "FAWE Rwanda", "desc": "Women educationalists.", "link": "https://www.fawerwa.org/" },
@@ -215,6 +248,9 @@
     "South Sudan": {
       "communities": [
         { "title": "BUSSSA Mentorship", "desc": "Student association support.", "link": "https://www.facebook.com/BUSSSA/" }
+      ],
+      "hubs": [
+        { "title": "Koneta Hub", "desc": "Innovation & digital skills hub.", "link": "https://konetahub.org/", "type": "Ecosystem" }
       ]
     },
     "Burundi": {

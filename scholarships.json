@@ -178,5 +178,65 @@
     "deadline": "Bi-annual",
     "link": "https://www.eac.int/",
     "desc": "Scholarships for Master's students in Mathematics, Engineering, Informatics, Science, Technology and Business Science."
+  },
+  {
+    "id": "aid_016",
+    "name": "ABE Initiative",
+    "provider": "JICA",
+    "type": "Scholarship",
+    "coverage": "Full (Master's + Internship)",
+    "country": "Regional",
+    "target": "Master's",
+    "deadline": "Annual",
+    "link": "https://www.jica.go.jp/english/countries/africa/internship.html",
+    "desc": "Master's Degree and Internship Program of African Business Education Initiative for Youth, bridging Africa-Japan industry networks."
+  },
+  {
+    "id": "aid_017",
+    "name": "AfDB ENABLE Youth",
+    "provider": "African Development Bank",
+    "type": "Grant",
+    "coverage": "Incubation + Seed Funding",
+    "country": "Regional",
+    "target": "Agripreneurs",
+    "deadline": "Rolling",
+    "link": "https://www.afdb.org/en/topics-and-sectors/initiatives-partnerships/enable-youth",
+    "desc": "Empowering Novel Agri-Business-Led Employment. Provides incubation and financing for youth in agriculture."
+  },
+  {
+    "id": "aid_018",
+    "name": "TEF Seed Capital",
+    "provider": "Tony Elumelu Foundation",
+    "type": "Grant",
+    "coverage": "$5,000 Seed Capital",
+    "country": "Regional",
+    "target": "Entrepreneurs",
+    "deadline": "Annual (March)",
+    "link": "https://www.tonyelumelufoundation.org/",
+    "desc": "Non-refundable seed capital for African entrepreneurs who complete the TEF training programme."
+  },
+  {
+    "id": "aid_019",
+    "name": "Skills Development Facility (SDF)",
+    "provider": "PSFU / World Bank",
+    "type": "Grant",
+    "coverage": "Training Costs (Subsidized)",
+    "country": "Uganda",
+    "target": "Employees / Interns",
+    "deadline": "Call for Proposals",
+    "link": "https://www.psfuganda.org/sdf/",
+    "desc": "Grants to support short-term skills training for employees, interns, and entrepreneurs to boost productivity and competitiveness."
+  },
+  {
+    "id": "aid_020",
+    "name": "Skills Development Fund (SDF)",
+    "provider": "RDB / World Bank",
+    "type": "Grant",
+    "coverage": "Tuition / Training Costs",
+    "country": "Rwanda",
+    "target": "Youth / SMEs",
+    "deadline": "Periodic Calls",
+    "link": "https://sdfrwanda.rw/",
+    "desc": "Funding to minimize the skills gap by covering training costs for youth and employees in priority sectors."
   }
 ]
