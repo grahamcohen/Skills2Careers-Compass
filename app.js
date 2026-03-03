@@ -8468,7 +8468,7 @@ window.toggleCareerHub = function() {
                         <div>
                             <h3 class="text-base font-bold text-slate-800 mb-1">Navigate High Growth Sectors</h3>
                             <p class="text-xs text-slate-500 leading-relaxed">
-                                Select a sector and country to access real-time labour market data and investment trends. Open tabs for sector-specific market intelligence, details on occupations and skills in demand, and emerging entrepreneurship opportunities.
+                                Select a sector and country to access real-time data on labour markets and investment trends. Open tabs for sector-specific market intelligence, details on occupations and skills in demand, and emerging entrepreneurship opportunities.
                              </p>
                         </div>
                         
