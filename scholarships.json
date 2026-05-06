@@ -169,15 +169,15 @@
   },
   {
     "id": "aid_015",
-    "name": "EAC Scholarship Programme",
-    "provider": "EAC / KfW",
+    "name": "EAC Scholarship Programme – Phase II (2026 Intake)",
+    "provider": "IUCEA / KfW",
     "type": "Scholarship",
     "coverage": "Full",
     "country": "Regional",
     "target": "Master's",
-    "deadline": "Bi-annual",
+    "deadline": "2026",
     "link": "https://www.eac.int/",
-    "desc": "Scholarships for Master's students in Mathematics, Engineering, Informatics, Science, Technology and Business Science."
+    "desc": "Fully-funded Master's scholarships for regional mobility across all 8 EAC partner states in Mathematics, Engineering, Technology (STEM), Informatics, and Business Science."
   },
   {
     "id": "aid_016",
@@ -238,5 +238,29 @@
     "deadline": "Periodic Calls",
     "link": "https://sdfrwanda.rw/",
     "desc": "Funding to minimize the skills gap by covering training costs for youth and employees in priority sectors."
+  },
+  {
+    "id": "aid_021",
+    "name": "Green Energy Africa Fund 2026",
+    "provider": "African Development Bank",
+    "type": "Grant",
+    "coverage": "Seed Funding ($10,000 - $50,000)",
+    "country": "Regional",
+    "target": "SMEs / Entrepreneurs",
+    "deadline": "Annual (October)",
+    "link": "https://www.afdb.org/",
+    "desc": "Funding for early-stage renewable energy and clean-tech startups across East Africa."
+  },
+  {
+    "id": "aid_022",
+    "name": "Women in Tech East Africa Scholarship",
+    "provider": "Safaricom & Vodafone",
+    "type": "Scholarship",
+    "coverage": "Full Tuition + Tech Kit",
+    "country": "Regional",
+    "target": "Undergraduate",
+    "deadline": "Annual (May)",
+    "link": "https://www.safaricom.co.ke/",
+    "desc": "Empowering young women in STEM fields with full scholarships and mentorship opportunities."
   }
 ]

@@ -21,7 +21,7 @@
     { "title": "IUCEA", "desc": "Universities directory (regional visibility).", "link": "https://www.iucea.org/", "type": "Education" },
     { "title": "YALI RLC East Africa", "desc": "Leadership training & alumni network.", "link": "https://www.yalieastafrica.org/", "type": "Skills" },
     { "title": "YouthConnekt", "desc": "Youth empowerment & opportunities.", "link": "https://www.youthconnekt.org/", "type": "Ecosystem" },
-    { "title": "Educate!", "desc": "Skills for youth employment.", "link": "https://www.experienceeducate.org/", "type": "Skills" },
+    { "title": "Educate!", "desc": "Youth leadership & entrepreneurship skills in Kenya, Rwanda, Uganda, and Tanzania.", "link": "https://www.experienceeducate.org/", "type": "Skills" },
     { "title": "Helvetas", "desc": "Skills development & education.", "link": "https://www.helvetas.org/", "type": "Ecosystem" },
     { "title": "Beta Mentor Africa", "desc": "Mentorship for African youth.", "link": "https://betamentor.africa/", "type": "Ecosystem" },
     { "title": "DAI", "desc": "Global development company supporting various projects.", "link": "https://www.dai.com/", "type": "Funding" },
@@ -46,13 +46,19 @@
     { "title": "SATREPS", "desc": "International joint research funding for global issues.", "link": "https://www.jst.go.jp/global/english/", "type": "Funding" },
     { "title": "JICA AI Cooperation", "desc": "AI talent development & curriculum support.", "link": "https://www.jica.go.jp/english/", "type": "Skills" },
     { "title": "JICA KCCP", "desc": "Technical training in ICT, digital policy & project planning.", "link": "https://www.jica.go.jp/english/our_work/types_of_assistance/tech/acceptance/index.html", "type": "Skills" },
-    { "title": "Studentpreneur Africa Network", "desc": "Platform supporting student-led startups with mentorship & funding.", "link": "https://studentpreneurafrica.com/", "type": "Ecosystem" },
-    { "title": "YADEN East Africa", "desc": "Youth, Arts, Development & Entrepreneurship Network.", "link": "https://yaden.org/", "type": "Ecosystem" },
+    { "title": "Studentpreneur Africa Network", "desc": "Pan-African network connecting student startups with mentorship, events, and funding.", "link": "https://studentpreneurafrica.com/", "type": "Ecosystem" },
+    { "title": "YADEN East Africa", "desc": "Youth, Arts, Development & Entrepreneurship Network across East Africa.", "link": "https://yaden.org/", "type": "Ecosystem" },
     { "title": "East Africa Entrepreneurs Association", "desc": "Regional network for entrepreneurs across EAC.", "link": "https://eaentrepreneurs.org/", "type": "Ecosystem" },
     { "title": "Commonwealth Alliance of Young Entrepreneurs", "desc": "Connecting young entrepreneurs across East Africa.", "link": "https://thecommonwealth.org/caye", "type": "Ecosystem" },
     { "title": "dSkills@EA Innovators Sprint Up", "desc": "Regional entrepreneurial training for students.", "link": "https://dskills.iucea.org/", "type": "Skills" },
     { "title": "ANDE Global East Africa", "desc": "Network of development entrepreneurs.", "link": "https://andeglobal.org/", "type": "Ecosystem" },
-    { "title": "Digital Opportunity Trust (DOT)", "desc": "Youth entrepreneurship & leadership training.", "link": "https://www.dotrust.org/", "type": "Skills" }
+    { "title": "Digital Opportunity Trust (DOT)", "desc": "Tech & entrepreneurship training in Kenya, Tanzania, Rwanda, Ethiopia.", "link": "https://www.dotrust.org/", "type": "Skills" },
+    { "title": "CEDA International", "desc": "Entrepreneurship education & mentoring across East Africa.", "link": "https://ceda-international.org/", "type": "Ecosystem" },
+    { "title": "Ashoka East Africa", "desc": "Social entrepreneurship ecosystem for young changemakers.", "link": "https://www.ashoka.org/en-ke", "type": "Ecosystem" },
+    { "title": "SET4Jobs (World Bank & IUCEA)", "desc": "Skills for Economic Transformation and Jobs program aligning TVET/Uni with private sector.", "link": "https://www.iucea.org/set4jobs", "type": "Funding" },
+    { "title": "EAC Regional Capability Network (Health)", "desc": "Harmonizing health workforce and local manufacturing across EAC.", "link": "https://africacdc.org/", "type": "Policy/Regulation" },
+    { "title": "IUCEA Vacancy Portal", "desc": "Regional roles like Research Coordinators and Project Managers.", "link": "https://www.iucea.org/vacancies", "type": "Jobs" },
+    { "title": "East Africa Digital Innovation Week", "desc": "Annual gathering of tech hubs, startups, and policymakers.", "link": "https://www.ea-innovationweek.org/", "type": "Event" }
   ],
   "global_resources": [
     { "title": "ITU", "desc": "Telecom/ICT standards & policy.", "link": "https://www.itu.int/", "type": "Policy/Regulation", "gsa_member": true },
@@ -109,7 +115,11 @@
     { "title": "Passport to Success", "desc": "IYF life skills curriculum.", "link": "https://passporttosuccess.org/", "type": "Skills" },
     { "title": "Hult Prize", "desc": "Student entrepreneurship competition.", "link": "https://www.hultprize.org/", "type": "Funding" },
     { "title": "TechWomen", "desc": "Mentorship for women in STEM.", "link": "https://www.techwomen.org/", "type": "Ecosystem" },
-    { "title": "Oracle Academy", "desc": "Global philanthropic tech education program.", "link": "https://academy.oracle.com/", "type": "Ecosystem" }
+    { "title": "Oracle Academy", "desc": "Global philanthropic tech education program.", "link": "https://academy.oracle.com/", "type": "Ecosystem" },
+    { "title": "Africa Youth Employment Outlook 2026", "desc": "Labor trends and Youth Employment Clock by Mastercard Foundation.", "link": "https://mastercardfdn.org/research/", "type": "Data/Research" },
+    { "title": "Talenteum", "desc": "Remote-work Employer of Record (EOR) service.", "link": "https://www.talenteum.africa/", "type": "Jobs" },
+    { "title": "Africa Climate Summit", "desc": "Global and regional stakeholders discussing green tech and climate resilience.", "link": "https://africaclimatesummit.org/", "type": "Event" }
+    { "title": "TechAfrica News", "desc": "Safaricom & AWS $500M AI Infrastructure and Upskilling Partnership.", "link": "https://www.techafricanews.com/", "type": "Data/Research" }
   ],
   "country_resources": {
     "Kenya": {
@@ -132,7 +142,10 @@
         { "title": "Ustawi Africa", "desc": "Entrepreneurship & employability training.", "link": "https://ustawiafrica.org/" },
         { "title": "KeNIA", "desc": "Kenya National Innovation Agency mentorship.", "link": "https://www.innovationagency.go.ke/" },
         { "title": "EldoHub", "desc": "Innovation hub & digital skills academy in Eldoret.", "link": "https://eldohub.co.ke/", "type": "Ecosystem" },
-        { "title": "Kenya Private Sector Alliance (KEPSA)", "desc": "Apex body for private sector, implementing Ajira Digital for youth employment." }
+        { "title": "Kenya Private Sector Alliance (KEPSA)", "desc": "Apex body for private sector, implementing Ajira Digital for youth employment." },
+        { "title": "iHub", "desc": "Innovation hub & community for technologists.", "link": "https://ihub.co.ke/" },
+        { "title": "JHUB (JKUAT)", "desc": "University digital innovation hub.", "link": "http://jhub.jkuat.ac.ke/" },
+        { "title": "AkiraChix", "desc": "Tech training for young women.", "link": "https://akirachix.com/" }
       ],
       "communities": [
         { "title": "Kenya Youth Mentorship Assoc.", "desc": "Youth mentorship network.", "link": "https://kyma.co.ke/" },
@@ -160,7 +173,6 @@
         { "title": "Topowa Youth Mentoring", "desc": "Youth empowerment & mentorship.", "link": "https://www.topowayouth.org/" },
         { "title": "Trailblazers Mentoring", "desc": "Girl child empowerment.", "link": "https://trailblazersuganda.org/" },
         { "title": "LeadMinds Africa", "desc": "Leadership & mentorship.", "link": "https://leadmindsafrica.org/" },
-        { "title": "CEDA International", "desc": "Youth leadership & entrepreneurship training.", "link": "https://ceda-international.org/" },
         { "title": "Chevening Alumni Uganda", "desc": "UK Govt scholarships alumni.", "link": "https://www.chevening.org/alumni/" },
         { "title": "Peer to Peer Uganda", "desc": "Youth mentorship program.", "link": "https://peertopeerug.org/" },
         { "title": "YALI Uganda", "desc": "Leadership & alumni network.", "link": "https://yaliuganda.org/" },
@@ -173,7 +185,8 @@
         { "title": "UNEDI", "desc": "Entrepreneurship development institute.", "link": "https://mglsd.go.ug/", "type": "Ecosystem" },
         { "title": "The Innovation Village", "desc": "Entrepreneurship & skilling ecosystem.", "link": "https://innovationvillage.co.ug/", "type": "Ecosystem" },
         { "title": "Makerere Innovation Support Center", "desc": "University hub for research commercialization.", "link": "https://misc.mak.ac.ug/", "type": "Ecosystem" },
-        { "title": "Private Sector Foundation Uganda (PSFU)", "desc": "Apex body for private sector, implementing GROW and SDF projects.", "link": "https://www.psfuganda.org/", "type": "Ecosystem" }
+        { "title": "Private Sector Foundation Uganda (PSFU)", "desc": "Apex body for private sector, implementing GROW and SDF projects.", "link": "https://www.psfuganda.org/", "type": "Ecosystem" },
+        { "title": "Hive Colab", "desc": "Collaborative workspace & incubator for tech startups.", "link": "https://hivecolab.org/" }
       ],
       "funding": [
         { "title": "Emyooga", "desc": "Presidential initiative on wealth and job creation.", "link": "https://msc.co.ug/emyooga/" },
@@ -202,7 +215,8 @@
         { "title": "Skills for Employment (SET)", "desc": "Swiss contact project.", "link": "https://www.swisscontact.org/en/projects/set" },
         { "title": "Helvetas YES Project", "desc": "Youth Employment through Skills Enhancement.", "link": "https://www.helvetas.org/en/tanzania/what-we-do/youth-employment" },
         { "title": "Empower Academy", "desc": "Skills development & corporate training.", "link": "https://empower.co.tz/", "type": "Skills" },
-        { "title": "Buni Hub", "desc": "Innovation & technology hub.", "link": "https://bunihub.or.tz/", "type": "Ecosystem" }
+        { "title": "Buni Hub", "desc": "Innovation & technology hub.", "link": "https://bunihub.or.tz/", "type": "Ecosystem" },
+        { "title": "Ifakara Innovation Hub", "desc": "Health & tech innovation hub.", "link": "https://ifakarahub.or.tz/" }
       ],
       "funding": [
         { "title": "Youth Development Fund", "desc": "Loans for youth groups and entrepreneurs.", "link": "https://www.kazi.go.tz/" }

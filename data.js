@@ -29,8 +29,8 @@
                     jobTrend: "+40% YoY",
                     investment: "$500M (Hub)",
                     skillsDemand: "Critical",
-                    demandContext: "Regional Tech Hub",
-                    hiring: "Microsoft ADC, Safaricom, Equity Bank",
+                    demandContext: "Massive corporate shift to Cloud-Native & GenAI",
+                    hiring: "Safaricom (Fintech 2.0), Microsoft ADC, Equity Bank",
                     hotspots: "Nairobi (Westlands/Kilimani)",
                     source: "World Bank Enterprise Survey"
                 },
@@ -472,7 +472,7 @@ const roleEmployers = {
     "Cybersecurity Analyst": "Financial Institutions, Govt Agencies, Tech Firms",
     "Frontend Dev": "Digital Agencies, Tech Startups, Corporations",
     "Backend Dev": "Product Companies, Banks, Mobile Operators",
-    "AI/ML Engineer": "Innovation Hubs, Research Labs, Tech Giants",
+    "AI/ML Engineer": "Telcos (Safaricom AI Labs), Fintechs, Microsoft ADC",
     "UX/UI Designer": "FinTechs, Digital Agencies, Large Corporates",
     "Product Manager": "SaaS Companies, Banks, Telcos",
     "DevOps Engineer": "Scale-up Startups, Cloud Providers, Enterprise IT",
@@ -745,7 +745,7 @@ const roleToolsMap = {
     "Cybersecurity Analyst": ["Wireshark", "Metasploit", "SIEM Tools (Splunk)", "Firewalls", "Nessus"],
     "Frontend Dev": ["VS Code", "Git/GitHub", "Browser DevTools", "Figma (View Mode)", "Package Managers (npm)"],
     "Backend Dev": ["Postman", "Docker", "Database Clients (DBeaver)", "IDE (VS Code)", "Git"],
-    "AI/ML Engineer": ["TensorFlow / PyTorch", "Jupyter Notebooks", "CUDA (GPUs)", "Hugging Face", "MLOps Tools (MLflow)"],
+    "AI/ML Engineer": ["Amazon SageMaker", "Amazon Bedrock", "TensorFlow / PyTorch", "Hugging Face", "MLOps (MLflow)"],
     "UX/UI Designer": ["Figma", "Adobe XD", "Miro", "UserTesting.com", "Sketch"],
     "Product Manager": ["Jira / Linear", "Notion", "Amplitude / Mixpanel", "Figma (View)", "Slack"],
     "DevOps Engineer": ["Jenkins / GitLab", "Docker", "Kubernetes", "Prometheus / Grafana", "AWS/Azure CLI"],
@@ -1904,8 +1904,8 @@ const venturePlaybooks = {
 // --- 37. Pathway Tools Interest Map ---
 const pathwayToolsInterestMap = {
     'digital': {
-        'code': ['Docker', 'GraphQL', 'Next.js'],
-        'data': ['TensorFlow', 'Tableau', 'dbt'],
+        'code': ['Docker', 'Amazon Bedrock', 'Next.js'],
+        'data': ['Amazon SageMaker', 'TensorFlow', 'dbt'],
         'creative': ['Figma (Adv)', 'Webflow', 'Adobe XD']
     },
     'energy': {
@@ -2239,13 +2239,17 @@ const libraryResources = [
 const employerConnectEvents = [
     { title: "Annual Career Fair", date: "Oct 15, 2025", type: "Virtual" },
     { title: "East Africa Graduate Recruitment Drive", date: "Nov 02, 2025", type: "Hybrid" },
-    { title: "Industry Networking Night", date: "Monthly", type: "In-Person" }
+    { title: "Industry Networking Night", date: "Monthly", type: "In-Person" },
+    { title: "EAC Tech & Innovation Summit", date: "Mar 20, 2026", type: "Hybrid" },
+    { title: "Green Energy Jobs Expo", date: "Jun 10, 2026", type: "In-Person" }
 ];
 
 // --- 52. Alumni Networks ---
 const alumniNetworks = [
     { name: "Sector Professionals EA", platform: "LinkedIn" },
-    { name: "University Alumni Network", platform: "Portal" }
+    { name: "University Alumni Network", platform: "Portal" },
+    { name: "Mastercard Foundation Alumni Network", platform: "Community Hub" },
+    { name: "East Africa Women in Tech Alumni", platform: "LinkedIn" }
 ];
 
 // --- 53. Specific Mentors (Mock Data) ---

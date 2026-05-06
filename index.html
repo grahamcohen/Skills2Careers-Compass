@@ -120,7 +120,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 
                 <p class="text-sm md:text-base text-slate-500 mb-6 leading-relaxed max-w-2xl mx-auto">
                     Your tool for navigating <span class="font-semibold text-slate-900">the future of work</span> and <span class="font-semibold text-slate-900">lifelong learning</span> 
-                    in green, digital and AI economies. In 5 minutes, you'll have a shortlist of in-demand occupations and entrepreneurship opportunities across high growth sectors, a solid knowledge of skills requirements, and links to relevant training pathways.
+                    in green, digital and AI economies. In 5 minutes, you'll have a shortlist of in-demand occupations and entrepreneurship opportunities across high growth sectors, a solid knowledge of skills requirements, and links to targeted training pathways and careers support.
                 </p>
 
                 <!-- Stats Container (Populated by app.js) -->
@@ -133,7 +133,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         
 
         <div class="text-center mb-10">
-            <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-2 tracking-tight">Start Navigating</h3>
+            <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-2 tracking-tight">Start Navigating</h2>
             <p class="text-slate-500 max-w-xl mx-auto text-sm leading-relaxed">Select a pathway below to start your journey.</p>
         </div>
 
@@ -164,21 +164,22 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 </div>
                 <div class="flex-1 overflow-y-auto custom-scroll bg-white p-4 md:p-8 space-y-6 md:space-y-8">
                     <div id="modal-snapshot-section"></div>
+                    <div id="modal-demand-section"></div>
                     <section>
-                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-2">
                             <span class="w-6 h-6 rounded bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">1</span> Role Snapshot
                         </h3>
                         <div id="occ-desc" class="text-slate-800 text-base leading-relaxed font-medium">Description loading...</div>
                     </section>
-                    <div id="modal-demand-section"></div>
                     <section>
-                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-2">
                             <span class="w-6 h-6 rounded bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold">2</span> Typical Skills Required
                         </h3>
                         <div id="occ-skills-list" class="flex flex-wrap gap-2"></div>
                     </section>
                     <div id="modal-related-section"></div>
                     <div id="modal-extra-section"></div>
+                    <div id="modal-pathway-section"></div>
                     <section id="occ-fit-section"></section>
                 </div>
                 <div id="occ-modal-footer" class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end"></div>
@@ -258,7 +259,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </div>
         </div>
 
-        <div id="unified-hub-modal" class="fixed inset-y-0 right-0 z-[100] w-full max-w-xl bg-white shadow-2xl flex flex-col transition-transform duration-300 translate-x-full">
+       <div id="unified-hub-modal" class="fixed inset-y-0 right-0 z-[100] w-full max-w-xl md:max-w-2xl bg-white shadow-2xl flex flex-col transition-transform duration-300 translate-x-full">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white shrink-0">
                 <div>
                     <h2 id="pp-header-title" class="text-xl font-bold text-slate-900 flex items-center gap-2"><i data-lucide="layers" class="w-6 h-6 text-indigo-600"></i> Skills & Training Hub</h2>
@@ -344,6 +345,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                         </div>
                     </div>
                 </div>
+
+                <!-- TAB: TOP SKILLS (New) -->
+                <div id="pp-top-skills" class="pp-view-content hidden space-y-6"></div>
 
                 <!-- TAB 3: COURSES (Consolidated from Training Hub) -->
                 <div id="pp-courses" class="pp-view-content hidden space-y-6">
@@ -569,7 +573,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
         <div id="career-hub-drawer" class="fixed inset-y-0 right-0 z-[95] w-full max-w-md bg-white shadow-2xl drawer flex flex-col translate-x-full">
             <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
-                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2"><i data-lucide="briefcase" class="w-5 h-5 text-indigo-600"></i> Career Tools Hub</h2>
+                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2"><i data-lucide="briefcase" class="w-5 h-5 text-indigo-600"></i> Careers Hub</h2>
                 <button onclick="toggleCareerHub()" class="p-2 bg-white rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors" aria-label="Close Careers Hub"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div id="career-hub-content" class="flex-1 overflow-y-auto p-5 space-y-6"></div>
@@ -577,7 +581,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
         <div id="community-hub-drawer" class="fixed inset-y-0 right-0 z-[95] w-full max-w-md bg-white shadow-2xl drawer flex flex-col translate-x-full">
             <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
-                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-pink-600"></i> Communities & Networks</h2>
+                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-pink-600"></i> Careers Hub</h2>
                 <button onclick="toggleCommunityHub()" class="p-2 bg-white rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors" aria-label="Close Community Hub"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div id="community-hub-content" class="flex-1 overflow-y-auto p-5 space-y-6"></div>
