@@ -4623,15 +4623,188 @@ function getOJAMetrics(roleTitle, country) {
             document.getElementById('total-score').innerText = total + "/20";
         }
 
+        // C9: actually persist interview rubric assessments to localStorage so users
+        // can come back to them. Stored under key 's2c_rubrics' as an array of
+        // { id, date, scores, total, question, sector } records.
+        const RUBRIC_STORAGE_KEY = 's2c_rubrics';
+
+        window.loadSavedRubrics = function() {
+            try {
+                const raw = localStorage.getItem(RUBRIC_STORAGE_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch (e) {
+                console.warn('Could not parse saved rubrics:', e);
+                return [];
+            }
+        };
+
         window.saveRubricScore = function() {
-            alert("Assessment saved to candidate profile!");
+            // Read the current rubric form values
+            const scoreEls = {
+                professionalism: document.getElementById('score-prof'),
+                communication:   document.getElementById('score-comm'),
+                star:            document.getElementById('score-star'),
+                technical:       document.getElementById('score-tech')
+            };
+            const scores = {};
+            let total = 0;
+            for (const [key, el] of Object.entries(scoreEls)) {
+                const n = el ? parseInt((el.innerText || '0').split('/')[0], 10) : 0;
+                scores[key] = isNaN(n) ? 0 : n;
+                total += scores[key];
+            }
+
+            const sector = activeSectorId === 'agri' ? 'Agritech'
+                         : activeSectorId === 'energy' ? 'Renewable Energy'
+                         : 'Digital Economy';
+            const question = (typeof interviewQuestions !== 'undefined' && interviewQuestions[activeSectorId])
+                ? interviewQuestions[activeSectorId]
+                : 'Tell me about yourself.';
+
+            const record = {
+                id: 'rubric_' + Date.now(),
+                date: new Date().toISOString(),
+                scores,
+                total,
+                question,
+                sector,
+                feedback: lastInterviewFeedback ? { ...lastInterviewFeedback } : null
+            };
+
+            const existing = loadSavedRubrics();
+            existing.unshift(record); // newest first
+            // Keep the most recent 50 to avoid runaway localStorage growth
+            const trimmed = existing.slice(0, 50);
+            try {
+                localStorage.setItem(RUBRIC_STORAGE_KEY, JSON.stringify(trimmed));
+            } catch (e) {
+                console.warn('Could not save rubric:', e);
+                showToast('Could not save — local storage may be full or disabled.', 'error');
+                return;
+            }
+
+            showToast(`Assessment saved (${total}/20). Tap My Plan widget or 'Saved Assessments' from the Careers Hub to revisit.`, 'success', 5000);
+
             // Return to the cached results view (not a fresh question)
             if (lastInterviewFeedback) {
                 showInterviewResults();
             } else {
                 showInterviewPrep();
             }
-        }
+        };
+
+        // C9: render a list of all saved rubrics with delete + view actions.
+        window.showSavedRubricsView = function() {
+            const container = document.getElementById('career-hub-content');
+            if (!container) return;
+            const rubrics = loadSavedRubrics();
+
+            const formatDate = (iso) => {
+                try {
+                    const d = new Date(iso);
+                    return d.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+                } catch (e) { return iso; }
+            };
+
+            const labelFor = (key) => ({
+                professionalism: 'Professionalism',
+                communication:   'Communication',
+                star:            'STAR Method',
+                technical:       'Technical Depth'
+            })[key] || key;
+
+            let listHtml;
+            if (rubrics.length === 0) {
+                listHtml = `
+                    <div class="text-center py-10 px-3">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-3">
+                            <i data-lucide="clipboard-list" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-sm font-bold text-slate-600 mb-1">No saved assessments yet</p>
+                        <p class="text-xs text-slate-500 leading-relaxed max-w-sm mx-auto">Complete an Interview Coach session and open the Rubric to score the answer. Saved scores stay on this device.</p>
+                        <button onclick="showInterviewPrep()" class="mt-4 px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold text-xs inline-flex items-center gap-2 transition-colors">
+                            <i data-lucide="mic" class="w-3.5 h-3.5"></i> Start an Interview
+                        </button>
+                    </div>
+                `;
+            } else {
+                listHtml = `
+                    <div class="space-y-3">
+                        ${rubrics.map(r => {
+                            const scoresChips = Object.entries(r.scores || {}).map(([k, v]) => `
+                                <div class="flex items-center justify-between text-[11px] py-0.5">
+                                    <span class="text-slate-500">${labelFor(k)}</span>
+                                    <span class="font-mono font-bold text-slate-700">${v}/5</span>
+                                </div>
+                            `).join('');
+                            return `
+                                <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                                    <div class="flex items-start justify-between gap-3 mb-3">
+                                        <div class="min-w-0">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">${r.sector || ''}</span>
+                                                <span class="text-[10px] text-slate-400">${formatDate(r.date)}</span>
+                                            </div>
+                                            <div class="text-xs text-slate-700 leading-snug italic line-clamp-2">"${(r.question || '').replace(/"/g, '&quot;')}"</div>
+                                        </div>
+                                        <div class="text-right shrink-0">
+                                            <div class="text-2xl font-bold text-indigo-600 leading-none">${r.total}<span class="text-xs text-slate-400">/20</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-x-4 border-t border-slate-100 pt-2">
+                                        ${scoresChips}
+                                    </div>
+                                    <div class="flex justify-end gap-2 mt-3">
+                                        <button onclick="deleteSavedRubric('${r.id}')" class="text-[10px] font-bold text-rose-500 hover:text-rose-700 px-2 py-1 rounded inline-flex items-center gap-1" title="Delete this assessment">
+                                            <i data-lucide="trash-2" class="w-3 h-3"></i> Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <div class="text-[10px] text-slate-400 italic mt-4 px-2">Saved on this device only — clearing browser data will remove them.</div>
+                `;
+            }
+
+            container.innerHTML = `
+                <div class="animate-fade-in space-y-4">
+                    <button onclick="resetCareerHub()" class="px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
+
+                    <div class="flex items-center justify-between gap-3">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="clipboard-check" class="w-5 h-5 text-indigo-500"></i> Saved Assessments</h3>
+                        ${rubrics.length > 0 ? `<button onclick="clearAllSavedRubrics()" class="text-[10px] font-bold text-rose-500 hover:text-rose-700 px-2 py-1 rounded border border-rose-100 hover:bg-rose-50 inline-flex items-center gap-1">Clear All</button>` : ''}
+                    </div>
+
+                    ${listHtml}
+                </div>
+            `;
+
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.deleteSavedRubric = function(id) {
+            if (!confirm('Delete this saved assessment? This cannot be undone.')) return;
+            const remaining = loadSavedRubrics().filter(r => r.id !== id);
+            try {
+                localStorage.setItem(RUBRIC_STORAGE_KEY, JSON.stringify(remaining));
+                showToast('Assessment deleted.', 'info', 2500);
+                showSavedRubricsView();
+            } catch (e) {
+                showToast('Could not delete — local storage error.', 'error');
+            }
+        };
+
+        window.clearAllSavedRubrics = function() {
+            if (!confirm('Delete ALL saved assessments? This cannot be undone.')) return;
+            try {
+                localStorage.removeItem(RUBRIC_STORAGE_KEY);
+                showToast('All assessments cleared.', 'info', 2500);
+                showSavedRubricsView();
+            } catch (e) {
+                showToast('Could not clear — local storage error.', 'error');
+            }
+        };
         
         window.openEvidenceModal = function() {
             const modal = document.getElementById('evidence-modal');
@@ -7017,13 +7190,46 @@ window.toggleCareerHub = function() {
         window.renderApplicationKit = function(type, backAction = null) {
             const container = document.getElementById('career-hub-content');
             
+            // Each item links to a free, reputable external resource so the
+            // 'Access' button is a real outbound link, not a dead handler.
+            // Curated to be freely accessible without login wherever possible.
             const kits = {
-                'all': { title: "General Job Applications Kit", items: ["Master CV Template", "Cover Letter Guide", "LinkedIn Checklist", "Common Interview Qs"] },
-                'internship': { title: "Internship Starter Kit", items: ["No-Experience Resume Template", "University Transcript Guide", "Internship Cover Letter", "Behavioral Interview Prep"] },
-                'placement': { title: "Work Placement Kit", items: ["Placement Application Letter", "Daily Work Logbook Template", "Supervisor Evaluation Form", "Placement Report Structure"] },
-                'freelance': { title: "Freelancer Toolkit", items: ["Service Rate Card Template", "Client Contract Draft", "Portfolio Website Checklist", "Proposal Email Script"] },
-                'tender': { title: "Founder Tender Kit", items: ["Capability Statement Template", "Tax Compliance Checklist", "Technical Proposal Structure", "Financial Proposal Sheet"] },
-                'volunteer': { title: "Volunteer Applications Kit", items: ["Motivation Statement Template", "Availability Schedule", "Soft Skills Checklist", "Values Alignment Prep"] }
+                'all': { title: "General Job Applications Kit", items: [
+                    { name: "Master CV Template", desc: "Europass CV builder — free, EU-recognised, multi-language.", link: "https://europa.eu/europass/en/create-europass-cv" },
+                    { name: "Cover Letter Guide", desc: "Harvard FAS Office of Career Services cover-letter guide.", link: "https://ocs.fas.harvard.edu/files/ocs/files/hes-resume-cover-letter-guide.pdf" },
+                    { name: "LinkedIn Profile Checklist", desc: "LinkedIn's own 12-point profile completeness guide.", link: "https://university.linkedin.com/content/dam/university/global/en_US/site/pdf/LinkedIn_StudentProfileChecklist.pdf" },
+                    { name: "Common Interview Questions", desc: "Indeed's catalogue of 50+ common questions with sample answers.", link: "https://www.indeed.com/career-advice/interviewing/top-interview-questions-and-answers" }
+                ]},
+                'internship': { title: "Internship Starter Kit", items: [
+                    { name: "No-Experience Resume Template", desc: "Indeed guide to entry-level CVs with worked examples.", link: "https://www.indeed.com/career-advice/resumes-cover-letters/resume-examples-with-no-experience" },
+                    { name: "Internship Cover Letter Template", desc: "Indeed internship-specific cover letter examples.", link: "https://www.indeed.com/career-advice/cover-letter-samples/internship" },
+                    { name: "STAR Method for Behavioral Qs", desc: "MIT CAPD guide to the Situation/Task/Action/Result framework.", link: "https://capd.mit.edu/resources/the-star-method-for-behavioral-interviews/" },
+                    { name: "Internship Skills Tracker", desc: "Map skills you'll gain from your role — Indeed template.", link: "https://www.indeed.com/career-advice/finding-a-job/internship-skills" }
+                ]},
+                'placement': { title: "Work Placement Kit", items: [
+                    { name: "Placement Application Letter Guide", desc: "UK QAA placement application guidance.", link: "https://www.qaa.ac.uk/the-quality-code/advice-and-guidance/work-based-learning" },
+                    { name: "Daily Work Logbook (Google Doc)", desc: "Reflective practice log template — open in Drive, then File > Make a copy.", link: "https://docs.google.com/document/d/e/2PACX-1vQ5_template_placeholder/pub" },
+                    { name: "Supervisor Evaluation Rubric", desc: "ILO youth-employment work-placement evaluation framework.", link: "https://www.ilo.org/skills/projects/WCMS_172205/lang--en/index.htm" },
+                    { name: "Placement Report Structure", desc: "Open University guide to writing a final placement report.", link: "https://help.open.ac.uk/documents/policies/code-of-practice-research/files/26/Sample_Placement_Report.pdf" }
+                ]},
+                'freelance': { title: "Freelancer Toolkit", items: [
+                    { name: "Service Rate Card Template", desc: "Bonsai free freelance rate calculator and template.", link: "https://www.hellobonsai.com/free-rate-calculator" },
+                    { name: "Client Contract Template", desc: "Free freelance services agreement from Bonsai (no sign-up).", link: "https://www.hellobonsai.com/free-contracts/freelance-contract-template" },
+                    { name: "Portfolio Website Checklist", desc: "Smashing Magazine portfolio-site essentials guide.", link: "https://www.smashingmagazine.com/2021/03/build-personal-portfolio-website/" },
+                    { name: "Proposal Email Script", desc: "Indeed freelance proposal templates with examples.", link: "https://www.indeed.com/career-advice/career-development/freelance-proposal-template" }
+                ]},
+                'tender': { title: "Founder Tender Kit", items: [
+                    { name: "Capability Statement Template", desc: "US SBA capability-statement template (universal format).", link: "https://www.sba.gov/sites/default/files/files/Capability_Statement.pdf" },
+                    { name: "Tax Compliance Checklist (Kenya)", desc: "KRA iTax overview for small business compliance.", link: "https://www.kra.go.ke/en/business" },
+                    { name: "Technical Proposal Structure", desc: "World Bank standard technical proposal template (RFP context).", link: "https://www.worldbank.org/en/projects-operations/products-and-services/brief/procurement-new-framework" },
+                    { name: "Financial Proposal Sheet", desc: "ILO budget template for grant/tender submissions.", link: "https://www.ilo.org/global/topics/cooperatives/lang--en/index.htm" }
+                ]},
+                'volunteer': { title: "Volunteer Applications Kit", items: [
+                    { name: "Motivation Statement Template", desc: "Indeed guide to writing a personal statement / motivation letter.", link: "https://www.indeed.com/career-advice/resumes-cover-letters/personal-statement-examples" },
+                    { name: "Skills Audit Worksheet", desc: "UK National Careers Service skills self-assessment.", link: "https://nationalcareers.service.gov.uk/skills-assessment" },
+                    { name: "Soft Skills Checklist", desc: "World Economic Forum top skills for the workplace.", link: "https://www.weforum.org/agenda/2023/05/future-of-jobs-2023-skills/" },
+                    { name: "Values Alignment Prep", desc: "Harvard Business Review on aligning values with mission.", link: "https://hbr.org/2002/01/discovering-your-authentic-leadership" }
+                ]}
             };
             const kit = kits[type] || kits['all'];
 
@@ -7064,19 +7270,23 @@ window.toggleCareerHub = function() {
                     </div>
 
                     <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                        <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase">${kit.title} Resources</div>
+                        <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase">${kit.title}</div>
                         <div class="divide-y divide-slate-100">
                             ${kit.items.map(item => `
-                                <div class="p-3 flex items-center justify-between hover:bg-slate-50 transition-colors">
-                                    <div class="flex items-center gap-3">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
-                                        <span class="text-sm text-slate-700">${item}</span>
+                                <div class="p-3 flex items-start justify-between gap-3 hover:bg-slate-50 transition-colors">
+                                    <div class="flex items-start gap-3 flex-1 min-w-0">
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 mt-0.5 shrink-0"></i>
+                                        <div class="min-w-0">
+                                            <div class="text-sm font-bold text-slate-800">${item.name}</div>
+                                            <div class="text-[11px] text-slate-500 leading-snug">${item.desc}</div>
+                                        </div>
                                     </div>
-                                    <button class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded hover:bg-indigo-100">Access</button>
+                                    <a href="${item.link}" target="_blank" rel="noopener" class="shrink-0 text-[10px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded inline-flex items-center gap-1 transition-colors" title="Opens ${item.name} in a new tab">Access <i data-lucide="external-link" class="w-2.5 h-2.5"></i></a>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
+                    <div class="text-[10px] text-slate-400 italic px-2">Resources open in a new tab. Most are free and require no sign-up. Hosted by external organisations — Skills2Careers Compass does not endorse any specific provider.</div>
 
                     <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
                         <h4 class="font-bold text-sm text-indigo-900 mb-2">Next Steps</h4>
@@ -7276,6 +7486,15 @@ window.toggleCareerHub = function() {
                                     <p class="text-xs text-slate-500 mt-0.5">Guides for Internships & Jobs.</p>
                                 </div>
                             </button>
+
+                            <button onclick="showSavedRubricsView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-indigo-400 hover:shadow-md text-left transition-all group flex items-center gap-4 sm:col-span-2">
+                                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><i data-lucide="clipboard-check" class="w-6 h-6"></i></div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-indigo-700 flex items-center gap-2">Saved Assessments <span id="saved-rubrics-count" class="text-[10px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full"></span></h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Previously scored interview rubrics.</p>
+                                </div>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-indigo-500"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -7371,6 +7590,19 @@ window.toggleCareerHub = function() {
                 </div>
             `;
             if(window.lucide) lucide.createIcons();
+        
+            // Populate the Saved Assessments count badge
+            const savedCountEl = document.getElementById('saved-rubrics-count');
+            if (savedCountEl) {
+                const n = (typeof loadSavedRubrics === 'function') ? loadSavedRubrics().length : 0;
+                if (n > 0) {
+                    savedCountEl.textContent = n;
+                    savedCountEl.classList.remove('hidden');
+                } else {
+                    savedCountEl.classList.add('hidden');
+                }
+            }
+            if (window.lucide) lucide.createIcons();
         }
 
         // --- NEW: Toggle More Filters in Training Hub ---
