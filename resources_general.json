@@ -118,7 +118,7 @@
     { "title": "Oracle Academy", "desc": "Global philanthropic tech education program.", "link": "https://academy.oracle.com/", "type": "Ecosystem" },
     { "title": "Africa Youth Employment Outlook 2026", "desc": "Labor trends and Youth Employment Clock by Mastercard Foundation.", "link": "https://mastercardfdn.org/research/", "type": "Data/Research" },
     { "title": "Talenteum", "desc": "Remote-work Employer of Record (EOR) service.", "link": "https://www.talenteum.africa/", "type": "Jobs" },
-    { "title": "Africa Climate Summit", "desc": "Global and regional stakeholders discussing green tech and climate resilience.", "link": "https://africaclimatesummit.org/", "type": "Event" }
+    { "title": "Africa Climate Summit", "desc": "Global and regional stakeholders discussing green tech and climate resilience.", "link": "https://africaclimatesummit.org/", "type": "Event" },
     { "title": "TechAfrica News", "desc": "Safaricom & AWS $500M AI Infrastructure and Upskilling Partnership.", "link": "https://www.techafricanews.com/", "type": "Data/Research" }
   ],
   "country_resources": {

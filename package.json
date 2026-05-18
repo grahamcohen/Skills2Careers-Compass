@@ -1,7 +1,7 @@
 {
   "name": "skills2careers-compass",
   "version": "1.4.0",
-  "description": "Skills2Careers Compass — a dashboard linking labour market intelligence to skills in demand across the East African Community.",
+  "description": "Skills2Careers Compass \u2014 a dashboard linking labour market intelligence to skills in demand across the East African Community.",
   "private": true,
   "license": "MIT",
   "repository": {
@@ -16,7 +16,8 @@
     "lint": "npm run lint:js && npm run lint:html && npm run lint:css",
     "validate:data": "python3 validate_data.py",
     "validate:links": "python3 validate_links.py",
-    "serve": "python3 -m http.server 8080"
+    "serve": "python3 -m http.server 8080",
+    "test": "node tests/smoke.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
