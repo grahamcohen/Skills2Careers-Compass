@@ -1,6 +1,34 @@
 // --- GLOBAL STATE ---
 let activeSectorId = 'agri';
 let activeCountry = 'all';
+
+// ============================================================================
+// ORPHAN FUNCTIONS (defined on window but never called from app.js or index.html
+// as of last audit). Likely abandoned during refactors. Listed here so a future
+// cleanup pass can either re-wire them into a UI flow or safely delete them
+// after browser verification:
+//
+//   - openEvidenceModal           (resource-modal evidence renderer)
+//   - openResourceModal           (resource-modal generic renderer)
+//   - renderPathwayStep2          (replaced by direct step 1 -> step 3 flow)
+//   - renderPivotAudit            (duplicate of showPivotAuditView, Careers Hub
+//                                   context; the new one uses pivotAuditSections
+//                                   from data.js as source of truth)
+//   - showNextSteps               (legacy next-steps view)
+//   - showResourceLibraryModal    (resource library modal — superseded by drawer)
+//   - showSectorTooltip           (hover tooltip helper, may still be triggered
+//                                   by inline event handlers at runtime — verify
+//                                   in browser before removal)
+//   - submitPracticeTask          (practice-task submission flow)
+//   - switchPathwaySector         (pre-cleanup sector switcher)
+//   - updatePathwayConstraint     (pathway constraint update — superseded by
+//                                   constraint render in renderPathwayStep3)
+//
+// To verify orphans in future: see the Python regex sweep at the bottom of
+// tests/smoke.mjs notes — searches for `\bfn\b` in app.js + index.html and
+// flags counts <= 1.
+// ============================================================================
+
 let currentSkillName = null;
 let currentSkillData = null;
 let impactChartsInitialized = false;
