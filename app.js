@@ -3510,9 +3510,16 @@ function getOJAMetrics(roleTitle, country) {
             const btn = document.getElementById('lb-toggle');
             btn.innerText = isLite ? 'Full Mode' : 'Lite Mode';
             localStorage.setItem('ai4eac_lite_mode', isLite);
-            
+
             if (isLite) {
                 console.log("Lite mode enabled: Reducing visual load for performance.");
+                if (typeof showToast === 'function') {
+                    showToast('Lite Mode on — animations and heavy visuals disabled for slower connections.', 'info', 3500);
+                }
+            } else {
+                if (typeof showToast === 'function') {
+                    showToast('Full Mode on.', 'info', 2000);
+                }
             }
         }
 
@@ -5071,8 +5078,36 @@ window.toggleCareerHub = function() {
                 document.getElementById('skill-synergies-section').classList.add('hidden');
             }
 
-            document.getElementById('skill-roles-primary').innerHTML = primaryRoles.map(r => `<span class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded border border-indigo-100 text-xs font-medium">${r}</span>`).join('');
-            document.getElementById('skill-roles-similar').innerHTML = similarRoles.map(r => `<span class="px-2 py-1 bg-slate-50 text-slate-600 rounded border border-slate-200 text-xs">${r}</span>`).join('');
+            // F1: Make Common Job Titles clickable when they match a known occupation,
+            // so users can jump from a skill into a full role profile and back.
+            // We resolve a name to an occupation via baseSectorDetailData + DataManager.
+            const knownOccupationNames = new Set();
+            if (typeof baseSectorDetailData !== 'undefined') {
+                Object.values(baseSectorDetailData).forEach(sec => {
+                    (sec && sec.occupations ? sec.occupations : []).forEach(o => knownOccupationNames.add((o.name || '').toLowerCase()));
+                });
+            }
+            if (dataManager && Array.isArray(dataManager.topOccupations)) {
+                dataManager.topOccupations.forEach(o => knownOccupationNames.add((o.occupationRole || o.name || '').toLowerCase()));
+            }
+
+            const renderRoleChip = (r, primary) => {
+                const isLinkable = knownOccupationNames.has((r || '').toLowerCase());
+                if (isLinkable) {
+                    const styleClass = primary
+                        ? 'px-2 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded border border-indigo-200 text-xs font-medium inline-flex items-center gap-1 transition-colors cursor-pointer'
+                        : 'px-2 py-1 bg-slate-50 text-slate-700 hover:bg-slate-100 rounded border border-slate-200 text-xs inline-flex items-center gap-1 transition-colors cursor-pointer';
+                    return `<button onclick="closeModal('skill-modal'); openOccupationModal('${r.replace(/'/g, "\\'")}')" class="${styleClass}" title="View ${r} occupation profile">${r} <i data-lucide="arrow-up-right" class="w-2.5 h-2.5"></i></button>`;
+                }
+                // Fallback: plain non-interactive chip (same as before)
+                const styleClass = primary
+                    ? 'px-2 py-1 bg-indigo-50 text-indigo-700 rounded border border-indigo-100 text-xs font-medium'
+                    : 'px-2 py-1 bg-slate-50 text-slate-600 rounded border border-slate-200 text-xs';
+                return `<span class="${styleClass}">${r}</span>`;
+            };
+
+            document.getElementById('skill-roles-primary').innerHTML = primaryRoles.map(r => renderRoleChip(r, true)).join(' ');
+            document.getElementById('skill-roles-similar').innerHTML = similarRoles.map(r => renderRoleChip(r, false)).join(' ');
             
             let defaultHotspotText = `High demand in major economic hubs like <strong>Nairobi, Kigali, and Dar es Salaam</strong>, particularly within the growing ${activeSectorId === 'agri' ? 'Agribusiness' : activeSectorId === 'energy' ? 'Renewable Energy' : 'ICT'} sector.`;
             
@@ -7472,6 +7507,7 @@ window.toggleCareerHub = function() {
                                 <span class="px-2 py-1 bg-slate-50 text-slate-600 rounded text-[10px] border border-slate-100 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> ${c.mode}</span>
                                 <span class="px-2 py-1 bg-slate-50 text-slate-600 rounded text-[10px] border border-slate-100 flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${c.duration}</span>
                                 <span class="px-2 py-1 bg-slate-50 text-slate-600 rounded text-[10px] border border-slate-100 flex items-center gap-1"><i data-lucide="banknote" class="w-3 h-3"></i> ${c.cost}</span>
+                                <span class="px-2 py-1 bg-slate-50 text-slate-600 rounded text-[10px] border border-slate-100 flex items-center gap-1" title="Language of instruction"><i data-lucide="languages" class="w-3 h-3"></i> ${c.language || 'English'}</span>
                             </div>
 
                             <div class="flex items-center justify-between pt-2 border-t border-slate-50">
@@ -7509,7 +7545,7 @@ window.toggleCareerHub = function() {
                         </td>
                         <td class="px-3 py-3">
                             <div class="text-[10px] text-slate-600 font-medium">${sectorDisplay}</div>
-                            <div class="text-[9px] text-slate-400">${c.mode} • ${c.duration}</div>
+                            <div class="text-[9px] text-slate-400">${c.mode} • ${c.duration} • ${c.language || 'English'}</div>
                         </td>
                         <td class="px-3 py-3">
                             <span class="${badgeClass} px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider inline-flex items-center gap-1 whitespace-nowrap">
@@ -8399,7 +8435,32 @@ window.toggleCareerHub = function() {
                    </div>` 
                 : '';
 
-            container.innerHTML = (html || '<div class="text-center text-xs text-slate-400 py-4 italic">Your plan is empty.<br>Save roles, skills, or courses to see them here.</div>') + shareBtn;
+            const emptyState = `
+                <div class="text-center py-6 px-3 space-y-3">
+                    <div class="w-12 h-12 mx-auto rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center">
+                        <i data-lucide="bookmark" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-slate-700 mb-1">Build your career plan</div>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            Browse the Compass and tap the
+                            <i data-lucide="bookmark" class="w-3 h-3 inline-block -mt-0.5 text-slate-400"></i>
+                            icon on any
+                            <strong class="text-slate-700">role</strong>,
+                            <strong class="text-slate-700">skill</strong>,
+                            or <strong class="text-slate-700">course</strong>
+                            to save it here. Your plan stays on this device — no account needed.
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 pt-2 text-[10px] text-slate-400">
+                        <div class="flex flex-col items-center gap-1"><i data-lucide="briefcase" class="w-3.5 h-3.5"></i> Roles</div>
+                        <div class="flex flex-col items-center gap-1"><i data-lucide="cpu" class="w-3.5 h-3.5"></i> Skills</div>
+                        <div class="flex flex-col items-center gap-1"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> Courses</div>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = (html || emptyState) + shareBtn;
             if(window.lucide) lucide.createIcons();
         }
 
