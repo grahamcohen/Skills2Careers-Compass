@@ -8126,6 +8126,7 @@ window.toggleCareerHub = function() {
 
             injectSectorDrawer(); // Inject the new Sector Drawer
             injectUsersDrawer(); // Inject Users Drawer
+            injectAboutDrawer(); // Inject About Drawer (was missing — Info button was a no-op)
             renderMainLanding(); // Render the 3-Pillar Dashboard
             if(window.lucide) lucide.createIcons();
             setGlobalSector('agri');
@@ -8536,7 +8537,85 @@ window.toggleCareerHub = function() {
                         <i data-lucide="x" class="w-5 h-5 text-slate-500"></i>
                     </button>
                 </div>
-                
+                <div class="p-5 space-y-6 flex-1 overflow-y-auto">
+
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-2">What this is</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            <strong>Skills2Careers Compass</strong> links labour market intelligence to skills in
+                            demand, helping users navigate pathways from learning to work in three high-growth
+                            sectors across the East African Community: <strong>Agritech</strong>,
+                            <strong>Renewable Energy</strong>, and the <strong>Digital Economy</strong>.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-2">Coverage</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-2">Eight EAC countries:</p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇰🇪 Kenya</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇹🇿 Tanzania</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇺🇬 Uganda</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇷🇼 Rwanda</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇧🇮 Burundi</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇸🇸 South Sudan</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇨🇩 DR Congo</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇸🇴 Somalia</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-2">About the data</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                            Occupation classifications and skills profiles draw on the
+                            <strong>UNESCO Global Skills Tracker</strong> and the European
+                            <strong>ESCO</strong> taxonomy. National context blends data from country
+                            labour-market information systems and regional aggregators.
+                        </p>
+                        <div class="space-y-1.5 text-[11px]">
+                            <a href="https://unevoc.unesco.org/home/Global+Skills+Tracker" target="_blank" rel="noopener" class="flex items-center justify-between p-2 bg-indigo-50 border border-indigo-100 rounded hover:bg-indigo-100 transition-colors group">
+                                <span class="font-medium text-indigo-800">UNESCO Global Skills Tracker</span>
+                                <i data-lucide="external-link" class="w-3 h-3 text-indigo-400 group-hover:text-indigo-600"></i>
+                            </a>
+                            <a href="https://esco.ec.europa.eu/en" target="_blank" rel="noopener" class="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded hover:bg-slate-100 transition-colors group">
+                                <span class="font-medium text-slate-700">ESCO classification</span>
+                                <i data-lucide="external-link" class="w-3 h-3 text-slate-400 group-hover:text-slate-600"></i>
+                            </a>
+                            <a href="https://ilostat.ilo.org" target="_blank" rel="noopener" class="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded hover:bg-slate-100 transition-colors group">
+                                <span class="font-medium text-slate-700">ILOSTAT</span>
+                                <i data-lucide="external-link" class="w-3 h-3 text-slate-400 group-hover:text-slate-600"></i>
+                            </a>
+                            <a href="https://labourmarket.go.ke" target="_blank" rel="noopener" class="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded hover:bg-slate-100 transition-colors group">
+                                <span class="font-medium text-slate-700">Kenya KLMIS</span>
+                                <i data-lucide="external-link" class="w-3 h-3 text-slate-400 group-hover:text-slate-600"></i>
+                            </a>
+                            <a href="https://lmis.gov.rw" target="_blank" rel="noopener" class="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded hover:bg-slate-100 transition-colors group">
+                                <span class="font-medium text-slate-700">Rwanda LMIS</span>
+                                <i data-lucide="external-link" class="w-3 h-3 text-slate-400 group-hover:text-slate-600"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                        <h3 class="text-xs font-bold text-amber-900 mb-1 flex items-center gap-1.5">
+                            <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> Prototype notice
+                        </h3>
+                        <p class="text-[11px] text-amber-800 leading-relaxed">
+                            This is a working prototype. Some wage figures, mentor profiles, and outcome
+                            metrics are <strong>illustrative</strong> rather than sourced — clearly
+                            labelled wherever they appear. Treat as design exploration, not production data.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-2">Built with</h3>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">
+                            Open-source static webapp. View the
+                            <a href="https://github.com/carmelasalzano-source/Skills2Careers-Compass" target="_blank" rel="noopener" class="text-indigo-600 hover:underline font-medium">source on GitHub</a>.
+                        </p>
+                    </div>
+
+                </div>
             `;
             document.body.appendChild(drawer);
         }
