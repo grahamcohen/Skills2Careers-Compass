@@ -15,6 +15,12 @@ let showCrossSectorOnly = false; // Toggle for Cross-Sector Skills
 let isStudentpreneur = false; // Toggle for Studentpreneur Mode
 
 // --- CONFIGURATION ---
+
+// PLACEHOLDER: not a real address. The upstream codebase used
+// support@ai4eac.org (old project name). Replace with the production
+// inbox before deployment. Used by all "Report Broken Link" buttons.
+const REPORT_EMAIL = 'feedback@example.org';
+
 const API_CONFIG = {
     baseUrl: '', // Leave empty for local files, set to 'https://api.yourdomain.com/v1/' for MVP
     endpoints: {
@@ -895,7 +901,7 @@ function getOJAMetrics(roleTitle, country) {
                         <div class="flex justify-between items-end mt-3 pt-2 border-t border-slate-50">
                             <div class="flex flex-col gap-1">
                                 <div class="text-[9px] text-slate-400 italic">Updated: ${t.lastUpdated || '2024'}</div>
-                                <button onclick="event.stopPropagation(); window.open('mailto:support@ai4eac.org?subject=Broken Link Report: ${encodeURIComponent(t.name)}', '_blank')" class="text-[9px] text-rose-400 hover:text-rose-600 flex items-center gap-1 transition-colors" title="Report Broken Link">
+                                <button onclick="event.stopPropagation(); window.open('mailto:${REPORT_EMAIL}?subject=Broken Link Report: ${encodeURIComponent(t.name)}', '_blank')" class="text-[9px] text-rose-400 hover:text-rose-600 flex items-center gap-1 transition-colors" title="Report Broken Link">
                                     <i data-lucide="flag" class="w-2.5 h-2.5"></i> Report Issue
                                 </button>
                             </div>
@@ -7368,7 +7374,7 @@ window.toggleCareerHub = function() {
                                     <div class="font-mono font-bold text-xs ${metricDisplay === 'No Data' ? 'text-slate-300' : 'text-blue-600'}">
                                         ${metricDisplay}
                                     </div>
-                                    <button onclick="event.stopPropagation(); window.open('mailto:support@ai4eac.org?subject=Broken Link Report: ${encodeURIComponent(c.name)}', '_blank')" class="text-[9px] text-rose-400 hover:text-rose-600 flex items-center gap-1 mt-1" title="Report Broken Link">
+                                    <button onclick="event.stopPropagation(); window.open('mailto:${REPORT_EMAIL}?subject=Broken Link Report: ${encodeURIComponent(c.name)}', '_blank')" class="text-[9px] text-rose-400 hover:text-rose-600 flex items-center gap-1 mt-1" title="Report Broken Link">
                                         <i data-lucide="flag" class="w-2.5 h-2.5"></i> Report
                                     </button>
                                 </div>
@@ -7416,7 +7422,7 @@ window.toggleCareerHub = function() {
                                 <i data-lucide="external-link" class="w-3 h-3"></i>
                             </a>` : `<span class="text-[10px] text-slate-300 cursor-not-allowed">N/A</span>`}
                             <div class="flex items-center justify-end gap-3">
-                                <button onclick="event.stopPropagation(); window.open('mailto:support@ai4eac.org?subject=Broken Link Report: ${encodeURIComponent(c.name)}', '_blank')" class="text-slate-300 hover:text-rose-500 transition" title="Report Broken Link">
+                                <button onclick="event.stopPropagation(); window.open('mailto:${REPORT_EMAIL}?subject=Broken Link Report: ${encodeURIComponent(c.name)}', '_blank')" class="text-slate-300 hover:text-rose-500 transition" title="Report Broken Link">
                                     <i data-lucide="flag" class="w-3 h-3"></i>
                                 </button>
                                 ${c.url ? `
