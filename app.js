@@ -3708,6 +3708,7 @@ function getOJAMetrics(roleTitle, country) {
 
         window.setGlobalCountry = function(country) {
             activeCountry = country;
+            try { localStorage.setItem('s2c_active_country', country); } catch (e) {}
             
             // Update Top Nav Dropdown (if changed via Hub)
             const navSelector = document.getElementById('country-selector');
@@ -3769,6 +3770,7 @@ function getOJAMetrics(roleTitle, country) {
 
         window.setGlobalSector = function(sector) {
             activeSectorId = sector;
+            try { localStorage.setItem('s2c_active_sector', sector); } catch (e) {}
             
             // Update Tabs
             ['agri', 'energy', 'digital'].forEach(s => {
@@ -8900,7 +8902,23 @@ window.toggleCareerHub = function() {
             renderMainLanding(); // Render the 3-Pillar Dashboard
             initHeroPersona(); // C: restore/initialize hero persona switcher
             if(window.lucide) lucide.createIcons();
-            setGlobalSector('agri');
+
+            // Restore last-used sector and country from localStorage so returning
+            // users land on their context, not the defaults.
+            let restoredSector = 'agri';
+            let restoredCountry = 'all';
+            try {
+                const s = localStorage.getItem('s2c_active_sector');
+                if (s && ['agri', 'energy', 'digital'].includes(s)) restoredSector = s;
+                const c = localStorage.getItem('s2c_active_country');
+                if (c) restoredCountry = c;
+            } catch (e) {}
+            // Sync the top-nav dropdown FIRST so setGlobalCountry's onchange syncs the rest.
+            const navCountrySel = document.getElementById('country-selector');
+            if (navCountrySel) navCountrySel.value = restoredCountry;
+            setGlobalSector(restoredSector);
+            setGlobalCountry(restoredCountry);
+            // setGlobalSector('agri'); -- replaced by restored value above
             updateTrainingProviders(); 
             dataManager.init(); // Initialize DataManager
             loadMyPlan(); // Load saved plan from LocalStorage
