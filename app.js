@@ -6786,6 +6786,63 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
+        window.showOutreachTemplatesView = function() {
+            const container = document.getElementById('career-hub-content');
+            if (!container) return;
+            const templates = (typeof outreachTemplates !== 'undefined') ? outreachTemplates : [];
+
+            const cardsHtml = templates.map((t, idx) => {
+                const escaped = (t.body || '').replace(/`/g, '\\`');
+                return `
+                    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                        <div class="flex items-start justify-between gap-3 mb-2">
+                            <div class="min-w-0 flex-1">
+                                <h4 class="font-bold text-sm text-slate-800 mb-1">${t.title}</h4>
+                                ${t.subject && t.subject !== 'N/A' ? `<div class="text-[10px] text-slate-400 uppercase tracking-wide mb-1 flex items-center gap-1"><i data-lucide="mail" class="w-3 h-3"></i> Subject</div><div class="text-xs text-slate-700 font-medium mb-2">${t.subject}</div>` : ''}
+                            </div>
+                            <button onclick="copyOutreachTemplate(${idx})" class="shrink-0 text-[10px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded inline-flex items-center gap-1 transition-colors" title="Copy this template to clipboard"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                        </div>
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wide mt-2 mb-1 flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> Body</div>
+                        <pre class="text-xs text-slate-700 whitespace-pre-wrap font-sans bg-slate-50 border border-slate-100 rounded p-3 leading-relaxed">${t.body}</pre>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="animate-fade-in space-y-4">
+                    <button onclick="resetCareerHub()" class="px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
+
+                    <div>
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="send" class="w-5 h-5 text-indigo-500"></i> Outreach Templates</h3>
+                        <p class="text-xs text-slate-500 mt-1">Copy, replace the bracketed [placeholders], and send. Designed to be short — recipients are more likely to reply.</p>
+                    </div>
+
+                    ${templates.length > 0 ? `<div class="space-y-3">${cardsHtml}</div>` : '<p class="text-sm text-slate-500 italic">No templates available.</p>'}
+
+                    <div class="text-[10px] text-slate-400 italic px-2">All templates personalise to you and the role you're applying for. Avoid sending them verbatim.</div>
+                </div>
+            `;
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.copyOutreachTemplate = function(idx) {
+            const templates = (typeof outreachTemplates !== 'undefined') ? outreachTemplates : [];
+            const t = templates[idx];
+            if (!t) return;
+            const text = (t.subject && t.subject !== 'N/A')
+                ? `Subject: ${t.subject}\n\n${t.body}`
+                : t.body;
+            try {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(`"${t.title}" copied — replace the [placeholders] before sending.`, 'success', 4000);
+                }).catch(() => {
+                    showToast('Could not copy to clipboard.', 'error');
+                });
+            } catch (e) {
+                showToast('Clipboard access blocked by browser.', 'error');
+            }
+        };
+
         // --- NEW: CV Generator Logic ---
         window.renderCVGenerator = function() {
             const container = document.getElementById('career-hub-content');
@@ -7232,48 +7289,63 @@ window.toggleCareerHub = function() {
         window.renderApplicationKit = function(type, backAction = null) {
             const container = document.getElementById('career-hub-content');
             
-            // Each item links to a free, reputable external resource so the
-            // 'Access' button is a real outbound link, not a dead handler.
-            // Curated to be freely accessible without login wherever possible.
-            const kits = {
-                'all': { title: "General Job Applications Kit", items: [
-                    { name: "Master CV Template", desc: "Europass CV builder — free, EU-recognised, multi-language.", link: "https://europa.eu/europass/en/create-europass-cv" },
-                    { name: "Cover Letter Guide", desc: "Harvard FAS Office of Career Services cover-letter guide.", link: "https://ocs.fas.harvard.edu/files/ocs/files/hes-resume-cover-letter-guide.pdf" },
-                    { name: "LinkedIn Profile Checklist", desc: "LinkedIn's own 12-point profile completeness guide.", link: "https://university.linkedin.com/content/dam/university/global/en_US/site/pdf/LinkedIn_StudentProfileChecklist.pdf" },
-                    { name: "Common Interview Questions", desc: "Indeed's catalogue of 50+ common questions with sample answers.", link: "https://www.indeed.com/career-advice/interviewing/top-interview-questions-and-answers" }
-                ]},
-                'internship': { title: "Internship Starter Kit", items: [
-                    { name: "No-Experience Resume Template", desc: "Indeed guide to entry-level CVs with worked examples.", link: "https://www.indeed.com/career-advice/resumes-cover-letters/resume-examples-with-no-experience" },
-                    { name: "Internship Cover Letter Template", desc: "Indeed internship-specific cover letter examples.", link: "https://www.indeed.com/career-advice/cover-letter-samples/internship" },
-                    { name: "STAR Method for Behavioral Qs", desc: "MIT CAPD guide to the Situation/Task/Action/Result framework.", link: "https://capd.mit.edu/resources/the-star-method-for-behavioral-interviews/" },
-                    { name: "Internship Skills Tracker", desc: "Map skills you'll gain from your role — Indeed template.", link: "https://www.indeed.com/career-advice/finding-a-job/internship-skills" }
-                ]},
-                'placement': { title: "Work Placement Kit", items: [
-                    { name: "Placement Application Letter Guide", desc: "UK QAA placement application guidance.", link: "https://www.qaa.ac.uk/the-quality-code/advice-and-guidance/work-based-learning" },
-                    { name: "Daily Work Logbook (Google Doc)", desc: "Reflective practice log template — open in Drive, then File > Make a copy.", link: "https://docs.google.com/document/d/e/2PACX-1vQ5_template_placeholder/pub" },
-                    { name: "Supervisor Evaluation Rubric", desc: "ILO youth-employment work-placement evaluation framework.", link: "https://www.ilo.org/skills/projects/WCMS_172205/lang--en/index.htm" },
-                    { name: "Placement Report Structure", desc: "Open University guide to writing a final placement report.", link: "https://help.open.ac.uk/documents/policies/code-of-practice-research/files/26/Sample_Placement_Report.pdf" }
-                ]},
-                'freelance': { title: "Freelancer Toolkit", items: [
-                    { name: "Service Rate Card Template", desc: "Bonsai free freelance rate calculator and template.", link: "https://www.hellobonsai.com/free-rate-calculator" },
-                    { name: "Client Contract Template", desc: "Free freelance services agreement from Bonsai (no sign-up).", link: "https://www.hellobonsai.com/free-contracts/freelance-contract-template" },
-                    { name: "Portfolio Website Checklist", desc: "Smashing Magazine portfolio-site essentials guide.", link: "https://www.smashingmagazine.com/2021/03/build-personal-portfolio-website/" },
-                    { name: "Proposal Email Script", desc: "Indeed freelance proposal templates with examples.", link: "https://www.indeed.com/career-advice/career-development/freelance-proposal-template" }
-                ]},
-                'tender': { title: "Founder Tender Kit", items: [
-                    { name: "Capability Statement Template", desc: "US SBA capability-statement template (universal format).", link: "https://www.sba.gov/sites/default/files/files/Capability_Statement.pdf" },
-                    { name: "Tax Compliance Checklist (Kenya)", desc: "KRA iTax overview for small business compliance.", link: "https://www.kra.go.ke/en/business" },
-                    { name: "Technical Proposal Structure", desc: "World Bank standard technical proposal template (RFP context).", link: "https://www.worldbank.org/en/projects-operations/products-and-services/brief/procurement-new-framework" },
-                    { name: "Financial Proposal Sheet", desc: "ILO budget template for grant/tender submissions.", link: "https://www.ilo.org/global/topics/cooperatives/lang--en/index.htm" }
-                ]},
-                'volunteer': { title: "Volunteer Applications Kit", items: [
-                    { name: "Motivation Statement Template", desc: "Indeed guide to writing a personal statement / motivation letter.", link: "https://www.indeed.com/career-advice/resumes-cover-letters/personal-statement-examples" },
-                    { name: "Skills Audit Worksheet", desc: "UK National Careers Service skills self-assessment.", link: "https://nationalcareers.service.gov.uk/skills-assessment" },
-                    { name: "Soft Skills Checklist", desc: "World Economic Forum top skills for the workplace.", link: "https://www.weforum.org/agenda/2023/05/future-of-jobs-2023-skills/" },
-                    { name: "Values Alignment Prep", desc: "Harvard Business Review on aligning values with mission.", link: "https://hbr.org/2002/01/discovering-your-authentic-leadership" }
-                ]}
+            // Item names come from applicationKitsResources (data.js) — the
+            // canonical list. Per-item curated external links live in this
+            // local map; items in data.js but not here render as plain rows.
+            const kitLinks = {
+                // 'all'
+                "Master CV Template (ATS-Optimized)":         { desc: "Europass CV builder — free, EU-recognised, multi-language.", link: "https://europa.eu/europass/en/create-europass-cv" },
+                "Cover Letter Guide & Examples":              { desc: "Harvard FAS Office of Career Services cover-letter guide.", link: "https://ocs.fas.harvard.edu/files/ocs/files/hes-resume-cover-letter-guide.pdf" },
+                "LinkedIn Profile Optimization Checklist":    { desc: "LinkedIn's own 12-point profile completeness guide.", link: "https://university.linkedin.com/content/dam/university/global/en_US/site/pdf/LinkedIn_StudentProfileChecklist.pdf" },
+                "Common Interview Questions & STAR Answers": { desc: "Indeed's catalogue of 50+ common questions with sample answers.", link: "https://www.indeed.com/career-advice/interviewing/top-interview-questions-and-answers" },
+                "Salary Negotiation Script":                  { desc: "Harvard PON guide to negotiating an offer.", link: "https://www.pon.harvard.edu/daily/salary-negotiations/" },
+                // 'internship'
+                "Student/Graduate Resume Template":           { desc: "Indeed guide to entry-level CVs with worked examples.", link: "https://www.indeed.com/career-advice/resumes-cover-letters/resume-examples-with-no-experience" },
+                "University Recommendation Letter Request":   { desc: "Princeton career services template for requesting recommendations.", link: "https://careerdevelopment.princeton.edu/guides/applying-jobs-internships/cover-letters-and-other-application-documents" },
+                "Internship Cover Letter (No Experience)":    { desc: "Indeed internship-specific cover letter examples.", link: "https://www.indeed.com/career-advice/cover-letter-samples/internship" },
+                "Learning Agreement Template":                { desc: "Erasmus+ Learning Agreement template (EC).", link: "https://erasmus-plus.ec.europa.eu/resources-and-tools/learning-agreement" },
+                "Internship Report Guidelines":               { desc: "ILO internship report writing guide.", link: "https://www.ilo.org/global/about-the-ilo/jobs/internship-programme/lang--en/index.htm" },
+                // 'placement'
+                "Placement Application Letter":               { desc: "UK QAA placement application guidance.", link: "https://www.qaa.ac.uk/the-quality-code/advice-and-guidance/work-based-learning" },
+                "Daily Work Logbook Template":                { desc: "Open University reflective practice log template.", link: "https://help.open.ac.uk/" },
+                "Supervisor Evaluation Form":                 { desc: "ILO youth-employment placement evaluation framework.", link: "https://www.ilo.org/skills/projects/WCMS_172205/lang--en/index.htm" },
+                "Placement Report Structure":                 { desc: "Open University guide to writing a final placement report.", link: "https://help.open.ac.uk/" },
+                "Workplace Safety Checklist":                 { desc: "ILO OSH workplace safety checklist toolkit.", link: "https://www.ilo.org/global/topics/safety-and-health-at-work/resources-library/training/lang--en/index.htm" },
+                // 'freelance'
+                "Freelance Service Rate Card":                { desc: "Bonsai free freelance rate calculator and template.", link: "https://www.hellobonsai.com/free-rate-calculator" },
+                "Client Contract & SOW Template":             { desc: "Free freelance services agreement from Bonsai (no sign-up).", link: "https://www.hellobonsai.com/free-contracts/freelance-contract-template" },
+                "Portfolio Website Checklist":                { desc: "Smashing Magazine portfolio-site essentials guide.", link: "https://www.smashingmagazine.com/2021/03/build-personal-portfolio-website/" },
+                "Cold Pitch Email Templates":                 { desc: "Indeed freelance cold pitch templates with examples.", link: "https://www.indeed.com/career-advice/career-development/freelance-proposal-template" },
+                "Invoice & Payment Tracker":                  { desc: "Wave free invoicing & tracking for freelancers.", link: "https://www.waveapps.com/invoicing" },
+                // 'tender'
+                "Company Profile / Capability Statement":     { desc: "US SBA capability-statement template (universal format).", link: "https://www.sba.gov/sites/default/files/files/Capability_Statement.pdf" },
+                "Tax Compliance Checklist (KRA/TRA/URA)":     { desc: "KRA iTax overview for small business compliance (Kenya).", link: "https://www.kra.go.ke/en/business" },
+                "Technical Proposal Structure":               { desc: "World Bank standard technical proposal template (RFP context).", link: "https://www.worldbank.org/en/projects-operations/products-and-services/brief/procurement-new-framework" },
+                "Financial Proposal Budget Sheet":            { desc: "ILO budget template for grant/tender submissions.", link: "https://www.ilo.org/global/topics/cooperatives/lang--en/index.htm" },
+                "Pre-qualification Questionnaire Guide":      { desc: "World Bank PPQ standards for procurement.", link: "https://www.worldbank.org/en/projects-operations/products-and-services/brief/procurement-new-framework" },
+                // 'volunteer'
+                "Skills-Based Volunteer Resume":              { desc: "Indeed personal statement / volunteer resume guide.", link: "https://www.indeed.com/career-advice/resumes-cover-letters/personal-statement-examples" },
+                "Motivation Statement / Personal Essay":      { desc: "Indeed personal statement examples.", link: "https://www.indeed.com/career-advice/resumes-cover-letters/personal-statement-examples" },
+                "Availability & Commitment Schedule":         { desc: "Idealist volunteer commitment planning guide.", link: "https://www.idealist.org/en/careers/volunteer-resources" },
+                "Soft Skills Self-Assessment":                { desc: "WEF top skills for the workplace.", link: "https://www.weforum.org/agenda/2023/05/future-of-jobs-2023-skills/" },
+                "Volunteer Code of Conduct Preview":          { desc: "UN Volunteers code of conduct overview.", link: "https://www.unv.org/become-volunteer" }
             };
-            const kit = kits[type] || kits['all'];
+
+            // Pull canonical kit items from data.js when available; fall back
+            // to a minimal hand-built list if data.js wasn't loaded.
+            let kitsSource = (typeof applicationKitsResources !== 'undefined') ? applicationKitsResources : {
+                'all': { title: "General Job Applications Kit", items: Object.keys(kitLinks).slice(0, 5) }
+            };
+            const kitMeta = (typeof applicationKitsConfig !== 'undefined') ? applicationKitsConfig : {};
+
+            const rawKit = kitsSource[type] || kitsSource['all'];
+            const kit = {
+                title: rawKit.title,
+                items: rawKit.items.map(name => {
+                    const link = kitLinks[name] || null;
+                    return { name, desc: link ? link.desc : null, link: link ? link.link : null };
+                })
+            };
 
             // Back Button Logic
             const backBtnCode = backAction 
@@ -7309,7 +7381,20 @@ window.toggleCareerHub = function() {
                         <button onclick="renderApplicationKit('placement', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('placement')}">Placement</button>
                         <button onclick="renderApplicationKit('freelance', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('freelance')}">Freelance</button>
                         <button onclick="renderApplicationKit('volunteer', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('volunteer')}">Volunteer</button>
+                        <button onclick="renderApplicationKit('tender', ${safeBackAction})" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('tender')}">Founder Tender</button>
                     </div>
+
+                    ${(() => {
+                        const meta = kitMeta[type] || kitMeta['all'] || null;
+                        if (!meta) return '';
+                        return `
+                            <div class="bg-cyan-50 border border-cyan-100 rounded-xl p-3 grid grid-cols-1 sm:grid-cols-3 gap-3 text-[11px]">
+                                <div><div class="font-bold text-cyan-900 mb-0.5 flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> CV Format</div><div class="text-slate-600">${meta.cv}</div></div>
+                                <div><div class="font-bold text-cyan-900 mb-0.5 flex items-center gap-1"><i data-lucide="clipboard-check" class="w-3 h-3"></i> Bring</div><div class="text-slate-600">${meta.check}</div></div>
+                                <div><div class="font-bold text-cyan-900 mb-0.5 flex items-center gap-1"><i data-lucide="target" class="w-3 h-3"></i> Test Type</div><div class="text-slate-600">${meta.test}</div></div>
+                            </div>
+                        `;
+                    })()}
 
                     <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                         <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase">${kit.title}</div>
@@ -7317,13 +7402,16 @@ window.toggleCareerHub = function() {
                             ${kit.items.map(item => `
                                 <div class="p-3 flex items-start justify-between gap-3 hover:bg-slate-50 transition-colors">
                                     <div class="flex items-start gap-3 flex-1 min-w-0">
-                                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 mt-0.5 shrink-0"></i>
+                                        <i data-lucide="${item.link ? 'check-circle' : 'circle-dashed'}" class="w-4 h-4 ${item.link ? 'text-emerald-500' : 'text-slate-300'} mt-0.5 shrink-0"></i>
                                         <div class="min-w-0">
                                             <div class="text-sm font-bold text-slate-800">${item.name}</div>
-                                            <div class="text-[11px] text-slate-500 leading-snug">${item.desc}</div>
+                                            ${item.desc ? `<div class="text-[11px] text-slate-500 leading-snug">${item.desc}</div>` : `<div class="text-[10px] text-slate-400 italic">Resource link coming soon</div>`}
                                         </div>
                                     </div>
-                                    <a href="${item.link}" target="_blank" rel="noopener" class="shrink-0 text-[10px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded inline-flex items-center gap-1 transition-colors" title="Opens ${item.name} in a new tab">Access <i data-lucide="external-link" class="w-2.5 h-2.5"></i></a>
+                                    ${item.link
+                                        ? `<a href="${item.link}" target="_blank" rel="noopener" class="shrink-0 text-[10px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded inline-flex items-center gap-1 transition-colors" title="Opens ${item.name} in a new tab">Access <i data-lucide="external-link" class="w-2.5 h-2.5"></i></a>`
+                                        : `<span class="shrink-0 text-[10px] font-medium text-slate-300 px-2 py-1">—</span>`
+                                    }
                                 </div>
                             `).join('')}
                         </div>
@@ -7333,11 +7421,54 @@ window.toggleCareerHub = function() {
                     <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
                         <h4 class="font-bold text-sm text-indigo-900 mb-2">Next Steps</h4>
                         <ol class="list-decimal list-inside text-xs text-indigo-800 space-y-1">
-                            <li>Download the templates above.</li>
+                            <li>Open the relevant templates above.</li>
                             <li>Customize them for the specific role.</li>
                             <li>Use the <strong>Interview Prep</strong> tool in the main hub.</li>
                         </ol>
                     </div>
+
+                    ${type === 'placement' ? (() => {
+                        // Pull sector-specific apprenticeship framework from data.js
+                        const frameworks = (typeof apprenticeshipFrameworks !== 'undefined') ? apprenticeshipFrameworks : {};
+                        const fw = frameworks[activeSectorId] || frameworks.default || null;
+                        // Country-specific standards: filter by activeCountry, then add 'all' (regional)
+                        const standards = (typeof apprenticeshipStandards !== 'undefined') ? apprenticeshipStandards : [];
+                        const relevantStandards = standards.filter(s => s.c === activeCountry || s.c === 'all');
+                        if (!fw && relevantStandards.length === 0) return '';
+                        return `
+                            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                                <h4 class="font-bold text-sm text-slate-800 mb-3 flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4 text-cyan-500"></i> Apprenticeship Framework ${activeSectorId === 'agri' ? '(Agritech)' : activeSectorId === 'energy' ? '(Renewable Energy)' : '(Digital Economy)'}</h4>
+                                ${fw ? `
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                                        <div class="bg-slate-50 border border-slate-100 rounded-lg p-3">
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1 flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> Duration</div>
+                                            <div class="text-xs text-slate-700">${fw.duration}</div>
+                                        </div>
+                                        <div class="bg-slate-50 border border-slate-100 rounded-lg p-3">
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1 flex items-center gap-1"><i data-lucide="target" class="w-3 h-3"></i> Objective</div>
+                                            <div class="text-xs text-slate-700">${fw.objective}</div>
+                                        </div>
+                                        <div class="bg-slate-50 border border-slate-100 rounded-lg p-3">
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1 flex items-center gap-1"><i data-lucide="user" class="w-3 h-3"></i> Apprentice Role</div>
+                                            <div class="text-xs text-slate-700">${fw.role}</div>
+                                        </div>
+                                        <div class="bg-slate-50 border border-slate-100 rounded-lg p-3">
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1 flex items-center gap-1"><i data-lucide="building" class="w-3 h-3"></i> Employer Provides</div>
+                                            <div class="text-xs text-slate-700">${fw.employer}</div>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                ${relevantStandards.length > 0 ? `
+                                    <div class="border-t border-slate-100 pt-3">
+                                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-2 flex items-center gap-1"><i data-lucide="shield-check" class="w-3 h-3"></i> National Standards</div>
+                                        <div class="flex flex-wrap gap-2">
+                                            ${relevantStandards.map(s => `<a href="${s.url}" target="_blank" rel="noopener" class="text-[11px] font-medium px-2 py-1 rounded bg-cyan-50 text-cyan-700 border border-cyan-100 hover:bg-cyan-100 transition-colors inline-flex items-center gap-1">${s.c === 'all' ? '🌍' : ''} ${s.name} <i data-lucide="external-link" class="w-2.5 h-2.5"></i></a>`).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    })() : ''}
                 </div>
             `;
             if(window.lucide) lucide.createIcons();
@@ -7510,6 +7641,14 @@ window.toggleCareerHub = function() {
                                 <div class="flex-1">
                                     <h4 class="font-bold text-slate-800 text-sm group-hover:text-purple-700">CV Builder</h4>
                                     <p class="text-xs text-slate-500 mt-0.5">Templates & ATS tools.</p>
+                                </div>
+                            </button>
+
+                            <button onclick="showOutreachTemplatesView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors"><i data-lucide="send" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-blue-700">Outreach Templates</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">LinkedIn, follow-ups, informational interviews.</p>
                                 </div>
                             </button>
 
