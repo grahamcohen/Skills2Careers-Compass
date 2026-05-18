@@ -22,6 +22,39 @@ let lastInterviewFeedback = null; // Cache for AI Interview Coach result (so Bac
 // inbox before deployment. Used by all "Report Broken Link" buttons.
 const REPORT_EMAIL = 'feedback@example.org';
 
+// Lightweight toast helper — used for transient feedback like
+// "Coming soon", "Copied to clipboard", etc. Stacks toasts in a
+// bottom-right column. Auto-dismisses after `ms` (default 4s).
+window.showToast = function(message, kind = 'info', ms = 4000) {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] flex flex-col items-center gap-2 pointer-events-none print:hidden';
+        document.body.appendChild(container);
+    }
+    const tones = {
+        info:    { bg: 'bg-slate-900',   icon: 'info' },
+        success: { bg: 'bg-emerald-600', icon: 'check-circle' },
+        warn:    { bg: 'bg-amber-600',   icon: 'alert-triangle' },
+        error:   { bg: 'bg-rose-600',    icon: 'alert-circle' }
+    };
+    const tone = tones[kind] || tones.info;
+    const toast = document.createElement('div');
+    toast.className = `${tone.bg} text-white text-xs font-medium px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2 max-w-md pointer-events-auto opacity-0 translate-y-2 transition-all duration-200`;
+    toast.innerHTML = `<i data-lucide="${tone.icon}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
+    container.appendChild(toast);
+    requestAnimationFrame(() => {
+        toast.classList.remove('opacity-0', 'translate-y-2');
+        toast.classList.add('opacity-100', 'translate-y-0');
+    });
+    if (window.lucide) lucide.createIcons();
+    setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 200);
+    }, ms);
+};
+
 const API_CONFIG = {
     baseUrl: '', // Leave empty for local files, set to 'https://api.yourdomain.com/v1/' for MVP
     endpoints: {
@@ -3450,7 +3483,12 @@ function getOJAMetrics(roleTitle, country) {
             document.getElementById('modal-pathway-section').innerHTML = '';
 
             // NEW: Share Button in Footer
-            const shareText = encodeURIComponent(`Check out this ${title} role on the Skills Compass!`);
+            // Include the live page URL so recipients can actually open the app.
+            // window.location.href is fine here — works on any host (GitHub Pages,
+            // localhost, custom domain) without hard-coding.
+            const shareText = encodeURIComponent(
+                `Check out the "${title}" role on Skills2Careers Compass: ${window.location.href}`
+            );
             const shareUrl = `https://wa.me/?text=${shareText}`;
             
             const footer = document.getElementById('occ-modal-footer');
@@ -8210,14 +8248,32 @@ window.toggleCareerHub = function() {
                 hubSelector.value = activeCountry;
             }
 
-            // Language Persistence
+            // Language Persistence + "coming soon" notice for non-English
+            //
+            // TODO (i18n): The UI offers EN / SW / FR but no translation strings exist.
+            // Doing it properly would mean: (a) extract every visible string into a
+            // key/value dictionary keyed by language code, (b) add a translate(key)
+            // helper, (c) translate templates through it. That's a separate, larger
+            // workstream (~hundreds of strings across app.js). For now the selector
+            // persists the user's pick to localStorage and shows a notice if they
+            // pick something other than English.
             const langSelector = document.getElementById('language-selector');
             if (langSelector) {
                 const savedLang = localStorage.getItem('ai4eac_lang');
                 if (savedLang) langSelector.value = savedLang;
-                
+
                 langSelector.addEventListener('change', (e) => {
-                    localStorage.setItem('ai4eac_lang', e.target.value);
+                    const lang = e.target.value;
+                    localStorage.setItem('ai4eac_lang', lang);
+                    if (lang && lang !== 'en' && lang !== 'EN' && lang !== 'English') {
+                        showToast(
+                            'Coming soon — the interface is currently English only. Your language preference has been saved for when translations are added.',
+                            'info'
+                        );
+                        // Snap selector back to English for now so users aren't left
+                        // staring at a UI they can't read.
+                        langSelector.value = 'en';
+                    }
                 });
             }
 
@@ -8402,7 +8458,7 @@ window.toggleCareerHub = function() {
                 text += "📚 Saved Courses:\n";
                 myPlan.courses.forEach(id => text += `- ${myPlan.names[id] || id}\n`);
             }
-            text += "\nBuild your own at: https://ai4eac-compass.org";
+            text += `\nBuild your own at: ${window.location.href}`;
             
             navigator.clipboard.writeText(text).then(() => {
                 alert("Plan copied to clipboard!");
@@ -8708,27 +8764,28 @@ window.toggleCareerHub = function() {
                 </div>
                 <div class="p-5 space-y-8 flex-1 overflow-y-auto">
                     <div>
+                        <p class="text-xs text-slate-500 mb-3 italic">Tap any user type for a tailored briefing.</p>
                         <div class="space-y-4">
-                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
-                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="graduation-cap" class="w-3 h-3"></i> Graduates</div>
+                            <button onclick="generateUserInsight('graduates')" class="w-full text-left bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 hover:bg-white hover:border-indigo-300 hover:shadow-sm transition-all group">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center justify-between"><span class="flex items-center gap-1"><i data-lucide="graduation-cap" class="w-3 h-3"></i> Graduates</span><i data-lucide="arrow-right" class="w-3 h-3 text-indigo-400 group-hover:text-indigo-700 group-hover:translate-x-0.5 transition-all"></i></div>
                                 <p class="text-xs text-slate-600 leading-snug">Students, graduates and trainees can unlock skills training and job readiness opportunities in emerging employment and entrepreneurship sectors.</p>
-                            </div>
-                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
-                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="user-check" class="w-3 h-3"></i> Career Specialists</div>
+                            </button>
+                            <button onclick="generateUserInsight('specialists')" class="w-full text-left bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 hover:bg-white hover:border-indigo-300 hover:shadow-sm transition-all group">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center justify-between"><span class="flex items-center gap-1"><i data-lucide="user-check" class="w-3 h-3"></i> Career Specialists</span><i data-lucide="arrow-right" class="w-3 h-3 text-indigo-400 group-hover:text-indigo-700 group-hover:translate-x-0.5 transition-all"></i></div>
                                 <p class="text-xs text-slate-600 leading-snug">Careers advisors and specialists can use the Compass for evidence-based guidance and clearer progression routes to every learner.</p>
-                            </div>
-                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
-                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="book-open" class="w-3 h-3"></i> Educators & Trainers</div>
+                            </button>
+                            <button onclick="generateUserInsight('educators')" class="w-full text-left bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 hover:bg-white hover:border-indigo-300 hover:shadow-sm transition-all group">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center justify-between"><span class="flex items-center gap-1"><i data-lucide="book-open" class="w-3 h-3"></i> Educators & Trainers</span><i data-lucide="arrow-right" class="w-3 h-3 text-indigo-400 group-hover:text-indigo-700 group-hover:translate-x-0.5 transition-all"></i></div>
                                 <p class="text-xs text-slate-600 leading-snug">Educators and institutions can translate emerging occupational and skills trends into pedagogical and curriculum updates, micro-credential design, and modernized training offers.</p>
-                            </div>
-                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
-                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="briefcase" class="w-3 h-3"></i> Employers</div>
+                            </button>
+                            <button onclick="generateUserInsight('employers')" class="w-full text-left bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 hover:bg-white hover:border-indigo-300 hover:shadow-sm transition-all group">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center justify-between"><span class="flex items-center gap-1"><i data-lucide="briefcase" class="w-3 h-3"></i> Employers</span><i data-lucide="arrow-right" class="w-3 h-3 text-indigo-400 group-hover:text-indigo-700 group-hover:translate-x-0.5 transition-all"></i></div>
                                 <p class="text-xs text-slate-600 leading-snug">Employers can identify relevant training providers, more clearly articulate skill needs, and build stronger recruitment and partnership pipelines.</p>
-                            </div>
-                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
-                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="landmark" class="w-3 h-3"></i> Policymakers</div>
+                            </button>
+                            <button onclick="generateUserInsight('policymakers')" class="w-full text-left bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 hover:bg-white hover:border-indigo-300 hover:shadow-sm transition-all group">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center justify-between"><span class="flex items-center gap-1"><i data-lucide="landmark" class="w-3 h-3"></i> Policymakers</span><i data-lucide="arrow-right" class="w-3 h-3 text-indigo-400 group-hover:text-indigo-700 group-hover:translate-x-0.5 transition-all"></i></div>
                                 <p class="text-xs text-slate-600 leading-snug">Decision-makers can align investments to skills in specific value chains poised for job growth, benefitting from comparable data across sectors and countries.</p>
-                            </div>
+                            </button>
                         </div>
                     </div>
                     
