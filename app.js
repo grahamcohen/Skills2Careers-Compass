@@ -6825,6 +6825,84 @@ window.toggleCareerHub = function() {
             if (window.lucide) lucide.createIcons();
         };
 
+        // Pivot Audit — career-changer checklist. Mirrors the structure of the
+        // Readiness Scorecard but uses pivotAuditSections from data.js.
+        window.showPivotAuditView = function() {
+            const container = document.getElementById('career-hub-content');
+            if (!container) return;
+            const sections = (typeof pivotAuditSections !== 'undefined') ? pivotAuditSections : [];
+
+            const sectionsHtml = sections.map((s, idx) => `
+                <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <div class="p-1.5 bg-${s.color}-50 text-${s.color}-600 rounded-lg"><i data-lucide="${s.icon}" class="w-4 h-4"></i></div>
+                        ${s.title}
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        ${s.items.map(item => `
+                            <label class="flex items-start gap-3 p-3 border border-slate-100 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
+                                <input type="checkbox" class="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 pivot-check">
+                                <span class="text-xs text-slate-700 font-medium leading-snug">${item}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            const totalItems = sections.reduce((sum, s) => sum + s.items.length, 0);
+
+            container.innerHTML = `
+                <div class="max-w-3xl mx-auto py-4 animate-fade-in">
+                    <div class="mb-6 flex justify-between items-center">
+                        <button onclick="resetCareerHub()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub</button>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">Pivot Audit</div>
+                    </div>
+
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-slate-900 mb-2">Ready to pivot careers?</h2>
+                        <p class="text-slate-500">For people moving between sectors. Tick what you've done; aim for full coverage before applying.</p>
+                    </div>
+
+                    <div class="space-y-6" id="pivot-audit-form">
+                        ${sectionsHtml}
+                    </div>
+
+                    <div class="mt-8 bg-indigo-50 border border-indigo-100 rounded-xl p-5 flex justify-between items-center">
+                        <div>
+                            <div class="text-[10px] font-bold text-indigo-400 uppercase tracking-wide mb-1">Coverage</div>
+                            <div class="text-sm font-bold text-indigo-900"><span id="pivot-audit-count">0</span> of ${totalItems} complete</div>
+                        </div>
+                        <div id="pivot-audit-readiness" class="text-xs font-bold text-indigo-700 bg-white border border-indigo-200 rounded-full px-3 py-1.5">Just starting</div>
+                    </div>
+                </div>
+            `;
+
+            // Wire checkbox listeners for live coverage count
+            const form = document.getElementById('pivot-audit-form');
+            if (form) {
+                form.addEventListener('change', (e) => {
+                    if (!e.target.classList.contains('pivot-check')) return;
+                    const checks = form.querySelectorAll('.pivot-check');
+                    const done = Array.from(checks).filter(c => c.checked).length;
+                    const total = checks.length;
+                    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+                    document.getElementById('pivot-audit-count').textContent = done;
+                    const badge = document.getElementById('pivot-audit-readiness');
+                    if (badge) {
+                        let label;
+                        if (pct === 0) label = 'Just starting';
+                        else if (pct < 35) label = 'Early stage';
+                        else if (pct < 70) label = 'Making progress';
+                        else if (pct < 100) label = 'Almost there';
+                        else label = 'Ready to pivot!';
+                        badge.textContent = label;
+                    }
+                });
+            }
+
+            if (window.lucide) lucide.createIcons();
+        };
+
         window.copyOutreachTemplate = function(idx) {
             const templates = (typeof outreachTemplates !== 'undefined') ? outreachTemplates : [];
             const t = templates[idx];
@@ -7633,6 +7711,14 @@ window.toggleCareerHub = function() {
                                 <div class="flex-1">
                                     <h4 class="font-bold text-slate-800 text-sm group-hover:text-emerald-700">Readiness Audit</h4>
                                     <p class="text-xs text-slate-500 mt-0.5">Checklist for job search.</p>
+                                </div>
+                            </button>
+
+                            <button onclick="showPivotAuditView()" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-pink-400 hover:shadow-md text-left transition-all group flex items-center gap-4">
+                                <div class="p-3 bg-pink-50 text-pink-600 rounded-lg shrink-0 group-hover:bg-pink-600 group-hover:text-white transition-colors"><i data-lucide="repeat" class="w-6 h-6"></i></div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-slate-800 text-sm group-hover:text-pink-700">Pivot Audit</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">For career changers between sectors.</p>
                                 </div>
                             </button>
 
@@ -8840,6 +8926,7 @@ window.toggleCareerHub = function() {
             injectUsersDrawer(); // Inject Users Drawer
             injectAboutDrawer(); // Inject About Drawer (was missing — Info button was a no-op)
             renderMainLanding(); // Render the 3-Pillar Dashboard
+            initHeroPersona(); // C: restore/initialize hero persona switcher
             if(window.lucide) lucide.createIcons();
             setGlobalSector('agri');
             updateTrainingProviders(); 
@@ -9354,6 +9441,36 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
+
+        // setHeroPersona — wires the heroPersonaContent block (data.js) into the landing-page
+// persona switcher row. Persisted to localStorage so returning visitors see their pick.
+        const HERO_PERSONA_KEY = 's2c_hero_persona';
+        window.setHeroPersona = function(persona) {
+            const content = (typeof heroPersonaContent !== 'undefined') ? heroPersonaContent : {};
+            const entry = content[persona];
+            const textEl = document.getElementById('hero-persona-text');
+            if (entry && textEl) {
+                textEl.textContent = entry.text;
+                try { localStorage.setItem(HERO_PERSONA_KEY, persona); } catch (e) {}
+            }
+            // Highlight the active button
+            document.querySelectorAll('.hero-persona-btn').forEach(b => {
+                if (b.dataset.persona === persona) {
+                    b.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
+                    b.classList.remove('border-slate-200');
+                } else {
+                    b.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
+                    b.classList.add('border-slate-200');
+                }
+            });
+        };
+
+        // Restore saved persona on load (or default to 'learner')
+        window.initHeroPersona = function() {
+            let saved = 'learner';
+            try { saved = localStorage.getItem(HERO_PERSONA_KEY) || 'learner'; } catch (e) {}
+            setHeroPersona(saved);
+        };
 
         window.injectAboutDrawer = function() {
             if (document.getElementById('about-drawer')) return;
