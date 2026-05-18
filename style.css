@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap'); /* For Certificates */
+
+body {
+    font-family: 'Inter';
+    background-color: #ffffff;
+    color: #0f172a; /* Slate 900 */
+}
+/* Star Rating Colors */
+.star-5 { color: #16a34a; background: #dcfce7; border: 1px solid #bbf7d0; } /* Proven */
+.star-3 { color: #ca8a04; background: #fef9c3; border: 1px solid #fde047; } /* Self-Reported */
+.star-1 { color: #64748b; background: #f1f5f9; border: 1px solid #e2e8f0; } /* No Data */
+/* Low Bandwidth Mode toggles */
+body.low-bandwidth .heavy-chart { display: none !important; }
+body.low-bandwidth .simple-stat { display: block !important; }
+.simple-stat { display: none; }
+/* Top Sector Cards */
+.btn-sector-card { transition: all 0.2s; border-width: 1px; cursor: pointer; position: relative; overflow: hidden; }
+.btn-sector-card:hover { transform: translateY(-3px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+.btn-sector-card.active { border-width: 2px; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+
+/* Sector Themes for Cards */
+.card-agri.active { border-color: #16a34a; background-color: #f0fdf4; }
+.card-energy.active { border-color: #ca8a04; background-color: #fefce8; }
+.card-digital.active { border-color: #2563eb; background-color: #eff6ff; }
+.card-agri.active h3 { color: #15803d; }
+.card-energy.active h3 { color: #a16207; }
+.card-digital.active h3 { color: #1d4ed8; }
+/* Custom Scrollbar */
+.custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
+.custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+/* Animation */
+.animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* Drawer Transition */
+.drawer { transition: transform 0.3s ease-in-out; }
+.drawer.open { transform: translateX(0) !important; }
+/* Tab Styles */
+.tab-btn { padding: 0.75rem 1.25rem; border-bottom: 2px solid transparent; font-weight: 600; color: #64748b; transition: all 0.2s; }
+.tab-btn.active-tab { border-color: #4f46e5; color: #1e293b; }
+/* Certificate Font */
+.font-serif { font-family: 'Playfair Display', serif; }
+/* LOW BANDWIDTH MODE */
+body.low-bandwidth img,
+body.low-bandwidth canvas,
+body.low-bandwidth .icon-box i { display: none !important; }
+body.low-bandwidth .icon-box::after { content: attr(data-alt); font-size: 10px; }
+body.low-bandwidth * { box-shadow: none !important; transition: none !important; animation: none !important; background-image: none !important; }
+body.low-bandwidth .btn-sector-card { border: 1px solid #ccc; background: white; }

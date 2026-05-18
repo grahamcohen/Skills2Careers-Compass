@@ -5,19 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skills2Careers Compass</title>
 
-   <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-K99RWVH5');</script>
+   <!--
+     Google Tag Manager — DISABLED in this fork.
+     Container GTM-K99RWVH5 belongs to the upstream maintainer
+     (carmelasalzano-source). Leaving it active would silently
+     feed all traffic from a redeploy of this fork into their
+     analytics property. Re-enable on merge back upstream by
+     uncommenting the <script> and <noscript> blocks below
+     (also tagged "GTM noscript fallback").
+   -->
+   <!--
+   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+   })(window,document,'script','dataLayer','GTM-K99RWVH5');</script>
+   -->
 <!-- End Google Tag Manager -->
 
-    <meta name="description" content="Careers2Skills Compass Prototype">
+    <meta name="description" content="Skills2Careers Compass Prototype">
     <meta name="theme-color" content="#4f46e5">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
@@ -46,9 +56,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     </style>
 </head>
 <body class="antialiased overflow-x-hidden">
-    <!-- Google Tag Manager (noscript) -->
+    <!-- GTM noscript fallback — DISABLED in this fork (see <head> note) -->
+    <!--
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K99RWVH5"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    -->
     <!-- End Google Tag Manager (noscript) -->
 
     <div id="global-loader" class="fixed inset-0 bg-white z-[9999] flex items-center justify-center">
@@ -59,7 +71,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <div class="flex items-center gap-2">
             <span class="font-bold bg-white text-indigo-600 px-2 py-0.5 rounded text-[10px] uppercase">Prototype v1.4</span>
         </div>
-        <span class="hidden sm:inline text-white/80">Demonstrating UI flow for Skills2Careers Compass.</span>
+        <span class="hidden sm:inline text-white/80">Demonstrating UI flow. Some wage and outcome figures are <strong class="text-white">illustrative</strong> &mdash; see <button onclick="toggleAboutDrawer()" class="underline underline-offset-2 hover:text-white">About</button>.</span>
+        <span class="sm:hidden text-white/80">Prototype &mdash; some figures illustrative.</span>
     </div>
 
     <nav class="bg-white text-slate-900 sticky top-0 z-50 shadow-sm border-b border-slate-200">
@@ -81,7 +94,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                         <option value="sw">SW (Kiswahili)</option>
                         <option value="fr">FR (Français)</option>
                     </select>
-                    <button onclick="toggleLowBandwidth()" id="lb-toggle" class="text-xs text-slate-500 hover:text-slate-900 border border-slate-200 hover:bg-slate-50 px-2 py-1 rounded shrink-0">Lite</button>
+                    <button onclick="toggleLowBandwidth()" id="lb-toggle" title="Toggle Lite Mode — disables animations, transitions, and heavy visuals for faster loading on slow connections" aria-label="Toggle Lite Mode for low-bandwidth viewing" class="text-xs text-slate-500 hover:text-slate-900 border border-slate-200 hover:bg-slate-50 px-2 py-1 rounded shrink-0">Lite</button>
                     </div>
             </div>
 
@@ -364,7 +377,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                         <h4 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i> Verification Checklist</h4>
                         <ul class="text-xs text-slate-600 space-y-2">
                             <li class="flex items-start gap-2"><i data-lucide="briefcase" class="w-3 h-3 mt-0.5 text-slate-400"></i> <span><strong>Employer Acceptance:</strong> Check if certificates and credentials are recognized by target employers in your industry.</span></li>
-                            <li class="flex items-start gap-2"><i data-lucide="globe" class="w-3 h-3 mt-0.5 text-slate-400"></i> <span><strong>Credit Transfer:</strong> Look for EACATS or ECTS-recognized credentials if you plan to pursue a degree or diplomain another EAC country or Europe.</span></li>
+                            <li class="flex items-start gap-2"><i data-lucide="globe" class="w-3 h-3 mt-0.5 text-slate-400"></i> <span><strong>Credit Transfer:</strong> Look for EACATS or ECTS-recognized credentials if you plan to pursue a degree or diploma in another EAC country or Europe.</span></li>
                         </ul>
                     </div>
 
@@ -581,7 +594,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
         <div id="community-hub-drawer" class="fixed inset-y-0 right-0 z-[95] w-full max-w-md bg-white shadow-2xl drawer flex flex-col translate-x-full">
             <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
-                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-pink-600"></i> Careers Hub</h2>
+                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-pink-600"></i> Community Hub</h2>
                 <button onclick="toggleCommunityHub()" class="p-2 bg-white rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors" aria-label="Close Community Hub"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div id="community-hub-content" class="flex-1 overflow-y-auto p-5 space-y-6"></div>
@@ -593,6 +606,53 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 <button onclick="toggleTrainingHub()" class="p-2 bg-white rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors" aria-label="Close Training Hub"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div id="training-hub-content" class="flex-1 overflow-y-auto p-5 space-y-6 custom-scroll"></div>
+        </div>
+
+        <!-- Certificate Modal: shown after a learner completes a competency badge -->
+        <div id="certificate-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm transition-opacity" onclick="closeModal('certificate-modal')"></div>
+            <div id="certificate-modal-panel" class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all scale-95 opacity-0">
+                <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white">
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="award" class="w-5 h-5 text-amber-500"></i> Certificate of Completion
+                    </h2>
+                    <button onclick="closeModal('certificate-modal')" aria-label="Close certificate" class="p-2 bg-white rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 border border-slate-200 transition-colors shadow-sm">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="p-8 md:p-12 bg-gradient-to-br from-indigo-50 via-white to-amber-50">
+                    <div class="border-4 border-double border-indigo-300 rounded-lg p-6 md:p-10 bg-white text-center shadow-inner">
+                        <div class="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-600 mb-2">Skills2Careers Compass</div>
+                        <h3 class="font-serif text-3xl md:text-4xl text-slate-900 mb-1">Certificate</h3>
+                        <p class="text-xs text-slate-500 mb-6">of Demonstrated Competency</p>
+                        <p class="text-xs text-slate-500 mb-2">This certifies that the holder has demonstrated proficiency in</p>
+                        <div id="cert-skill" class="font-serif text-2xl md:text-3xl text-indigo-700 font-bold mb-6">Skill Name</div>
+                        <p class="text-xs text-slate-500 mb-1">within the</p>
+                        <div id="cert-sector" class="text-sm font-bold text-slate-700 mb-6">Sector</div>
+                        <div class="grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-slate-200 text-left">
+                            <div>
+                                <div class="text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">Issued</div>
+                                <div id="cert-date" class="text-sm font-medium text-slate-700">—</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">Issuer</div>
+                                <div class="text-sm font-medium text-slate-700">Skills2Careers Compass</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-dashed border-slate-200">
+                            <p class="text-[10px] text-slate-400 italic">Prototype credential — for demonstration only. Not currently a verified or accredited qualification.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-2">
+                    <button onclick="window.print()" class="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold shadow-sm flex items-center gap-2">
+                        <i data-lucide="printer" class="w-4 h-4"></i> Print
+                    </button>
+                    <button onclick="closeModal('certificate-modal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-sm">
+                        Close
+                    </button>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -616,6 +676,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                         </button>
                     </div>
                     <div class="flex flex-col gap-1 text-[10px] md:text-xs text-slate-400">
+                    </div>
+                </div>
+                <div class="space-y-3 md:space-y-4 md:text-right">
+                    <div class="text-xs text-slate-500">
+                        Built on the
+                        <a href="https://unevoc.unesco.org/home/Global+Skills+Tracker" target="_blank" rel="noopener" class="font-bold text-indigo-600 hover:text-indigo-700 hover:underline">
+                            UNESCO Global Skills Tracker
+                            <i data-lucide="external-link" class="w-3 h-3 inline-block align-text-top"></i>
+                        </a>
+                        and the ESCO occupation taxonomy.
+                    </div>
+                    <div class="text-[10px] text-slate-400">
+                        <button onclick="toggleAboutDrawer()" class="text-slate-500 hover:text-indigo-600 underline-offset-2 hover:underline">About the data &amp; methodology</button>
                     </div>
                 </div>
             </div>

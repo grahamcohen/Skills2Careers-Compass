@@ -13,8 +13,170 @@ let favoriteVentures = new Set(); // Store favorite ventures
 let hubNavigationStack = []; // Navigation history for Unified Hub
 let showCrossSectorOnly = false; // Toggle for Cross-Sector Skills
 let isStudentpreneur = false; // Toggle for Studentpreneur Mode
+let lastInterviewFeedback = null; // Cache for AI Interview Coach result (so Back to Results doesn't re-run the simulation)
+let modalNavStack = []; // B1/B2/B3: stack of return points for cross-modal/drawer navigation.
+                        // Entries: { kind, payload }
+                        // kinds: 'drawer' (payload = drawer id e.g. 'sector-hub-drawer')
+                        //        'occupation' (payload = title)
+                        //        'skill'      (payload = name)
+                        // Pushed before opening a new modal that overlays an existing one.
+                        // Cleared whenever the user explicitly closes via the X button.
 
 // --- CONFIGURATION ---
+
+// PLACEHOLDER: not a real address. The upstream codebase used
+// support@ai4eac.org (old project name). Replace with the production
+// inbox before deployment. Used by all "Report Broken Link" buttons.
+const REPORT_EMAIL = 'feedback@example.org';
+
+// Lightweight toast helper — used for transient feedback like
+// "Coming soon", "Copied to clipboard", etc. Stacks toasts in a
+// bottom-right column. Auto-dismisses after `ms` (default 4s).
+window.showToast = function(message, kind = 'info', ms = 4000) {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] flex flex-col items-center gap-2 pointer-events-none print:hidden';
+        document.body.appendChild(container);
+    }
+    const tones = {
+        info:    { bg: 'bg-slate-900',   icon: 'info' },
+        success: { bg: 'bg-emerald-600', icon: 'check-circle' },
+        warn:    { bg: 'bg-amber-600',   icon: 'alert-triangle' },
+        error:   { bg: 'bg-rose-600',    icon: 'alert-circle' }
+    };
+    const tone = tones[kind] || tones.info;
+    const toast = document.createElement('div');
+    toast.className = `${tone.bg} text-white text-xs font-medium px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2 max-w-md pointer-events-auto opacity-0 translate-y-2 transition-all duration-200`;
+    toast.innerHTML = `<i data-lucide="${tone.icon}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
+    container.appendChild(toast);
+    requestAnimationFrame(() => {
+        toast.classList.remove('opacity-0', 'translate-y-2');
+        toast.classList.add('opacity-100', 'translate-y-0');
+    });
+    if (window.lucide) lucide.createIcons();
+    setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 200);
+    }, ms);
+};
+
+// --- Modal navigation stack helpers (B1/B2/B3) ---
+// pushModalReturn: capture the *current* foreground view so it can be restored
+// when the next modal is closed.
+window.pushModalReturn = function() {
+    // 1. Check for an open occupation or skill modal -> push as 'occupation'/'skill'
+    const occModal = document.getElementById('occupation-modal');
+    if (occModal && !occModal.classList.contains('hidden')) {
+        const t = document.getElementById('modal-title');
+        if (t && t.innerText) {
+            modalNavStack.push({ kind: 'occupation', payload: t.innerText });
+            return;
+        }
+    }
+    const skillModal = document.getElementById('skill-modal');
+    if (skillModal && !skillModal.classList.contains('hidden')) {
+        const t = document.getElementById('skill-modal-title');
+        if (t && t.innerText) {
+            modalNavStack.push({ kind: 'skill', payload: t.innerText });
+            return;
+        }
+    }
+    // 2. Check the side-drawers we treat as containers. The first one that's
+    //    visible (i.e. doesn't have the translate-x-full class) is the return target.
+    const drawerIds = [
+        'sector-hub-drawer',
+        'career-hub-drawer',
+        'community-hub-drawer',
+        'training-hub-drawer'
+    ];
+    for (const id of drawerIds) {
+        const d = document.getElementById(id);
+        if (d && !d.classList.contains('translate-x-full')) {
+            modalNavStack.push({ kind: 'drawer', payload: id });
+            return;
+        }
+    }
+    // Otherwise nothing to push — top-level entry, no return point.
+};
+
+// goBackModal: pop the most recent return point and restore it.
+window.goBackModal = function() {
+    const entry = modalNavStack.pop();
+    if (!entry) {
+        // Nothing on the stack — fall back to closing whatever is open.
+        const occModal = document.getElementById('occupation-modal');
+        if (occModal && !occModal.classList.contains('hidden')) closeModal('occupation-modal');
+        const skillModal = document.getElementById('skill-modal');
+        if (skillModal && !skillModal.classList.contains('hidden')) closeModal('skill-modal');
+        return;
+    }
+    if (entry.kind === 'occupation') {
+        // Re-open the previous occupation modal. Doing so will not re-push,
+        // because the function only pushes when invoked from outside this flow
+        // (see _internalRestore flag).
+        window._internalRestore = true;
+        openOccupationModal(entry.payload);
+        window._internalRestore = false;
+    } else if (entry.kind === 'skill') {
+        window._internalRestore = true;
+        openSkillModal(entry.payload);
+        window._internalRestore = false;
+    } else if (entry.kind === 'drawer') {
+        // Close the topmost modal, then reveal the drawer.
+        const occModal = document.getElementById('occupation-modal');
+        if (occModal && !occModal.classList.contains('hidden')) closeModal('occupation-modal');
+        const skillModal = document.getElementById('skill-modal');
+        if (skillModal && !skillModal.classList.contains('hidden')) closeModal('skill-modal');
+        const drawer = document.getElementById(entry.payload);
+        if (drawer) drawer.classList.remove('translate-x-full');
+    }
+};
+
+// injectModalBackButton: called after a modal renders. If the stack is
+// non-empty AND we have not just done an internal restore, inject a "Back"
+// button into the modal's header next to the close X.
+window.injectModalBackButton = function(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    // Remove any previous back button so we don't stack them
+    const prev = modal.querySelector('.modal-back-btn');
+    if (prev) prev.remove();
+    if (modalNavStack.length === 0) return;
+    // Find the X close button — both occupation and skill modals expose it
+    // via [aria-label="Close modal"]
+    const closeBtn = modal.querySelector('button[aria-label="Close modal"]');
+    if (!closeBtn) return;
+    const back = document.createElement('button');
+    back.type = 'button';
+    back.className = 'modal-back-btn mr-2 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 hover:text-slate-800 transition-colors text-xs font-bold flex items-center gap-1.5 shadow-sm shrink-0';
+    back.setAttribute('aria-label', 'Go back to previous view');
+    back.innerHTML = '<i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back';
+    back.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        goBackModal();
+    };
+    closeBtn.parentNode.insertBefore(back, closeBtn);
+    if (window.lucide) lucide.createIcons();
+};
+
+// B4: shared back-button action for sub-sections opened from the Careers Hub
+// (Community Hub drawer, Founders Launchpad, Financial Aid). Closes whatever
+// view is currently active and reopens the Careers Hub drawer.
+window.backToCareersHub = function() {
+    // Close any modal/drawer that might be on top
+    closeAllModals('career-hub-drawer');
+    const drawer = document.getElementById('career-hub-drawer');
+    if (drawer) drawer.classList.remove('translate-x-full');
+    // Always rebuild the hub content so the user sees the entry page, not
+    // whichever sub-view they last visited.
+    if (typeof resetCareerHub === 'function') resetCareerHub();
+    document.body.classList.add('overflow-hidden');
+    if (window.lucide) lucide.createIcons();
+};
+
 const API_CONFIG = {
     baseUrl: '', // Leave empty for local files, set to 'https://api.yourdomain.com/v1/' for MVP
     endpoints: {
@@ -895,7 +1057,7 @@ function getOJAMetrics(roleTitle, country) {
                         <div class="flex justify-between items-end mt-3 pt-2 border-t border-slate-50">
                             <div class="flex flex-col gap-1">
                                 <div class="text-[9px] text-slate-400 italic">Updated: ${t.lastUpdated || '2024'}</div>
-                                <button onclick="event.stopPropagation(); window.open('mailto:support@ai4eac.org?subject=Broken Link Report: ${encodeURIComponent(t.name)}', '_blank')" class="text-[9px] text-rose-400 hover:text-rose-600 flex items-center gap-1 transition-colors" title="Report Broken Link">
+                                <button onclick="event.stopPropagation(); window.open('mailto:${REPORT_EMAIL}?subject=Broken Link Report: ${encodeURIComponent(t.name)}', '_blank')" class="text-[9px] text-rose-400 hover:text-rose-600 flex items-center gap-1 transition-colors" title="Report Broken Link">
                                     <i data-lucide="flag" class="w-2.5 h-2.5"></i> Report Issue
                                 </button>
                             </div>
@@ -1755,11 +1917,8 @@ function getOJAMetrics(roleTitle, country) {
                                     <div class="relative z-10">
                                         <div class="flex justify-between items-start mb-1">
                                             <div class="text-[10px] uppercase font-bold text-${themeColor}-100">Micro-Credential</div>
-                                            <div class="text-[9px] bg-white/20 px-1.5 py-0.5 rounded text-white font-medium">${activeData.badgeProvider}</div>
                                             <div class="text-[9px] bg-white/20 px-1.5 py-0.5 rounded text-white font-medium">${badgeInfo.provider}</div>
                                         </div>
-                                        <h3 class="font-bold text-lg leading-tight mb-1">${activeData.badgeTitle}</h3>
-                                        <div class="text-[10px] text-${themeColor}-100 italic mb-3 opacity-90">${activeData.badgeStandard}</div>
                                         <h3 class="font-bold text-lg leading-tight mb-1">${badgeInfo.title}</h3>
                                         <div class="text-[10px] text-${themeColor}-100 italic mb-3 opacity-90">${badgeInfo.standard}</div>
                                         
@@ -3083,6 +3242,11 @@ function getOJAMetrics(roleTitle, country) {
         }
 
         function openOccupationModal(title) {
+            // B1/B2: capture where we came from so a Back button can restore it.
+            // _internalRestore is set true by goBackModal() to suppress double-push.
+            if (!window._internalRestore) {
+                pushModalReturn();
+            }
             closeAllModals('occupation-modal');
             const modal = document.getElementById('occupation-modal');
             const panel = document.getElementById('occupation-modal-panel');
@@ -3171,14 +3335,22 @@ function getOJAMetrics(roleTitle, country) {
             // Inject HTML description
             document.getElementById('occ-desc').innerHTML = details.desc;
             
-            // 2. Typical Skills Required (Ranked & Categorized)
+            // 2. Typical Skills Required (Ranked & Categorized).
+            // F1 (reverse): Each technical skill is wrapped in a button that opens
+            // the corresponding Skill Profile modal — so users can jump role->skill
+            // and (combined with the forward F1 change) skill->role.
+            // The whole row is clickable; we close the occupation modal first
+            // to avoid a confusing nested-modal stack.
             const techHtml = details.specificSkills.technical.map((s, i) => `
-                <div class="flex items-center gap-2 p-2 bg-slate-50 border border-slate-100 rounded text-xs text-slate-700 hover:border-indigo-200 transition-colors w-full">
+                <button onclick="closeModal('occupation-modal'); openSkillModal('${s.replace(/'/g, "\\'")}')" class="flex items-center gap-2 p-2 bg-slate-50 hover:bg-white border border-slate-100 hover:border-indigo-300 rounded text-xs text-slate-700 transition-colors w-full text-left group cursor-pointer" title="View ${s} skill profile">
                     <div class="w-5 h-5 flex items-center justify-center bg-white rounded-full shadow-sm text-[10px] font-bold text-slate-400 border border-slate-100">${i+1}</div>
-                    <span class="font-bold text-slate-800">${s}</span>
-                </div>
+                    <span class="font-bold text-slate-800 flex-1">${s}</span>
+                    <i data-lucide="arrow-up-right" class="w-3 h-3 text-slate-300 group-hover:text-indigo-500"></i>
+                </button>
             `).join('');
 
+            // Employability skills don't have their own profile modal yet, so
+            // they stay as static rows — same styling as before.
             const empHtml = details.specificSkills.employability.map((s, i) => `
                 <div class="flex items-center gap-2 p-2 bg-slate-50 border border-slate-100 rounded text-xs text-slate-700 hover:border-emerald-200 transition-colors w-full">
                     <div class="w-5 h-5 flex items-center justify-center bg-white rounded-full shadow-sm text-[10px] font-bold text-emerald-600 border border-slate-100">${i+1}</div>
@@ -3373,7 +3545,10 @@ function getOJAMetrics(roleTitle, country) {
                         <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
                             <div class="grid grid-cols-2 md:grid-cols-3 gap-y-5 gap-x-4">
                                 <div>
-                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Avg Wage</div>
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-1 flex items-center gap-1">
+                                        Avg Wage
+                                        <span class="text-[8px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded px-1 py-0.5 normal-case tracking-normal" title="Wage figures are simulated for the prototype. See About > Prototype notice.">Demo</span>
+                                    </div>
                                     <div class="text-xs font-bold text-emerald-600 flex items-center gap-1.5">
                                         <i data-lucide="banknote" class="w-3.5 h-3.5"></i> ${wageHtml}
                                     </div>
@@ -3446,7 +3621,12 @@ function getOJAMetrics(roleTitle, country) {
             document.getElementById('modal-pathway-section').innerHTML = '';
 
             // NEW: Share Button in Footer
-            const shareText = encodeURIComponent(`Check out this ${title} role on the Skills Compass!`);
+            // Include the live page URL so recipients can actually open the app.
+            // window.location.href is fine here — works on any host (GitHub Pages,
+            // localhost, custom domain) without hard-coding.
+            const shareText = encodeURIComponent(
+                `Check out the "${title}" role on Skills2Careers Compass: ${window.location.href}`
+            );
             const shareUrl = `https://wa.me/?text=${shareText}`;
             
             const footer = document.getElementById('occ-modal-footer');
@@ -3461,6 +3641,8 @@ function getOJAMetrics(roleTitle, country) {
             modal.classList.remove('hidden');
             if(window.lucide) lucide.createIcons();
             setTimeout(() => { panel.classList.remove('scale-95', 'opacity-0'); panel.classList.add('scale-100', 'opacity-100'); }, 10);
+            // B1/B2: render a Back button in the header if a return point exists.
+            injectModalBackButton('occupation-modal');
         }
         
         function toggleLowBandwidth() {
@@ -3468,16 +3650,29 @@ function getOJAMetrics(roleTitle, country) {
             const btn = document.getElementById('lb-toggle');
             btn.innerText = isLite ? 'Full Mode' : 'Lite Mode';
             localStorage.setItem('ai4eac_lite_mode', isLite);
-            
+
             if (isLite) {
                 console.log("Lite mode enabled: Reducing visual load for performance.");
+                if (typeof showToast === 'function') {
+                    showToast('Lite Mode on — animations and heavy visuals disabled for slower connections.', 'info', 3500);
+                }
+            } else {
+                if (typeof showToast === 'function') {
+                    showToast('Full Mode on.', 'info', 2000);
+                }
             }
         }
 
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             const panel = modal.querySelector('div[id$="panel"]');
-            
+
+            // B1/B2/B3: explicit close via X should clear cross-modal history.
+            // (goBackModal pops one entry; pressing X means "I'm done" — bail out.)
+            if (!window._internalRestore && (modalId === 'occupation-modal' || modalId === 'skill-modal')) {
+                modalNavStack = [];
+            }
+
             if(panel) {
                 panel.classList.remove('scale-100', 'opacity-100');
                 panel.classList.add('scale-95', 'opacity-0');
@@ -4190,6 +4385,9 @@ function getOJAMetrics(roleTitle, country) {
 
         // --- NEW: Interview Prep Logic ---
         window.showInterviewPrep = function() {
+            // Reset cached result whenever a new question is started
+            lastInterviewFeedback = null;
+
             const container = document.getElementById('career-hub-content');
             const sector = activeSectorId;
             
@@ -4200,20 +4398,20 @@ function getOJAMetrics(roleTitle, country) {
                     <button onclick="resetCareerHub()" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm shrink-0 w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
                     
                     <div class="flex-1 flex flex-col items-center justify-center text-center space-y-6">
-                        <div class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-2 animate-pulse">
+                        <div id="interview-mic-indicator" class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-2">
                             <i data-lucide="mic" class="w-8 h-8"></i>
                         </div>
                         
                         <div class="space-y-2">
                             <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase tracking-wide">AI Interview Coach</span>
                             <h3 class="text-xl font-bold text-slate-900 leading-snug">"${question}"</h3>
-                            <p class="text-xs text-slate-500">Speak clearly. The AI is listening for keywords and tone.</p>
+                            <p id="interview-hint" class="text-xs text-slate-500">Click Start when you're ready. Speak your answer aloud, then click Stop.</p>
                         </div>
 
-                        <!-- Mock Recording Interface -->
+                        <!-- Two-step Recording Interface: Start -> Stop -> Process -->
                         <div class="w-full max-w-xs space-y-3" id="interview-controls">
-                            <button onclick="simulateInterviewResponse()" class="w-full py-3 bg-rose-600 text-white font-bold rounded-xl shadow-lg hover:bg-rose-700 transition-all flex items-center justify-center gap-2">
-                                <span class="w-2 h-2 bg-white rounded-full animate-ping"></span> Start Recording Answer
+                            <button onclick="startInterviewRecording()" class="w-full py-3 bg-rose-600 text-white font-bold rounded-xl shadow-lg hover:bg-rose-700 transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="mic" class="w-4 h-4"></i> Start Recording
                             </button>
                         </div>
                     </div>
@@ -4222,53 +4420,114 @@ function getOJAMetrics(roleTitle, country) {
             if(window.lucide) lucide.createIcons();
         }
 
-        window.simulateInterviewResponse = function() {
+        // STEP 1: User clicks "Start Recording" -> swap UI to "Stop Recording" state.
+        // Note: this is a UI-only mock; we don't actually capture audio. The two-step
+        // pattern makes the flow match user expectations (press to start, press to stop).
+        window.startInterviewRecording = function() {
             const controls = document.getElementById('interview-controls');
+            const indicator = document.getElementById('interview-mic-indicator');
+            const hint = document.getElementById('interview-hint');
+            if (!controls) return;
+
+            if (indicator) {
+                indicator.classList.add('animate-pulse', 'ring-4', 'ring-rose-200');
+            }
+            if (hint) {
+                hint.innerHTML = '<span class="text-rose-600 font-bold">● Recording</span> &mdash; speak your answer, then click Stop.';
+            }
+
+            controls.innerHTML = `
+                <button onclick="stopInterviewRecording()" class="w-full py-3 bg-slate-900 text-white font-bold rounded-xl shadow-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+                    <span class="w-2 h-2 bg-rose-400 rounded-full animate-ping"></span> Stop Recording
+                </button>
+                <button onclick="showInterviewPrep()" class="w-full py-2 text-xs font-bold text-slate-500 hover:text-slate-700 transition-colors">
+                    Cancel
+                </button>
+            `;
+            if(window.lucide) lucide.createIcons();
+        }
+
+        // STEP 2: User clicks "Stop Recording" -> show "Processing..." then render the
+        // feedback report. Caches the result so the Rubric's "Back to Results" button
+        // can restore exactly the same screen instead of re-running the simulation.
+        window.stopInterviewRecording = function() {
+            const controls = document.getElementById('interview-controls');
+            if (!controls) return;
+
             controls.innerHTML = `<div class="text-sm font-medium text-slate-600 animate-pulse">Processing your answer...</div>`;
-            
-            // Randomized Feedback for Demo Realism
+
+            // Randomised feedback (demo content). Caching it means navigation back
+            // to this screen shows the same result, not a new random one.
             const feedbacks = [
                 { score: "8/10", strength: "Good structure (STAR method).", improve: "Quantify your impact (e.g., 'improved by 20%')." },
                 { score: "7/10", strength: "Clear articulation and tone.", improve: "Try to relate your answer back to the company's mission." },
                 { score: "9/10", strength: "Excellent technical depth.", improve: "Keep the answer slightly more concise." }
             ];
-            const fb = feedbacks[Math.floor(Math.random() * feedbacks.length)];
-            
-            setTimeout(() => {
-                const container = document.getElementById('career-hub-content');
-                container.innerHTML = `
-                    <div class="animate-fade-in space-y-4">
-                        <button onclick="resetCareerHub()" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
-                        
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-500"></i> Feedback Report</h3>
-                            
-                            <div class="space-y-4">
-                                <div>
-                                    <div class="flex justify-between text-xs font-bold text-slate-600 mb-1"><span>Confidence Score</span><span>${fb.score}</span></div>
-                                    <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full" style="width: ${parseInt(fb.score)*10}%"></div></div>
-                                </div>
-                                
-                                <div class="bg-indigo-50 p-3 rounded-lg">
-                                    <div class="text-xs font-bold text-indigo-800 mb-1">Key Strengths</div>
-                                    <p class="text-xs text-indigo-700">${fb.strength}</p>
-                                </div>
+            lastInterviewFeedback = feedbacks[Math.floor(Math.random() * feedbacks.length)];
 
-                                <div class="bg-orange-50 p-3 rounded-lg">
-                                    <div class="text-xs font-bold text-orange-800 mb-1">To Improve</div>
-                                    <p class="text-xs text-orange-700">${fb.improve}</p>
-                                </div>
+            setTimeout(() => {
+                showInterviewResults();
+            }, 1500);
+        }
+
+        // Renders the feedback report from cached state. Called both by
+        // stopInterviewRecording (after processing) and by the Rubric's
+        // "Back to Results" button (without re-running anything).
+        window.showInterviewResults = function() {
+            if (!lastInterviewFeedback) {
+                // Nothing cached; send the user back to the start of the flow.
+                showInterviewPrep();
+                return;
+            }
+            const fb = lastInterviewFeedback;
+            const container = document.getElementById('career-hub-content');
+
+            container.innerHTML = `
+                <div class="animate-fade-in space-y-4">
+                    <button onclick="resetCareerHub()" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+
+                    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-500"></i> Feedback Report</h3>
+                            <span class="text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200 rounded px-1.5 py-0.5 uppercase tracking-wide" title="Demo feedback — not produced by a real ASR/NLP pipeline">Demo</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-slate-600 mb-1"><span>Confidence Score</span><span>${fb.score}</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full" style="width: ${parseInt(fb.score)*10}%"></div></div>
                             </div>
-                            
-                            <div class="flex gap-2 mt-4">
-                                <button onclick="showInterviewPrep()" class="flex-1 py-2 border border-slate-200 text-slate-700 font-bold rounded-lg text-xs hover:bg-slate-50">Try Another</button>
-                                <button onclick="renderInterviewRubric()" class="flex-1 py-2 bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold rounded-lg text-xs hover:bg-indigo-100 flex items-center justify-center gap-1"><i data-lucide="clipboard-list" class="w-3 h-3"></i> Open Rubric</button>
+
+                            <div class="bg-indigo-50 p-3 rounded-lg">
+                                <div class="text-xs font-bold text-indigo-800 mb-1">Key Strengths</div>
+                                <p class="text-xs text-indigo-700">${fb.strength}</p>
+                            </div>
+
+                            <div class="bg-orange-50 p-3 rounded-lg">
+                                <div class="text-xs font-bold text-orange-800 mb-1">To Improve</div>
+                                <p class="text-xs text-orange-700">${fb.improve}</p>
                             </div>
                         </div>
+
+                        <div class="flex gap-2 mt-4">
+                            <button onclick="showInterviewPrep()" class="flex-1 py-2 border border-slate-200 text-slate-700 font-bold rounded-lg text-xs hover:bg-slate-50">Try Another</button>
+                            <button onclick="renderInterviewRubric()" class="flex-1 py-2 bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold rounded-lg text-xs hover:bg-indigo-100 flex items-center justify-center gap-1"><i data-lucide="clipboard-list" class="w-3 h-3"></i> Open Rubric</button>
+                        </div>
                     </div>
-                `;
-                if(window.lucide) lucide.createIcons();
-            }, 2000);
+                </div>
+            `;
+            if(window.lucide) lucide.createIcons();
+        }
+
+        // Back-compat alias: any external code (or older onclick handlers) that
+        // still calls simulateInterviewResponse should restore the cached results
+        // if available, or restart the flow.
+        window.simulateInterviewResponse = function() {
+            if (lastInterviewFeedback) {
+                showInterviewResults();
+            } else {
+                showInterviewPrep();
+            }
         }
 
         // --- NEW: Interview Rubric Logic ---
@@ -4277,7 +4536,7 @@ function getOJAMetrics(roleTitle, country) {
             
             container.innerHTML = `
                 <div class="animate-fade-in space-y-4">
-                    <button onclick="simulateInterviewResponse()" class="mb-2 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Results</button>
+                    <button onclick="showInterviewResults()" class="mb-2 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Results</button>
                     
                     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
                         <div class="flex justify-between items-start mb-4">
@@ -4366,7 +4625,12 @@ function getOJAMetrics(roleTitle, country) {
 
         window.saveRubricScore = function() {
             alert("Assessment saved to candidate profile!");
-            showInterviewPrep();
+            // Return to the cached results view (not a fresh question)
+            if (lastInterviewFeedback) {
+                showInterviewResults();
+            } else {
+                showInterviewPrep();
+            }
         }
         
         window.openEvidenceModal = function() {
@@ -4892,6 +5156,10 @@ window.toggleCareerHub = function() {
     resetCareerHub(); 
 }
         window.openSkillModal = function(skillName) {
+            // B3: capture where we came from so a Back button can restore it.
+            if (!window._internalRestore) {
+                pushModalReturn();
+            }
             closeAllModals('skill-modal');
             const modal = document.getElementById('skill-modal');
             const panel = document.getElementById('skill-modal-panel');
@@ -4960,8 +5228,36 @@ window.toggleCareerHub = function() {
                 document.getElementById('skill-synergies-section').classList.add('hidden');
             }
 
-            document.getElementById('skill-roles-primary').innerHTML = primaryRoles.map(r => `<span class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded border border-indigo-100 text-xs font-medium">${r}</span>`).join('');
-            document.getElementById('skill-roles-similar').innerHTML = similarRoles.map(r => `<span class="px-2 py-1 bg-slate-50 text-slate-600 rounded border border-slate-200 text-xs">${r}</span>`).join('');
+            // F1: Make Common Job Titles clickable when they match a known occupation,
+            // so users can jump from a skill into a full role profile and back.
+            // We resolve a name to an occupation via baseSectorDetailData + DataManager.
+            const knownOccupationNames = new Set();
+            if (typeof baseSectorDetailData !== 'undefined') {
+                Object.values(baseSectorDetailData).forEach(sec => {
+                    (sec && sec.occupations ? sec.occupations : []).forEach(o => knownOccupationNames.add((o.name || '').toLowerCase()));
+                });
+            }
+            if (dataManager && Array.isArray(dataManager.topOccupations)) {
+                dataManager.topOccupations.forEach(o => knownOccupationNames.add((o.occupationRole || o.name || '').toLowerCase()));
+            }
+
+            const renderRoleChip = (r, primary) => {
+                const isLinkable = knownOccupationNames.has((r || '').toLowerCase());
+                if (isLinkable) {
+                    const styleClass = primary
+                        ? 'px-2 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded border border-indigo-200 text-xs font-medium inline-flex items-center gap-1 transition-colors cursor-pointer'
+                        : 'px-2 py-1 bg-slate-50 text-slate-700 hover:bg-slate-100 rounded border border-slate-200 text-xs inline-flex items-center gap-1 transition-colors cursor-pointer';
+                    return `<button onclick="closeModal('skill-modal'); openOccupationModal('${r.replace(/'/g, "\\'")}')" class="${styleClass}" title="View ${r} occupation profile">${r} <i data-lucide="arrow-up-right" class="w-2.5 h-2.5"></i></button>`;
+                }
+                // Fallback: plain non-interactive chip (same as before)
+                const styleClass = primary
+                    ? 'px-2 py-1 bg-indigo-50 text-indigo-700 rounded border border-indigo-100 text-xs font-medium'
+                    : 'px-2 py-1 bg-slate-50 text-slate-600 rounded border border-slate-200 text-xs';
+                return `<span class="${styleClass}">${r}</span>`;
+            };
+
+            document.getElementById('skill-roles-primary').innerHTML = primaryRoles.map(r => renderRoleChip(r, true)).join(' ');
+            document.getElementById('skill-roles-similar').innerHTML = similarRoles.map(r => renderRoleChip(r, false)).join(' ');
             
             let defaultHotspotText = `High demand in major economic hubs like <strong>Nairobi, Kigali, and Dar es Salaam</strong>, particularly within the growing ${activeSectorId === 'agri' ? 'Agribusiness' : activeSectorId === 'energy' ? 'Renewable Energy' : 'ICT'} sector.`;
             
@@ -5041,6 +5337,8 @@ window.toggleCareerHub = function() {
             modal.classList.remove('hidden');
             if(window.lucide) lucide.createIcons();
             setTimeout(() => { panel.classList.remove('scale-95', 'opacity-0'); panel.classList.add('scale-100', 'opacity-100'); }, 10);
+            // B3: render a Back button in the header if a return point exists.
+            injectModalBackButton('skill-modal');
         }
 
         window.openCoursesForSkill = function(skillName) {
@@ -5196,7 +5494,7 @@ window.toggleCareerHub = function() {
                 } else {
                     el.classList.remove('max-h-0', 'opacity-0');
                     el.classList.add('max-h-[2000px]', 'opacity-100', 'mt-3');
-                    btn.innerHTML = `View Less ${label} <i data-lucide="chevron-up" class="w-3 h-3"></i>`;
+                    btn.innerHTML = `View Fewer ${label} <i data-lucide="chevron-up" class="w-3 h-3"></i>`;
                 }
                 if(window.lucide) lucide.createIcons();
             }
@@ -6025,6 +6323,7 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in flex flex-col h-full">
+                    <button onclick="backToCareersHub()" class="mb-3 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Careers Hub</button>
                     <div class="bg-pink-50/50 p-3 rounded-xl border border-pink-100 grid grid-cols-2 gap-3 mb-4 shrink-0">
                         <div>
                             <label class="block text-[10px] font-bold text-pink-900 mb-1">Location</label>
@@ -7361,6 +7660,7 @@ window.toggleCareerHub = function() {
                                 <span class="px-2 py-1 bg-slate-50 text-slate-600 rounded text-[10px] border border-slate-100 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> ${c.mode}</span>
                                 <span class="px-2 py-1 bg-slate-50 text-slate-600 rounded text-[10px] border border-slate-100 flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${c.duration}</span>
                                 <span class="px-2 py-1 bg-slate-50 text-slate-600 rounded text-[10px] border border-slate-100 flex items-center gap-1"><i data-lucide="banknote" class="w-3 h-3"></i> ${c.cost}</span>
+                                <span class="px-2 py-1 bg-slate-50 text-slate-600 rounded text-[10px] border border-slate-100 flex items-center gap-1" title="Language of instruction"><i data-lucide="languages" class="w-3 h-3"></i> ${c.language || 'English'}</span>
                             </div>
 
                             <div class="flex items-center justify-between pt-2 border-t border-slate-50">
@@ -7371,7 +7671,7 @@ window.toggleCareerHub = function() {
                                     <div class="font-mono font-bold text-xs ${metricDisplay === 'No Data' ? 'text-slate-300' : 'text-blue-600'}">
                                         ${metricDisplay}
                                     </div>
-                                    <button onclick="event.stopPropagation(); window.open('mailto:support@ai4eac.org?subject=Broken Link Report: ${encodeURIComponent(c.name)}', '_blank')" class="text-[9px] text-rose-400 hover:text-rose-600 flex items-center gap-1 mt-1" title="Report Broken Link">
+                                    <button onclick="event.stopPropagation(); window.open('mailto:${REPORT_EMAIL}?subject=Broken Link Report: ${encodeURIComponent(c.name)}', '_blank')" class="text-[9px] text-rose-400 hover:text-rose-600 flex items-center gap-1 mt-1" title="Report Broken Link">
                                         <i data-lucide="flag" class="w-2.5 h-2.5"></i> Report
                                     </button>
                                 </div>
@@ -7398,7 +7698,7 @@ window.toggleCareerHub = function() {
                         </td>
                         <td class="px-3 py-3">
                             <div class="text-[10px] text-slate-600 font-medium">${sectorDisplay}</div>
-                            <div class="text-[9px] text-slate-400">${c.mode} • ${c.duration}</div>
+                            <div class="text-[9px] text-slate-400">${c.mode} • ${c.duration} • ${c.language || 'English'}</div>
                         </td>
                         <td class="px-3 py-3">
                             <span class="${badgeClass} px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider inline-flex items-center gap-1 whitespace-nowrap">
@@ -7419,7 +7719,7 @@ window.toggleCareerHub = function() {
                                 <i data-lucide="external-link" class="w-3 h-3"></i>
                             </a>` : `<span class="text-[10px] text-slate-300 cursor-not-allowed">N/A</span>`}
                             <div class="flex items-center justify-end gap-3">
-                                <button onclick="event.stopPropagation(); window.open('mailto:support@ai4eac.org?subject=Broken Link Report: ${encodeURIComponent(c.name)}', '_blank')" class="text-slate-300 hover:text-rose-500 transition" title="Report Broken Link">
+                                <button onclick="event.stopPropagation(); window.open('mailto:${REPORT_EMAIL}?subject=Broken Link Report: ${encodeURIComponent(c.name)}', '_blank')" class="text-slate-300 hover:text-rose-500 transition" title="Report Broken Link">
                                     <i data-lucide="flag" class="w-3 h-3"></i>
                                 </button>
                                 ${c.url ? `
@@ -7559,6 +7859,7 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in space-y-6">
+                    <button onclick="backToCareersHub()" class="mb-3 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Careers Hub</button>
                     <!-- Header -->
                     <div class="bg-purple-50 rounded-xl p-5 border border-purple-100 flex items-start gap-4">
                         <div class="p-3 bg-purple-100 text-purple-600 rounded-xl shrink-0 shadow-sm"><i data-lucide="banknote" class="w-6 h-6"></i></div>
@@ -7954,6 +8255,7 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in space-y-8">
+                    <button onclick="backToCareersHub()" class="mb-3 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Careers Hub</button>
                     <!-- Header -->
                     <div class="bg-${tc}-50 rounded-xl p-6 border border-${tc}-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
@@ -8123,6 +8425,7 @@ window.toggleCareerHub = function() {
 
             injectSectorDrawer(); // Inject the new Sector Drawer
             injectUsersDrawer(); // Inject Users Drawer
+            injectAboutDrawer(); // Inject About Drawer (was missing — Info button was a no-op)
             renderMainLanding(); // Render the 3-Pillar Dashboard
             if(window.lucide) lucide.createIcons();
             setGlobalSector('agri');
@@ -8136,14 +8439,32 @@ window.toggleCareerHub = function() {
                 hubSelector.value = activeCountry;
             }
 
-            // Language Persistence
+            // Language Persistence + "coming soon" notice for non-English
+            //
+            // TODO (i18n): The UI offers EN / SW / FR but no translation strings exist.
+            // Doing it properly would mean: (a) extract every visible string into a
+            // key/value dictionary keyed by language code, (b) add a translate(key)
+            // helper, (c) translate templates through it. That's a separate, larger
+            // workstream (~hundreds of strings across app.js). For now the selector
+            // persists the user's pick to localStorage and shows a notice if they
+            // pick something other than English.
             const langSelector = document.getElementById('language-selector');
             if (langSelector) {
                 const savedLang = localStorage.getItem('ai4eac_lang');
                 if (savedLang) langSelector.value = savedLang;
-                
+
                 langSelector.addEventListener('change', (e) => {
-                    localStorage.setItem('ai4eac_lang', e.target.value);
+                    const lang = e.target.value;
+                    localStorage.setItem('ai4eac_lang', lang);
+                    if (lang && lang !== 'en' && lang !== 'EN' && lang !== 'English') {
+                        showToast(
+                            'Coming soon — the interface is currently English only. Your language preference has been saved for when translations are added.',
+                            'info'
+                        );
+                        // Snap selector back to English for now so users aren't left
+                        // staring at a UI they can't read.
+                        langSelector.value = 'en';
+                    }
                 });
             }
 
@@ -8269,7 +8590,32 @@ window.toggleCareerHub = function() {
                    </div>` 
                 : '';
 
-            container.innerHTML = (html || '<div class="text-center text-xs text-slate-400 py-4 italic">Your plan is empty.<br>Save roles, skills, or courses to see them here.</div>') + shareBtn;
+            const emptyState = `
+                <div class="text-center py-6 px-3 space-y-3">
+                    <div class="w-12 h-12 mx-auto rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center">
+                        <i data-lucide="bookmark" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-slate-700 mb-1">Build your career plan</div>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            Browse the Compass and tap the
+                            <i data-lucide="bookmark" class="w-3 h-3 inline-block -mt-0.5 text-slate-400"></i>
+                            icon on any
+                            <strong class="text-slate-700">role</strong>,
+                            <strong class="text-slate-700">skill</strong>,
+                            or <strong class="text-slate-700">course</strong>
+                            to save it here. Your plan stays on this device — no account needed.
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 pt-2 text-[10px] text-slate-400">
+                        <div class="flex flex-col items-center gap-1"><i data-lucide="briefcase" class="w-3.5 h-3.5"></i> Roles</div>
+                        <div class="flex flex-col items-center gap-1"><i data-lucide="cpu" class="w-3.5 h-3.5"></i> Skills</div>
+                        <div class="flex flex-col items-center gap-1"><i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> Courses</div>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = (html || emptyState) + shareBtn;
             if(window.lucide) lucide.createIcons();
         }
 
@@ -8328,7 +8674,7 @@ window.toggleCareerHub = function() {
                 text += "📚 Saved Courses:\n";
                 myPlan.courses.forEach(id => text += `- ${myPlan.names[id] || id}\n`);
             }
-            text += "\nBuild your own at: https://ai4eac-compass.org";
+            text += `\nBuild your own at: ${window.location.href}`;
             
             navigator.clipboard.writeText(text).then(() => {
                 alert("Plan copied to clipboard!");
@@ -8516,112 +8862,6 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
-        // --- NEW: Generate User Insights ---
-        window.generateUserInsight = function(userType) {
-            // Close drawer to show modal
-            toggleUsersDrawer();
-            
-            const modal = document.getElementById('resource-modal');
-            const panel = document.getElementById('resource-modal-panel');
-            const titleEl = document.getElementById('resource-modal-title');
-            const contentEl = document.getElementById('resource-modal-content');
-            
-            const sector = activeSectorId;
-            const country = activeCountry;
-            const sectorName = sector === 'agri' ? 'Agritech' : sector === 'energy' ? 'Renewable Energy' : 'Digital Economy';
-            
-            let title = "";
-            let content = "";
-            
-            if (userType === 'graduates') {
-                title = "Graduate Insights: " + sectorName;
-                const skills = dataManager.getSkills(sector) || [];
-                const hotSkills = skills.filter(s => s.isHot).slice(0, 3).map(s => s.name).join(", ") || "Data Analysis, Project Management";
-                const occs = dataManager.getOccupations(sector, country) || [];
-                const entryRoles = occs.slice(0, 3).map(o => o.name).join(", ") || "Entry Level Roles";
-                
-                content = `
-                    <div class="space-y-4">
-                        <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-emerald-800 mb-1">🚀 High Growth Opportunities</h4>
-                            <p class="text-xs text-emerald-700">In ${country === 'all' ? 'East Africa' : country}, the ${sectorName} sector is actively hiring for: <strong>${entryRoles}</strong>.</p>
-                        </div>
-                        <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-indigo-800 mb-1">🔥 Skills in Demand</h4>
-                            <p class="text-xs text-indigo-700">Employers are looking for proficiency in: <strong>${hotSkills}</strong>.</p>
-                        </div>
-                        <button onclick="openUnifiedHub('pp-practice')" class="w-full py-2 bg-slate-900 text-white font-bold rounded-lg text-xs hover:bg-slate-800 transition-colors">Build Your Pathway</button>
-                    </div>
-                `;
-            } else if (userType === 'specialists') {
-                title = "Career Specialist Brief: " + sectorName;
-                content = `
-                    <div class="space-y-4">
-                        <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-blue-800 mb-1">📈 Market Trends</h4>
-                            <p class="text-xs text-blue-700">The ${sectorName} sector shows strong demand for hybrid roles combining technical skills with soft skills like communication and project management.</p>
-                        </div>
-                        <div class="p-3 bg-orange-50 border border-orange-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-orange-800 mb-1">⚠️ Guidance Gap</h4>
-                            <p class="text-xs text-orange-700">Students often lack awareness of "middle-skill" technical roles which offer faster employment routes than general degrees.</p>
-                        </div>
-                        <button onclick="showMarketIntelView('sector')" class="w-full py-2 bg-slate-900 text-white font-bold rounded-lg text-xs hover:bg-slate-800 transition-colors">View Labor Market Data</button>
-                    </div>
-                `;
-            } else if (userType === 'educators') {
-                title = "Educator Intelligence: " + sectorName;
-                content = `
-                    <div class="space-y-4">
-                        <div class="p-3 bg-purple-50 border border-purple-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-purple-800 mb-1">🎓 Curriculum Alignment</h4>
-                            <p class="text-xs text-purple-700">Industry feedback suggests current curricula may under-emphasize practical application of: <strong>Data Analysis, Regulatory Compliance, and Safety Protocols</strong>.</p>
-                        </div>
-                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                            <h4 class="font-bold text-sm text-slate-800 mb-1">🛠️ Recommended Updates</h4>
-                            <p class="text-xs text-slate-600">Consider integrating micro-credentials for specific tools (e.g., GIS, Python, AutoCAD) into degree programs.</p>
-                        </div>
-                    </div>
-                `;
-            } else if (userType === 'employers') {
-                title = "Employer Snapshot: " + sectorName;
-                const courseCount = dataManager.courses.filter(c => c.sector === sector || c.sector === 'all').length;
-                content = `
-                    <div class="space-y-4">
-                        <div class="p-3 bg-teal-50 border border-teal-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-teal-800 mb-1">👥 Talent Pipeline</h4>
-                            <p class="text-xs text-teal-700">There are currently <strong>${courseCount}+</strong> active training programs in the region producing talent relevant to your sector.</p>
-                        </div>
-                        <div class="p-3 bg-amber-50 border border-amber-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-amber-800 mb-1">🤝 Partnership Opportunity</h4>
-                            <p class="text-xs text-amber-700">Training providers are seeking industry partners for Work-Integrated Learning (internships/apprenticeships) to improve graduate readiness.</p>
-                        </div>
-                        <button onclick="showTrainingHubView('featured')" class="w-full py-2 bg-slate-900 text-white font-bold rounded-lg text-xs hover:bg-slate-800 transition-colors">Find Training Partners</button>
-                    </div>
-                `;
-            } else if (userType === 'policymakers') {
-                title = "Policy Brief: " + sectorName;
-                content = `
-                    <div class="space-y-4">
-                        <div class="p-3 bg-slate-100 border border-slate-200 rounded-lg">
-                            <h4 class="font-bold text-sm text-slate-800 mb-1">📊 Regional Competitiveness</h4>
-                            <p class="text-xs text-slate-600">Investment in ${sectorName} skills is critical for achieving national development goals. Current training density is concentrated in urban centers, suggesting a need for rural TVET expansion.</p>
-                        </div>
-                        <div class="p-3 bg-red-50 border border-red-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-red-800 mb-1">🚨 Strategic Intervention</h4>
-                            <p class="text-xs text-red-700">Harmonization of certification standards across the EAC would significantly boost labor mobility.</p>
-                        </div>
-                    </div>
-                `;
-            }
-
-            titleEl.innerText = title;
-            contentEl.innerHTML = content;
-            
-            document.body.classList.add('overflow-hidden');
-            modal.classList.remove('hidden');
-            setTimeout(() => { panel.classList.remove('scale-95', 'opacity-0'); panel.classList.add('scale-100', 'opacity-100'); }, 10);
-            if(window.lucide) lucide.createIcons();
-        }
 
         window.injectAboutDrawer = function() {
             if (document.getElementById('about-drawer')) return;
@@ -8639,7 +8879,85 @@ window.toggleCareerHub = function() {
                         <i data-lucide="x" class="w-5 h-5 text-slate-500"></i>
                     </button>
                 </div>
-                
+                <div class="p-5 space-y-6 flex-1 overflow-y-auto">
+
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-2">What this is</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            <strong>Skills2Careers Compass</strong> links labour market intelligence to skills in
+                            demand, helping users navigate pathways from learning to work in three high-growth
+                            sectors across the East African Community: <strong>Agritech</strong>,
+                            <strong>Renewable Energy</strong>, and the <strong>Digital Economy</strong>.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-2">Coverage</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-2">Eight EAC countries:</p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇰🇪 Kenya</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇹🇿 Tanzania</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇺🇬 Uganda</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇷🇼 Rwanda</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇧🇮 Burundi</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇸🇸 South Sudan</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇨🇩 DR Congo</span>
+                            <span class="text-[10px] font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-700">🇸🇴 Somalia</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-2">About the data</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                            Occupation classifications and skills profiles draw on the
+                            <strong>UNESCO Global Skills Tracker</strong> and the European
+                            <strong>ESCO</strong> taxonomy. National context blends data from country
+                            labour-market information systems and regional aggregators.
+                        </p>
+                        <div class="space-y-1.5 text-[11px]">
+                            <a href="https://unevoc.unesco.org/home/Global+Skills+Tracker" target="_blank" rel="noopener" class="flex items-center justify-between p-2 bg-indigo-50 border border-indigo-100 rounded hover:bg-indigo-100 transition-colors group">
+                                <span class="font-medium text-indigo-800">UNESCO Global Skills Tracker</span>
+                                <i data-lucide="external-link" class="w-3 h-3 text-indigo-400 group-hover:text-indigo-600"></i>
+                            </a>
+                            <a href="https://esco.ec.europa.eu/en" target="_blank" rel="noopener" class="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded hover:bg-slate-100 transition-colors group">
+                                <span class="font-medium text-slate-700">ESCO classification</span>
+                                <i data-lucide="external-link" class="w-3 h-3 text-slate-400 group-hover:text-slate-600"></i>
+                            </a>
+                            <a href="https://ilostat.ilo.org" target="_blank" rel="noopener" class="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded hover:bg-slate-100 transition-colors group">
+                                <span class="font-medium text-slate-700">ILOSTAT</span>
+                                <i data-lucide="external-link" class="w-3 h-3 text-slate-400 group-hover:text-slate-600"></i>
+                            </a>
+                            <a href="https://labourmarket.go.ke" target="_blank" rel="noopener" class="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded hover:bg-slate-100 transition-colors group">
+                                <span class="font-medium text-slate-700">Kenya KLMIS</span>
+                                <i data-lucide="external-link" class="w-3 h-3 text-slate-400 group-hover:text-slate-600"></i>
+                            </a>
+                            <a href="https://lmis.gov.rw" target="_blank" rel="noopener" class="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded hover:bg-slate-100 transition-colors group">
+                                <span class="font-medium text-slate-700">Rwanda LMIS</span>
+                                <i data-lucide="external-link" class="w-3 h-3 text-slate-400 group-hover:text-slate-600"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                        <h3 class="text-xs font-bold text-amber-900 mb-1 flex items-center gap-1.5">
+                            <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> Prototype notice
+                        </h3>
+                        <p class="text-[11px] text-amber-800 leading-relaxed">
+                            This is a working prototype. Some wage figures, mentor profiles, and outcome
+                            metrics are <strong>illustrative</strong> rather than sourced — clearly
+                            labelled wherever they appear. Treat as design exploration, not production data.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-2">Built with</h3>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">
+                            Open-source static webapp. View the
+                            <a href="https://github.com/carmelasalzano-source/Skills2Careers-Compass" target="_blank" rel="noopener" class="text-indigo-600 hover:underline font-medium">source on GitHub</a>.
+                        </p>
+                    </div>
+
+                </div>
             `;
             document.body.appendChild(drawer);
         }
@@ -8662,27 +8980,28 @@ window.toggleCareerHub = function() {
                 </div>
                 <div class="p-5 space-y-8 flex-1 overflow-y-auto">
                     <div>
+                        <p class="text-xs text-slate-500 mb-3 italic">Tap any user type for a tailored briefing.</p>
                         <div class="space-y-4">
-                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
-                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="graduation-cap" class="w-3 h-3"></i> Graduates</div>
+                            <button onclick="generateUserInsight('graduates')" class="w-full text-left bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 hover:bg-white hover:border-indigo-300 hover:shadow-sm transition-all group">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center justify-between"><span class="flex items-center gap-1"><i data-lucide="graduation-cap" class="w-3 h-3"></i> Graduates</span><i data-lucide="arrow-right" class="w-3 h-3 text-indigo-400 group-hover:text-indigo-700 group-hover:translate-x-0.5 transition-all"></i></div>
                                 <p class="text-xs text-slate-600 leading-snug">Students, graduates and trainees can unlock skills training and job readiness opportunities in emerging employment and entrepreneurship sectors.</p>
-                            </div>
-                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
-                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="user-check" class="w-3 h-3"></i> Career Specialists</div>
+                            </button>
+                            <button onclick="generateUserInsight('specialists')" class="w-full text-left bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 hover:bg-white hover:border-indigo-300 hover:shadow-sm transition-all group">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center justify-between"><span class="flex items-center gap-1"><i data-lucide="user-check" class="w-3 h-3"></i> Career Specialists</span><i data-lucide="arrow-right" class="w-3 h-3 text-indigo-400 group-hover:text-indigo-700 group-hover:translate-x-0.5 transition-all"></i></div>
                                 <p class="text-xs text-slate-600 leading-snug">Careers advisors and specialists can use the Compass for evidence-based guidance and clearer progression routes to every learner.</p>
-                            </div>
-                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
-                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="book-open" class="w-3 h-3"></i> Educators & Trainers</div>
+                            </button>
+                            <button onclick="generateUserInsight('educators')" class="w-full text-left bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 hover:bg-white hover:border-indigo-300 hover:shadow-sm transition-all group">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center justify-between"><span class="flex items-center gap-1"><i data-lucide="book-open" class="w-3 h-3"></i> Educators & Trainers</span><i data-lucide="arrow-right" class="w-3 h-3 text-indigo-400 group-hover:text-indigo-700 group-hover:translate-x-0.5 transition-all"></i></div>
                                 <p class="text-xs text-slate-600 leading-snug">Educators and institutions can translate emerging occupational and skills trends into pedagogical and curriculum updates, micro-credential design, and modernized training offers.</p>
-                            </div>
-                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
-                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="briefcase" class="w-3 h-3"></i> Employers</div>
+                            </button>
+                            <button onclick="generateUserInsight('employers')" class="w-full text-left bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 hover:bg-white hover:border-indigo-300 hover:shadow-sm transition-all group">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center justify-between"><span class="flex items-center gap-1"><i data-lucide="briefcase" class="w-3 h-3"></i> Employers</span><i data-lucide="arrow-right" class="w-3 h-3 text-indigo-400 group-hover:text-indigo-700 group-hover:translate-x-0.5 transition-all"></i></div>
                                 <p class="text-xs text-slate-600 leading-snug">Employers can identify relevant training providers, more clearly articulate skill needs, and build stronger recruitment and partnership pipelines.</p>
-                            </div>
-                            <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
-                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center gap-1"><i data-lucide="landmark" class="w-3 h-3"></i> Policymakers</div>
+                            </button>
+                            <button onclick="generateUserInsight('policymakers')" class="w-full text-left bg-indigo-50/50 p-3 rounded-lg border border-indigo-100 hover:bg-white hover:border-indigo-300 hover:shadow-sm transition-all group">
+                                <div class="font-bold text-sm text-indigo-900 mb-1 flex items-center justify-between"><span class="flex items-center gap-1"><i data-lucide="landmark" class="w-3 h-3"></i> Policymakers</span><i data-lucide="arrow-right" class="w-3 h-3 text-indigo-400 group-hover:text-indigo-700 group-hover:translate-x-0.5 transition-all"></i></div>
                                 <p class="text-xs text-slate-600 leading-snug">Decision-makers can align investments to skills in specific value chains poised for job growth, benefitting from comparable data across sectors and countries.</p>
-                            </div>
+                            </button>
                         </div>
                     </div>
                     
