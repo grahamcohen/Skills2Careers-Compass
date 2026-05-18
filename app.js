@@ -8705,6 +8705,85 @@ window.toggleCareerHub = function() {
                 console.log('PWA Service Worker Registration skipped for single-file prototype.');
               });
             }
+
+            // --- Keyboard accessibility (ESC closes topmost modal/drawer) ---
+            // Order: topmost modal first (occupation/skill/certificate/resource/unified-hub),
+            // then side-drawers in reverse z-order. We use goBackModal() when there's a
+            // navigation stack, so ESC behaves like the visible Back button.
+            document.addEventListener('keydown', (e) => {
+                if (e.key !== 'Escape') return;
+
+                // 1. Modals on z-100
+                const modalIds = ['occupation-modal', 'skill-modal', 'certificate-modal', 'resource-modal', 'unified-hub-modal', 'evidence-modal'];
+                for (const id of modalIds) {
+                    const m = document.getElementById(id);
+                    if (m && !m.classList.contains('hidden')) {
+                        // For occupation/skill, prefer Back if there's a return point.
+                        if ((id === 'occupation-modal' || id === 'skill-modal') && Array.isArray(modalNavStack) && modalNavStack.length > 0) {
+                            goBackModal();
+                        } else {
+                            closeModal(id);
+                        }
+                        e.preventDefault();
+                        return;
+                    }
+                }
+
+                // 2. Side-drawers
+                const drawerIds = ['community-hub-drawer', 'training-hub-drawer', 'sector-hub-drawer', 'career-hub-drawer', 'users-drawer', 'about-drawer'];
+                for (const id of drawerIds) {
+                    const d = document.getElementById(id);
+                    if (!d) continue;
+                    // Right-side drawers use translate-x-full; left-side use -translate-x-full
+                    const isOpen = !d.classList.contains('translate-x-full') && !d.classList.contains('-translate-x-full');
+                    if (isOpen) {
+                        // Use the toggle function for the right drawer (also clears overflow-hidden)
+                        const togglers = {
+                            'community-hub-drawer': 'toggleCommunityHub',
+                            'training-hub-drawer':  'toggleTrainingHub',
+                            'sector-hub-drawer':    'toggleSectorHub',
+                            'career-hub-drawer':    'toggleCareerHub',
+                            'users-drawer':         'toggleUsersDrawer',
+                            'about-drawer':         'toggleAboutDrawer'
+                        };
+                        const fn = window[togglers[id]];
+                        if (typeof fn === 'function') {
+                            fn();
+                        } else {
+                            d.classList.add(id.endsWith('users-drawer') || id.endsWith('about-drawer') ? '-translate-x-full' : 'translate-x-full');
+                            document.body.classList.remove('overflow-hidden');
+                        }
+                        e.preventDefault();
+                        return;
+                    }
+                }
+            });
+
+            // --- Focus management ---
+            // When a modal opens, move keyboard focus to its first interactive element
+            // (typically the Back/Close button) so screen readers and keyboard users
+            // immediately enter the new context. Uses a MutationObserver because modal
+            // visibility is toggled via the 'hidden' class on the outer wrapper.
+            const focusableSelector = 'button:not([disabled]):not([tabindex="-1"]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+            const modalsToWatch = ['occupation-modal', 'skill-modal', 'certificate-modal', 'resource-modal', 'unified-hub-modal'];
+            modalsToWatch.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const obs = new MutationObserver(() => {
+                    if (!el.classList.contains('hidden')) {
+                        // Modal just became visible — wait for paint, then move focus
+                        setTimeout(() => {
+                            const focusables = el.querySelectorAll(focusableSelector);
+                            if (focusables.length > 0) {
+                                // Skip the very first if it's a backdrop overlay (close-on-click), focus the Close X
+                                const closeBtn = el.querySelector('button[aria-label*="Close"], button[aria-label*="close"]');
+                                (closeBtn || focusables[0]).focus();
+                            }
+                        }, 50);
+                    }
+                });
+                obs.observe(el, { attributes: true, attributeFilter: ['class'] });
+            });
         });
 
         // --- NEW: Generate Pathway Logic (Moved from index.html) ---

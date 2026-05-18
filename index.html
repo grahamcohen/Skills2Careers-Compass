@@ -67,7 +67,7 @@
         <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
     </div>
 
-    <div id="proto-banner" class="bg-indigo-600 text-white text-xs py-2 px-4 flex flex-wrap justify-center items-center relative z-[60] gap-x-4 gap-y-1">
+    <div id="proto-banner" role="status" aria-label="Prototype notice" class="bg-indigo-600 text-white text-xs py-2 px-4 flex flex-wrap justify-center items-center relative z-[60] gap-x-4 gap-y-1">
         <div class="flex items-center gap-2">
             <span class="font-bold bg-white text-indigo-600 px-2 py-0.5 rounded text-[10px] uppercase">Prototype v1.4</span>
         </div>
@@ -75,7 +75,7 @@
         <span class="sm:hidden text-white/80">Prototype &mdash; some figures illustrative.</span>
     </div>
 
-    <nav class="bg-white text-slate-900 sticky top-0 z-50 shadow-sm border-b border-slate-200">
+    <nav class="bg-white text-slate-900 sticky top-0 z-50 shadow-sm border-b border-slate-200" aria-label="Primary">
         <div class="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-4 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4">
             <div class="flex flex-row items-center justify-between sm:justify-start gap-3 sm:gap-6 w-full md:w-auto">
                 <div class="flex items-center gap-3">
@@ -160,7 +160,7 @@
 
         <div id="dashboard-content" class="min-h-[400px]"></div>
 
-        <div id="occupation-modal" class="fixed inset-0 z-[100] hidden flex items-start justify-center p-4 pt-4 md:pt-10">
+        <div id="occupation-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-[100] hidden flex items-start justify-center p-4 pt-4 md:pt-10">
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal('occupation-modal')"></div>
             <div class="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden transform transition-all scale-95 opacity-0" id="occupation-modal-panel">
                 <div class="bg-white border-b border-slate-200">
@@ -199,7 +199,7 @@
             </div>
         </div>
 
-        <div id="skill-modal" class="fixed inset-0 z-[100] hidden flex items-start justify-center p-4 pt-4 md:pt-10">
+        <div id="skill-modal" role="dialog" aria-modal="true" aria-labelledby="skill-modal-title" class="fixed inset-0 z-[100] hidden flex items-start justify-center p-4 pt-4 md:pt-10">
             <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeModal('skill-modal')"></div>
             <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden transform transition-all scale-95 opacity-0" id="skill-modal-panel">
                 <div class="p-6 border-b border-slate-100 flex justify-between items-start bg-white">
@@ -609,7 +609,7 @@
         </div>
 
         <!-- Certificate Modal: shown after a learner completes a competency badge -->
-        <div id="certificate-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div id="certificate-modal" role="dialog" aria-modal="true" aria-label="Certificate of Completion" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm transition-opacity" onclick="closeModal('certificate-modal')"></div>
             <div id="certificate-modal-panel" class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all scale-95 opacity-0">
                 <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-white">

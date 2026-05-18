@@ -52,3 +52,57 @@ body.low-bandwidth .icon-box i { display: none !important; }
 body.low-bandwidth .icon-box::after { content: attr(data-alt); font-size: 10px; }
 body.low-bandwidth * { box-shadow: none !important; transition: none !important; animation: none !important; background-image: none !important; }
 body.low-bandwidth .btn-sector-card { border: 1px solid #ccc; background: white; }
+/* ============================================
+   Print Styles — clean output when the user
+   prints the Certificate modal or the page.
+   ============================================ */
+@media print {
+    /* Hide everything by default... */
+    body * {
+        visibility: hidden;
+    }
+    /* ...except the certificate modal panel and its descendants. */
+    #certificate-modal,
+    #certificate-modal * {
+        visibility: visible;
+    }
+    /* Pull the modal panel onto the printed page properly */
+    #certificate-modal {
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        display: block !important;
+        padding: 0;
+    }
+    /* Strip the backdrop & shadows; widen the panel */
+    #certificate-modal-panel {
+        position: static !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+    /* Hide the modal's chrome (header X, footer buttons) when printing */
+    #certificate-modal-panel > div:first-child,
+    #certificate-modal-panel > div:last-child {
+        display: none !important;
+    }
+    /* Hide the toast container, proto-banner, sticky nav, fixed widgets */
+    #proto-banner,
+    nav,
+    #my-plan-widget,
+    #toast-container,
+    .modal-back-btn {
+        display: none !important;
+    }
+    /* Tighter colours for print */
+    body {
+        background: white !important;
+    }
+    @page {
+        margin: 1cm;
+    }
+}
