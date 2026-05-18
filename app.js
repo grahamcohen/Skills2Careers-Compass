@@ -2737,26 +2737,9 @@ function getOJAMetrics(roleTitle, country) {
                 blockCAction = "Browse Courses";
                 blockCOnclick = "openUnifiedHub('pp-courses')";
                 
-                // NEW: Contextualize tools based on Interest
+                // Contextualize tools based on Interest, sourced from pathwayToolsInterestMap (data.js).
                 const interest = pathwayState.interest;
-                
-                const toolsInterestMap = {
-                    'digital': {
-                        'code': ['Docker', 'Amazon Bedrock', 'Next.js'],
-                        'data': ['Amazon SageMaker', 'TensorFlow', 'dbt'],
-                        'creative': ['Figma (Adv)', 'Webflow', 'Adobe XD']
-                    },
-                    'energy': {
-                        'hands-on': ['Thermal Imaging', 'High Voltage Testers', 'SCADA'],
-                        'design': ['PVsyst', 'AutoCAD Electrical', 'Homer Pro'],
-                        'mgmt': ['MS Project', 'ERP Systems', 'Auditing Tools']
-                    },
-                    'agri': {
-                        'tech': ['ArcGIS Pro', 'Python for Ag', 'Drone Deploy'],
-                        'field': ['Soil Spectrometers', 'GPS Units', 'Farm ERP'],
-                        'biz': ['QuickBooks', 'Supply Chain Soft.', 'Market Analytics']
-                    }
-                };
+                const toolsInterestMap = (typeof pathwayToolsInterestMap !== 'undefined') ? pathwayToolsInterestMap : {};
 
                 if (interest && toolsInterestMap[sector] && toolsInterestMap[sector][interest]) {
                     advancedTools = toolsInterestMap[sector][interest];
@@ -2959,20 +2942,9 @@ function getOJAMetrics(roleTitle, country) {
             const isPathwayContext = targetId === 'pp-practice-content';
             const optionsBtn = isPathwayContext ? `<button onclick="renderPathwayGoal()" class="text-sm text-slate-500 hover:text-indigo-600 flex items-center gap-1"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> Options</button>` : '';
 
-            const sections = [
-                {
-                    title: "Digital Assets", icon: "file-text", color: "blue",
-                    items: ["CV is ATS-friendly (no graphics/columns)", "LinkedIn profile has a professional photo", "LinkedIn 'About' section tells a story", "Portfolio link is working and accessible"]
-                },
-                {
-                    title: "Search Strategy", icon: "target", color: "purple",
-                    items: ["Identified top 10 target companies", "Set up job alerts on 3+ platforms", "Connected with 5+ alumni/peers in sector", "Researched salary benchmarks for role"]
-                },
-                {
-                    title: "Interview Prep", icon: "mic", color: "emerald",
-                    items: ["Prepared 3 STAR stories for behavioral Qs", "Researched 'Why this company?' answer", "Practiced technical/case study questions", "Prepared questions to ask the interviewer"]
-                }
-            ];
+            // Source from readinessScorecardSections (data.js) so the items
+            // are editable in one place. Falls back to an empty list if unloaded.
+            const sections = (typeof readinessScorecardSections !== 'undefined') ? readinessScorecardSections : [];
 
             container.innerHTML = `
                 <div class="max-w-3xl mx-auto py-4 animate-fade-in">

@@ -1837,6 +1837,9 @@ const credentialRules = {
 };
 
 // --- 34. Sector Card Config ---
+// NOTE: sectorCardConfig is partially superseded by sectorThemes below + hard-coded
+// sector option lists in app.js. Kept here for future use as a single source of truth
+// (id, name, icon, color, growth label) if/when sector selectors are consolidated.
 const sectorCardConfig = [
     { id: 'agri', name: 'Agritech', icon: 'leaf', color: 'green', growth: 'High Growth' },
     { id: 'energy', name: 'Renewable Energy', icon: 'zap', color: 'orange', growth: 'High Demand' },
@@ -1880,6 +1883,10 @@ const sectorTooltips = {
 };
 
 // --- 36. Venture Playbooks ---
+// NOTE: venturePlaybooks here is superseded by the inline playbookData in
+// renderLaunchpadTab (app.js), which adds country-specific regulator overrides
+// (Kenya/Rwanda/Uganda/Tanzania/Burundi/South Sudan/DRC/Somalia). Keep both in
+// sync if either is edited.
 const venturePlaybooks = {
     agri: {
         reg: "KEPHIS (Seeds), PCPB (Chemicals), County Business Permit",
@@ -2236,6 +2243,10 @@ const libraryResources = [
 ];
 
 // --- 51. Employer Connect Events ---
+// NOTE: employerConnectEvents here is a minimal generic list. The richer
+// per-sector events list lives inline in showEmployerConnectView (app.js)
+// with dates, locations, and direct links. The inline copy is what the UI
+// actually renders.
 const employerConnectEvents = [
     { title: "Annual Career Fair", date: "Oct 15, 2025", type: "Virtual" },
     { title: "East Africa Graduate Recruitment Drive", date: "Nov 02, 2025", type: "Hybrid" },
@@ -2245,6 +2256,9 @@ const employerConnectEvents = [
 ];
 
 // --- 52. Alumni Networks ---
+// NOTE: alumniNetworks here is a minimal generic list. showEmployerConnectView
+// (app.js) uses richer per-sector alumni networks inline. The inline copy is
+// what the UI actually renders.
 const alumniNetworks = [
     { name: "Sector Professionals EA", platform: "LinkedIn" },
     { name: "University Alumni Network", platform: "Portal" },
