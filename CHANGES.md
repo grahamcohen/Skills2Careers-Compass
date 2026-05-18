@@ -226,6 +226,154 @@ The eslint configs referenced `@eslint/js`, `globals`, `eslint-plugin-jsonc` but
 ### Bonus (not in audit): Line endings normalized
 Several files in the repo had mixed CRLF/LF line endings because uploads happened from both the GitHub web UI (Windows-default CRLF) and automated tooling (LF). A one-time `chore: normalize line endings to LF` commit (with a clear standalone message explaining the noise) brings everything in line. A `.gitattributes` with `text=auto` keeps it stable going forward — Windows working copies will still see CRLF locally, the repo stores LF.
 
+## Round 2: Going beyond the audit
+
+After the first pass, a few things stood out as worth fixing — bugs that
+the audit didn't flag and features that were defined in code but never
+shipped. Seven more commits.
+
+### C7: Application Kit — Access buttons did nothing (real bug)
+The Applications Kit screen listed template names (Master CV Template,
+Cover Letter Guide, LinkedIn Checklist...) each with an Access button.
+Looking at the handlers: the buttons had no `onclick` at all. Clicking
+them was completely silent. This had been the case across all six kit
+types since the prototype was first built.
+
+Wired every item to a curated, freely-accessible external resource —
+Europass CV builder, Harvard cover-letter guide, LinkedIn profile
+checklist, Indeed interview Q catalogue, MIT STAR-method guide, Bonsai
+rate calculator + contract template, ILO supervisor evaluation rubric,
+WEF future-of-jobs skills report, plus 20+ others. Each row now shows
+the resource name, a one-line description (so users can decide before
+clicking), and an outbound link with an external-link icon.
+
+Then enriched it further by sourcing the canonical item list from
+`applicationKitsResources` in data.js (5 items per kit vs my 4) and
+adding a metadata header from `applicationKitsConfig` showing the CV
+format, what to bring, and the test type for each kit. Also exposed
+the Founder Tender tab that was authored in the data but never wired
+into the tab list. Items in data.js without a curated link render as
+plain rows with "Resource link coming soon" rather than dead buttons.
+
+### C9: Interview Coach "Save Assessment" was an alert(), nothing saved
+The Rubric's Save button popped an alert saying "Assessment saved to
+candidate profile!" but didn't actually save anything anywhere. There
+was no candidate profile. The button was theatrical.
+
+Now properly persists to localStorage under `s2c_rubrics`, capped at
+50 most-recent records. Each record stores the date, sector, question,
+all four sub-scores, the total, and the cached feedback. The alert is
+replaced with a toast that names the score and points to where the
+record can be reviewed.
+
+Added a new **Saved Assessments** card to the Careers Hub home grid
+with a live count badge. Click it to see all assessments as cards
+(date, sector, question, per-category scores, total /20, delete
+button). Empty state with friendly onboarding pointing back to the
+Interview Coach. Clear All button for bulk cleanup.
+
+### Accessibility — ESC to close, focus management, ARIA roles
+No keyboard handlers existed anywhere in the codebase. Added:
+
+- **ESC closes** the topmost modal or drawer. When `modalNavStack` is
+  populated (occupation -> skill -> job-title chain), ESC behaves like
+  the visible Back button instead of dismissing the whole stack.
+- **Focus management** on five modals via MutationObserver. When a
+  modal becomes visible, keyboard focus moves to its Close X button
+  after one paint. Screen readers + keyboard users now enter the new
+  context immediately rather than being stranded.
+- **role/aria-modal/aria-labelledby** on occupation-modal, skill-modal,
+  certificate-modal. `aria-label="Primary"` on the top nav. `role="status"`
+  on the prototype banner.
+
+### Print CSS — certificate was unprintable
+`viewCertificate` called `window.print()` but the print output included
+the modal overlay, nav bar, proto banner, fixed widgets — everything.
+Useless for actually printing the certificate.
+
+Added a `@media print` block that hides everything except the
+certificate panel itself, strips the modal header X + footer buttons +
+backdrop, sets `@page margin: 1cm`. Clean single-page certificate
+output suitable for framing or attaching to an application.
+
+### Dormant data — 13 unused declarations wired up
+
+Searching for top-level declarations in `data.js` that no code in
+`app.js` was actually reading revealed 13 blocks of authored content
+that never made it to the UI. After this pass: **all 13 accounted for**
+— nine newly visible, two deduplicated, four explicitly marked as
+superseded by richer inline versions.
+
+**Newly visible (9):**
+
+- `specificMentors` -> **Featured Mentors section** in the Community
+  Hub drawer. Card per mentor with avatar (initials fallback when the
+  pravatar.cc image fails), name, role, company, bio. Filtered to
+  show only on All/Mentorship filters. A small amber "Sample" pill
+  flags the illustrative nature, consistent with the demo-data
+  labelling pattern.
+
+- `applicationKitsResources` + `applicationKitsConfig` -> canonical
+  item list + metadata header in the Application Kit (see C7 above).
+
+- `outreachTemplates` -> brand-new **Outreach Templates** view under
+  Work Readiness on the Careers Hub. Three ready-to-copy templates
+  (LinkedIn alumni connection, informational interview request,
+  application follow-up). Each card has subject/body sections and a
+  Copy button that writes to clipboard and toasts a reminder to
+  replace bracketed placeholders before sending.
+
+- `apprenticeshipFrameworks` + `apprenticeshipStandards` -> new section
+  in the Placement kit only, showing duration / objective / role /
+  employer responsibilities tailored to the active sector
+  (digital / energy / agri / default), plus country-relevant national
+  apprenticeship bodies (NITA, VETA, DIT, RTB, EAC TVET) as outbound
+  chips.
+
+- `pivotAuditSections` -> brand-new **Pivot Audit** Careers Hub feature
+  for career-changers moving between sectors. Same checklist UX as
+  the Readiness Audit but focused on pivot-specific challenges:
+  Skill Translation, Market Immersion, Validation. Live coverage badge
+  updates as items are ticked ("Just starting" -> "Early stage" ->
+  "Making progress" -> "Almost there" -> "Ready to pivot!").
+
+- `heroPersonaContent` -> **persona switcher** added to the landing
+  page hero. Five tappable pills (Learner, Entrepreneur, Counsellor,
+  Educator, Policymaker) swap the hero subtitle to a persona-tailored
+  value prop. Selection persists to localStorage so returning visitors
+  land on their preferred framing. Defaults to Learner first-visit.
+
+**Deduplicated (2):**
+
+- `pathwayToolsInterestMap`: was a byte-identical inline duplicate in
+  `renderPathwayStep3`. Inline copy removed; pathway now reads from
+  data.js. Single source of truth.
+
+- `readinessScorecardSections`: same story — was a byte-identical
+  inline duplicate in `renderReadinessScorecard`. Inline copy removed.
+
+**Annotated as superseded (4):**
+
+For these, app.js already had richer inline versions (with country
+overrides, dates, links etc. that data.js didn't carry). Added
+explicit NOTE comments in data.js pointing future maintainers at
+the canonical inline version:
+
+- `sectorCardConfig` (partially covered by sectorThemes + inline lists)
+- `venturePlaybooks` (inline `playbookData` has 8 country regulator overrides)
+- `employerConnectEvents` (inline events list has dates and links)
+- `alumniNetworks` (inline alumni list is per-sector)
+
+### Other improvements
+
+- **Sector/country persistence**: previously every page reload reset
+  to defaults (Agritech / Regional). Returning users had to re-select
+  every time. Now persisted to localStorage; restored on init with
+  validation against allowed values; the top-nav dropdown syncs first
+  so all downstream selectors pick up the restored values cleanly.
+
+---
+
 ---
 
 ## What I did *not* change
@@ -234,9 +382,9 @@ Per the brief — labels not data, careful not destructive:
 
 - **Refactor**: `app.js` is still ~9k lines in a single file. Splitting per-concern (DataManager, Modals, Pathway, Training, Hub, Plan, Charts, Drawers) is a worthwhile follow-up but carried too much risk of breaking subtle interactions for this pass.
 - **Data**: No course / skill / occupation / scholarship data was edited. Demo data was labelled where prominent (wages, interview feedback) but kept as-is.
-- **Application Kit templates** (C7): the screen renders but its templates are placeholders; deferred.
-- **Saved candidate profiles** (C9): no dedicated viewing surface for "saved" rubrics; deferred.
-- **Mobile / accessibility / performance deep audit**: smoke tests catch data regressions but not these. Worth running Lighthouse on a future pass.
+- **Mobile / performance deep audit**: smoke tests catch data regressions but not these. Worth running Lighthouse on a future pass. (Round 2 added the accessibility basics — ESC, focus, ARIA — but a full WCAG sweep is still TBD.)
+- **Partner / employer logos**: held back pending usage approval (G3).
+- **i18n** (B5): the UI offers EN/SW/FR but no translation strings exist. Round 1 added a toast that snaps back to EN with a "translations coming soon" message — proper i18n is a separate project.
 
 ---
 

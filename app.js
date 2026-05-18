@@ -6777,7 +6777,7 @@ window.toggleCareerHub = function() {
                             <button onclick="copyOutreachTemplate(${idx})" class="shrink-0 text-[10px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded inline-flex items-center gap-1 transition-colors" title="Copy this template to clipboard"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
                         </div>
                         <div class="text-[10px] text-slate-400 uppercase tracking-wide mt-2 mb-1 flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> Body</div>
-                        <pre class="text-xs text-slate-700 whitespace-pre-wrap font-sans bg-slate-50 border border-slate-100 rounded p-3 leading-relaxed">${t.body}</pre>
+                        <pre class="text-xs text-slate-700 whitespace-pre-wrap break-words font-sans bg-slate-50 border border-slate-100 rounded p-3 leading-relaxed overflow-x-auto">${t.body}</pre>
                     </div>
                 `;
             }).join('');

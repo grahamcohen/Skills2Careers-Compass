@@ -23,11 +23,20 @@
    -->
 <!-- End Google Tag Manager -->
 
-    <meta name="description" content="Skills2Careers Compass Prototype">
+    <meta name="description" content="Skills2Careers Compass — a labour-market navigation prototype for green, digital, and AI economies in East Africa. Explore occupations, skills, training pathways, and application kits.">
     <meta name="theme-color" content="#4f46e5">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
+
+    <!-- Open Graph / social sharing -->
+    <meta property="og:title" content="Skills2Careers Compass">
+    <meta property="og:description" content="Navigate the future of work and lifelong learning in green, digital, and AI economies. Find in-demand occupations, skills, training pathways, and careers support across East Africa.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Skills2Careers Compass">
+    <meta name="twitter:description" content="Navigate the future of work and lifelong learning in green, digital, and AI economies.">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
@@ -727,5 +736,8 @@
         </button>
     </div>
 
-    <script src="data.js"></script>
-    <script src="app.js"></script>
+    <!-- Defer both: lets the HTML parse without blocking. Execution order is
+         preserved (data.js still runs before app.js) because defer scripts execute
+         in document order after parsing completes. -->
+    <script src="data.js" defer></script>
+    <script src="app.js" defer></script>
