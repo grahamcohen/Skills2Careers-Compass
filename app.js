@@ -5196,7 +5196,7 @@ window.toggleCareerHub = function() {
                 } else {
                     el.classList.remove('max-h-0', 'opacity-0');
                     el.classList.add('max-h-[2000px]', 'opacity-100', 'mt-3');
-                    btn.innerHTML = `View Less ${label} <i data-lucide="chevron-up" class="w-3 h-3"></i>`;
+                    btn.innerHTML = `View Fewer ${label} <i data-lucide="chevron-up" class="w-3 h-3"></i>`;
                 }
                 if(window.lucide) lucide.createIcons();
             }
