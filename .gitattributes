@@ -1,10 +1,26 @@
-# Normalize line endings for the repo.
-# The upstream maintainer commits from Windows (CRLF). We keep CRLF in the
-# working tree to match, so cross-platform diffs don't show as wholesale rewrites.
-*.js   text eol=crlf
-*.html text eol=crlf
-*.css  text eol=crlf
-*.json text eol=crlf
-*.md   text eol=crlf
-*.py   text eol=crlf
-*.txt  text eol=crlf
+# Normalize line endings using Git's standard auto behaviour:
+#   - the repository stores LF
+#   - working copies check out with platform-native line endings
+#     (CRLF on Windows for the upstream maintainer, LF on macOS/Linux)
+#
+# Without this, automated/scripted edits (Python read/write, GitHub
+# web UI uploads, etc.) drift line endings, producing diffs where
+# every line registers as changed and the real content edits get lost
+# in the noise.
+
+* text=auto
+
+# Explicit text classifications for files where Git's auto-detection
+# may guess wrong:
+*.js   text
+*.html text
+*.css  text
+*.json text
+*.md   text
+*.py   text
+*.txt  text
+
+# Binary lock-outs (none currently — Tracer image/binary assets
+# would go here if ever added):
+# *.png binary
+# *.jpg binary
