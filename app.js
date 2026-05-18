@@ -6381,7 +6381,27 @@ window.toggleCareerHub = function() {
         window.showCommunitiesView = function(activeFilter = 'all') { 
             const sectorData = getSectorCareerResources(activeSectorId);
             const container = document.getElementById('community-hub-content');
-            
+
+            // 0. Resolve Featured Mentors for this country+sector (from specificMentors in data.js).
+            //    Falls back to the 'all' (regional) entries when there's no country-specific list.
+            let featuredMentors = [];
+            try {
+                if (typeof specificMentors !== 'undefined' && specificMentors) {
+                    const countryEntry = specificMentors[activeCountry] || specificMentors['all'] || {};
+                    const fromCountry = countryEntry[activeSectorId] || [];
+                    // If a country has data for the sector, use it. Otherwise top up with regional.
+                    if (fromCountry.length > 0) {
+                        featuredMentors = fromCountry;
+                    } else if (specificMentors['all'] && specificMentors['all'][activeSectorId]) {
+                        featuredMentors = specificMentors['all'][activeSectorId];
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not resolve specificMentors:', e);
+            }
+            // Hide the featured-mentors section unless the user is browsing "All" or "Mentorship"
+            const showFeaturedMentors = featuredMentors.length > 0 && (activeFilter === 'all' || activeFilter === 'Mentorship');
+
             // 1. Consolidate Data & Deduplicate
             const uniqueItems = new Map();
             
@@ -6530,6 +6550,28 @@ window.toggleCareerHub = function() {
                         <button onclick="showCommunitiesView('Mentorship')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('Mentorship')}">Mentorship</button>
                         <button onclick="showCommunitiesView('Alumni')" class="px-3 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap ${getBtnClass('Alumni')}">Alumni</button>
                     </div>
+
+                    ${showFeaturedMentors ? `
+                    <div class="mb-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wide flex items-center gap-2"><i data-lucide="user-check" class="w-3.5 h-3.5"></i> Featured Mentors</h4>
+                            <span class="text-[8px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded px-1 py-0.5 normal-case tracking-normal" title="Sample profiles for the prototype — see About > Prototype notice">Sample</span>
+                        </div>
+                        <div class="grid grid-cols-1 gap-2">
+                            ${featuredMentors.map(m => `
+                                <div class="flex items-start gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:border-pink-200 transition-colors shadow-sm">
+                                    <img src="${m.image}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" class="w-12 h-12 rounded-full object-cover shrink-0 bg-slate-100" />
+                                    <div aria-hidden="true" class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-100 to-indigo-100 text-indigo-600 items-center justify-center font-bold text-sm shrink-0 hidden">${(m.name || '?').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase()}</div>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="text-sm font-bold text-slate-800 leading-tight">${m.name}</div>
+                                        <div class="text-[11px] text-slate-500 leading-tight mb-1">${m.role}${m.company ? ` &middot; <span class="text-slate-600">${m.company}</span>` : ''}</div>
+                                        <p class="text-[11px] text-slate-600 leading-snug">${m.bio || ''}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
 
                     <div class="space-y-3 overflow-y-auto pr-1 pb-4">
                         ${itemsHtml}

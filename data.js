@@ -2252,7 +2252,11 @@ const alumniNetworks = [
     { name: "East Africa Women in Tech Alumni", platform: "LinkedIn" }
 ];
 
-// --- 53. Specific Mentors (Mock Data) ---
+// --- 53. Specific Mentors ---
+//
+// Rendered in the Community Hub drawer (showCommunitiesView). Keyed by
+// country, then sector. When the active country has no entry, the UI
+// falls back to the 'all' regional list.
 const specificMentors = {
     'Kenya': {
         'agri': [
