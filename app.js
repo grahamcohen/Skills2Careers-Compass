@@ -1755,11 +1755,8 @@ function getOJAMetrics(roleTitle, country) {
                                     <div class="relative z-10">
                                         <div class="flex justify-between items-start mb-1">
                                             <div class="text-[10px] uppercase font-bold text-${themeColor}-100">Micro-Credential</div>
-                                            <div class="text-[9px] bg-white/20 px-1.5 py-0.5 rounded text-white font-medium">${activeData.badgeProvider}</div>
                                             <div class="text-[9px] bg-white/20 px-1.5 py-0.5 rounded text-white font-medium">${badgeInfo.provider}</div>
                                         </div>
-                                        <h3 class="font-bold text-lg leading-tight mb-1">${activeData.badgeTitle}</h3>
-                                        <div class="text-[10px] text-${themeColor}-100 italic mb-3 opacity-90">${activeData.badgeStandard}</div>
                                         <h3 class="font-bold text-lg leading-tight mb-1">${badgeInfo.title}</h3>
                                         <div class="text-[10px] text-${themeColor}-100 italic mb-3 opacity-90">${badgeInfo.standard}</div>
                                         
@@ -8516,112 +8513,6 @@ window.toggleCareerHub = function() {
             if(window.lucide) lucide.createIcons();
         }
 
-        // --- NEW: Generate User Insights ---
-        window.generateUserInsight = function(userType) {
-            // Close drawer to show modal
-            toggleUsersDrawer();
-            
-            const modal = document.getElementById('resource-modal');
-            const panel = document.getElementById('resource-modal-panel');
-            const titleEl = document.getElementById('resource-modal-title');
-            const contentEl = document.getElementById('resource-modal-content');
-            
-            const sector = activeSectorId;
-            const country = activeCountry;
-            const sectorName = sector === 'agri' ? 'Agritech' : sector === 'energy' ? 'Renewable Energy' : 'Digital Economy';
-            
-            let title = "";
-            let content = "";
-            
-            if (userType === 'graduates') {
-                title = "Graduate Insights: " + sectorName;
-                const skills = dataManager.getSkills(sector) || [];
-                const hotSkills = skills.filter(s => s.isHot).slice(0, 3).map(s => s.name).join(", ") || "Data Analysis, Project Management";
-                const occs = dataManager.getOccupations(sector, country) || [];
-                const entryRoles = occs.slice(0, 3).map(o => o.name).join(", ") || "Entry Level Roles";
-                
-                content = `
-                    <div class="space-y-4">
-                        <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-emerald-800 mb-1">🚀 High Growth Opportunities</h4>
-                            <p class="text-xs text-emerald-700">In ${country === 'all' ? 'East Africa' : country}, the ${sectorName} sector is actively hiring for: <strong>${entryRoles}</strong>.</p>
-                        </div>
-                        <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-indigo-800 mb-1">🔥 Skills in Demand</h4>
-                            <p class="text-xs text-indigo-700">Employers are looking for proficiency in: <strong>${hotSkills}</strong>.</p>
-                        </div>
-                        <button onclick="openUnifiedHub('pp-practice')" class="w-full py-2 bg-slate-900 text-white font-bold rounded-lg text-xs hover:bg-slate-800 transition-colors">Build Your Pathway</button>
-                    </div>
-                `;
-            } else if (userType === 'specialists') {
-                title = "Career Specialist Brief: " + sectorName;
-                content = `
-                    <div class="space-y-4">
-                        <div class="p-3 bg-blue-50 border border-blue-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-blue-800 mb-1">📈 Market Trends</h4>
-                            <p class="text-xs text-blue-700">The ${sectorName} sector shows strong demand for hybrid roles combining technical skills with soft skills like communication and project management.</p>
-                        </div>
-                        <div class="p-3 bg-orange-50 border border-orange-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-orange-800 mb-1">⚠️ Guidance Gap</h4>
-                            <p class="text-xs text-orange-700">Students often lack awareness of "middle-skill" technical roles which offer faster employment routes than general degrees.</p>
-                        </div>
-                        <button onclick="showMarketIntelView('sector')" class="w-full py-2 bg-slate-900 text-white font-bold rounded-lg text-xs hover:bg-slate-800 transition-colors">View Labor Market Data</button>
-                    </div>
-                `;
-            } else if (userType === 'educators') {
-                title = "Educator Intelligence: " + sectorName;
-                content = `
-                    <div class="space-y-4">
-                        <div class="p-3 bg-purple-50 border border-purple-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-purple-800 mb-1">🎓 Curriculum Alignment</h4>
-                            <p class="text-xs text-purple-700">Industry feedback suggests current curricula may under-emphasize practical application of: <strong>Data Analysis, Regulatory Compliance, and Safety Protocols</strong>.</p>
-                        </div>
-                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                            <h4 class="font-bold text-sm text-slate-800 mb-1">🛠️ Recommended Updates</h4>
-                            <p class="text-xs text-slate-600">Consider integrating micro-credentials for specific tools (e.g., GIS, Python, AutoCAD) into degree programs.</p>
-                        </div>
-                    </div>
-                `;
-            } else if (userType === 'employers') {
-                title = "Employer Snapshot: " + sectorName;
-                const courseCount = dataManager.courses.filter(c => c.sector === sector || c.sector === 'all').length;
-                content = `
-                    <div class="space-y-4">
-                        <div class="p-3 bg-teal-50 border border-teal-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-teal-800 mb-1">👥 Talent Pipeline</h4>
-                            <p class="text-xs text-teal-700">There are currently <strong>${courseCount}+</strong> active training programs in the region producing talent relevant to your sector.</p>
-                        </div>
-                        <div class="p-3 bg-amber-50 border border-amber-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-amber-800 mb-1">🤝 Partnership Opportunity</h4>
-                            <p class="text-xs text-amber-700">Training providers are seeking industry partners for Work-Integrated Learning (internships/apprenticeships) to improve graduate readiness.</p>
-                        </div>
-                        <button onclick="showTrainingHubView('featured')" class="w-full py-2 bg-slate-900 text-white font-bold rounded-lg text-xs hover:bg-slate-800 transition-colors">Find Training Partners</button>
-                    </div>
-                `;
-            } else if (userType === 'policymakers') {
-                title = "Policy Brief: " + sectorName;
-                content = `
-                    <div class="space-y-4">
-                        <div class="p-3 bg-slate-100 border border-slate-200 rounded-lg">
-                            <h4 class="font-bold text-sm text-slate-800 mb-1">📊 Regional Competitiveness</h4>
-                            <p class="text-xs text-slate-600">Investment in ${sectorName} skills is critical for achieving national development goals. Current training density is concentrated in urban centers, suggesting a need for rural TVET expansion.</p>
-                        </div>
-                        <div class="p-3 bg-red-50 border border-red-100 rounded-lg">
-                            <h4 class="font-bold text-sm text-red-800 mb-1">🚨 Strategic Intervention</h4>
-                            <p class="text-xs text-red-700">Harmonization of certification standards across the EAC would significantly boost labor mobility.</p>
-                        </div>
-                    </div>
-                `;
-            }
-
-            titleEl.innerText = title;
-            contentEl.innerHTML = content;
-            
-            document.body.classList.add('overflow-hidden');
-            modal.classList.remove('hidden');
-            setTimeout(() => { panel.classList.remove('scale-95', 'opacity-0'); panel.classList.add('scale-100', 'opacity-100'); }, 10);
-            if(window.lucide) lucide.createIcons();
-        }
 
         window.injectAboutDrawer = function() {
             if (document.getElementById('about-drawer')) return;
