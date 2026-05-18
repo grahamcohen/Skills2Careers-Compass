@@ -14,6 +14,13 @@ let hubNavigationStack = []; // Navigation history for Unified Hub
 let showCrossSectorOnly = false; // Toggle for Cross-Sector Skills
 let isStudentpreneur = false; // Toggle for Studentpreneur Mode
 let lastInterviewFeedback = null; // Cache for AI Interview Coach result (so Back to Results doesn't re-run the simulation)
+let modalNavStack = []; // B1/B2/B3: stack of return points for cross-modal/drawer navigation.
+                        // Entries: { kind, payload }
+                        // kinds: 'drawer' (payload = drawer id e.g. 'sector-hub-drawer')
+                        //        'occupation' (payload = title)
+                        //        'skill'      (payload = name)
+                        // Pushed before opening a new modal that overlays an existing one.
+                        // Cleared whenever the user explicitly closes via the X button.
 
 // --- CONFIGURATION ---
 
@@ -53,6 +60,121 @@ window.showToast = function(message, kind = 'info', ms = 4000) {
         toast.classList.add('opacity-0', 'translate-y-2');
         setTimeout(() => toast.remove(), 200);
     }, ms);
+};
+
+// --- Modal navigation stack helpers (B1/B2/B3) ---
+// pushModalReturn: capture the *current* foreground view so it can be restored
+// when the next modal is closed.
+window.pushModalReturn = function() {
+    // 1. Check for an open occupation or skill modal -> push as 'occupation'/'skill'
+    const occModal = document.getElementById('occupation-modal');
+    if (occModal && !occModal.classList.contains('hidden')) {
+        const t = document.getElementById('modal-title');
+        if (t && t.innerText) {
+            modalNavStack.push({ kind: 'occupation', payload: t.innerText });
+            return;
+        }
+    }
+    const skillModal = document.getElementById('skill-modal');
+    if (skillModal && !skillModal.classList.contains('hidden')) {
+        const t = document.getElementById('skill-modal-title');
+        if (t && t.innerText) {
+            modalNavStack.push({ kind: 'skill', payload: t.innerText });
+            return;
+        }
+    }
+    // 2. Check the side-drawers we treat as containers. The first one that's
+    //    visible (i.e. doesn't have the translate-x-full class) is the return target.
+    const drawerIds = [
+        'sector-hub-drawer',
+        'career-hub-drawer',
+        'community-hub-drawer',
+        'training-hub-drawer'
+    ];
+    for (const id of drawerIds) {
+        const d = document.getElementById(id);
+        if (d && !d.classList.contains('translate-x-full')) {
+            modalNavStack.push({ kind: 'drawer', payload: id });
+            return;
+        }
+    }
+    // Otherwise nothing to push — top-level entry, no return point.
+};
+
+// goBackModal: pop the most recent return point and restore it.
+window.goBackModal = function() {
+    const entry = modalNavStack.pop();
+    if (!entry) {
+        // Nothing on the stack — fall back to closing whatever is open.
+        const occModal = document.getElementById('occupation-modal');
+        if (occModal && !occModal.classList.contains('hidden')) closeModal('occupation-modal');
+        const skillModal = document.getElementById('skill-modal');
+        if (skillModal && !skillModal.classList.contains('hidden')) closeModal('skill-modal');
+        return;
+    }
+    if (entry.kind === 'occupation') {
+        // Re-open the previous occupation modal. Doing so will not re-push,
+        // because the function only pushes when invoked from outside this flow
+        // (see _internalRestore flag).
+        window._internalRestore = true;
+        openOccupationModal(entry.payload);
+        window._internalRestore = false;
+    } else if (entry.kind === 'skill') {
+        window._internalRestore = true;
+        openSkillModal(entry.payload);
+        window._internalRestore = false;
+    } else if (entry.kind === 'drawer') {
+        // Close the topmost modal, then reveal the drawer.
+        const occModal = document.getElementById('occupation-modal');
+        if (occModal && !occModal.classList.contains('hidden')) closeModal('occupation-modal');
+        const skillModal = document.getElementById('skill-modal');
+        if (skillModal && !skillModal.classList.contains('hidden')) closeModal('skill-modal');
+        const drawer = document.getElementById(entry.payload);
+        if (drawer) drawer.classList.remove('translate-x-full');
+    }
+};
+
+// injectModalBackButton: called after a modal renders. If the stack is
+// non-empty AND we have not just done an internal restore, inject a "Back"
+// button into the modal's header next to the close X.
+window.injectModalBackButton = function(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    // Remove any previous back button so we don't stack them
+    const prev = modal.querySelector('.modal-back-btn');
+    if (prev) prev.remove();
+    if (modalNavStack.length === 0) return;
+    // Find the X close button — both occupation and skill modals expose it
+    // via [aria-label="Close modal"]
+    const closeBtn = modal.querySelector('button[aria-label="Close modal"]');
+    if (!closeBtn) return;
+    const back = document.createElement('button');
+    back.type = 'button';
+    back.className = 'modal-back-btn mr-2 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 hover:text-slate-800 transition-colors text-xs font-bold flex items-center gap-1.5 shadow-sm shrink-0';
+    back.setAttribute('aria-label', 'Go back to previous view');
+    back.innerHTML = '<i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back';
+    back.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        goBackModal();
+    };
+    closeBtn.parentNode.insertBefore(back, closeBtn);
+    if (window.lucide) lucide.createIcons();
+};
+
+// B4: shared back-button action for sub-sections opened from the Careers Hub
+// (Community Hub drawer, Founders Launchpad, Financial Aid). Closes whatever
+// view is currently active and reopens the Careers Hub drawer.
+window.backToCareersHub = function() {
+    // Close any modal/drawer that might be on top
+    closeAllModals('career-hub-drawer');
+    const drawer = document.getElementById('career-hub-drawer');
+    if (drawer) drawer.classList.remove('translate-x-full');
+    // Always rebuild the hub content so the user sees the entry page, not
+    // whichever sub-view they last visited.
+    if (typeof resetCareerHub === 'function') resetCareerHub();
+    document.body.classList.add('overflow-hidden');
+    if (window.lucide) lucide.createIcons();
 };
 
 const API_CONFIG = {
@@ -3120,6 +3242,11 @@ function getOJAMetrics(roleTitle, country) {
         }
 
         function openOccupationModal(title) {
+            // B1/B2: capture where we came from so a Back button can restore it.
+            // _internalRestore is set true by goBackModal() to suppress double-push.
+            if (!window._internalRestore) {
+                pushModalReturn();
+            }
             closeAllModals('occupation-modal');
             const modal = document.getElementById('occupation-modal');
             const panel = document.getElementById('occupation-modal-panel');
@@ -3208,14 +3335,22 @@ function getOJAMetrics(roleTitle, country) {
             // Inject HTML description
             document.getElementById('occ-desc').innerHTML = details.desc;
             
-            // 2. Typical Skills Required (Ranked & Categorized)
+            // 2. Typical Skills Required (Ranked & Categorized).
+            // F1 (reverse): Each technical skill is wrapped in a button that opens
+            // the corresponding Skill Profile modal — so users can jump role->skill
+            // and (combined with the forward F1 change) skill->role.
+            // The whole row is clickable; we close the occupation modal first
+            // to avoid a confusing nested-modal stack.
             const techHtml = details.specificSkills.technical.map((s, i) => `
-                <div class="flex items-center gap-2 p-2 bg-slate-50 border border-slate-100 rounded text-xs text-slate-700 hover:border-indigo-200 transition-colors w-full">
+                <button onclick="closeModal('occupation-modal'); openSkillModal('${s.replace(/'/g, "\\'")}')" class="flex items-center gap-2 p-2 bg-slate-50 hover:bg-white border border-slate-100 hover:border-indigo-300 rounded text-xs text-slate-700 transition-colors w-full text-left group cursor-pointer" title="View ${s} skill profile">
                     <div class="w-5 h-5 flex items-center justify-center bg-white rounded-full shadow-sm text-[10px] font-bold text-slate-400 border border-slate-100">${i+1}</div>
-                    <span class="font-bold text-slate-800">${s}</span>
-                </div>
+                    <span class="font-bold text-slate-800 flex-1">${s}</span>
+                    <i data-lucide="arrow-up-right" class="w-3 h-3 text-slate-300 group-hover:text-indigo-500"></i>
+                </button>
             `).join('');
 
+            // Employability skills don't have their own profile modal yet, so
+            // they stay as static rows — same styling as before.
             const empHtml = details.specificSkills.employability.map((s, i) => `
                 <div class="flex items-center gap-2 p-2 bg-slate-50 border border-slate-100 rounded text-xs text-slate-700 hover:border-emerald-200 transition-colors w-full">
                     <div class="w-5 h-5 flex items-center justify-center bg-white rounded-full shadow-sm text-[10px] font-bold text-emerald-600 border border-slate-100">${i+1}</div>
@@ -3503,6 +3638,8 @@ function getOJAMetrics(roleTitle, country) {
             modal.classList.remove('hidden');
             if(window.lucide) lucide.createIcons();
             setTimeout(() => { panel.classList.remove('scale-95', 'opacity-0'); panel.classList.add('scale-100', 'opacity-100'); }, 10);
+            // B1/B2: render a Back button in the header if a return point exists.
+            injectModalBackButton('occupation-modal');
         }
         
         function toggleLowBandwidth() {
@@ -3526,7 +3663,13 @@ function getOJAMetrics(roleTitle, country) {
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             const panel = modal.querySelector('div[id$="panel"]');
-            
+
+            // B1/B2/B3: explicit close via X should clear cross-modal history.
+            // (goBackModal pops one entry; pressing X means "I'm done" — bail out.)
+            if (!window._internalRestore && (modalId === 'occupation-modal' || modalId === 'skill-modal')) {
+                modalNavStack = [];
+            }
+
             if(panel) {
                 panel.classList.remove('scale-100', 'opacity-100');
                 panel.classList.add('scale-95', 'opacity-0');
@@ -5010,6 +5153,10 @@ window.toggleCareerHub = function() {
     resetCareerHub(); 
 }
         window.openSkillModal = function(skillName) {
+            // B3: capture where we came from so a Back button can restore it.
+            if (!window._internalRestore) {
+                pushModalReturn();
+            }
             closeAllModals('skill-modal');
             const modal = document.getElementById('skill-modal');
             const panel = document.getElementById('skill-modal-panel');
@@ -5187,6 +5334,8 @@ window.toggleCareerHub = function() {
             modal.classList.remove('hidden');
             if(window.lucide) lucide.createIcons();
             setTimeout(() => { panel.classList.remove('scale-95', 'opacity-0'); panel.classList.add('scale-100', 'opacity-100'); }, 10);
+            // B3: render a Back button in the header if a return point exists.
+            injectModalBackButton('skill-modal');
         }
 
         window.openCoursesForSkill = function(skillName) {
@@ -6171,6 +6320,7 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in flex flex-col h-full">
+                    <button onclick="backToCareersHub()" class="mb-3 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Careers Hub</button>
                     <div class="bg-pink-50/50 p-3 rounded-xl border border-pink-100 grid grid-cols-2 gap-3 mb-4 shrink-0">
                         <div>
                             <label class="block text-[10px] font-bold text-pink-900 mb-1">Location</label>
@@ -7706,6 +7856,7 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in space-y-6">
+                    <button onclick="backToCareersHub()" class="mb-3 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Careers Hub</button>
                     <!-- Header -->
                     <div class="bg-purple-50 rounded-xl p-5 border border-purple-100 flex items-start gap-4">
                         <div class="p-3 bg-purple-100 text-purple-600 rounded-xl shrink-0 shadow-sm"><i data-lucide="banknote" class="w-6 h-6"></i></div>
@@ -8101,6 +8252,7 @@ window.toggleCareerHub = function() {
 
             container.innerHTML = `
                 <div class="animate-fade-in space-y-8">
+                    <button onclick="backToCareersHub()" class="mb-3 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Careers Hub</button>
                     <!-- Header -->
                     <div class="bg-${tc}-50 rounded-xl p-6 border border-${tc}-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
