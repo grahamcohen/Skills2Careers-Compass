@@ -7,7 +7,22 @@ import socket
 
 # --- Configuration ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-RESOURCE_FILE = os.path.join(BASE_DIR, "digital_resources.json")
+
+# Resource data is split across multiple JSON files (see app.js DataManager).
+# The old single-file digital_resources.json was empty and has been removed.
+RESOURCE_FILES = [
+    "resources_general.json",
+    "resources_evidence.json",
+    "resources_digital.json",
+    "resources_agri.json",
+    "resources_energy.json",
+    "courses.json",
+    "scholarships.json",
+    "top_occupations.json",
+    "ventures.json",
+    "sector_data.json",
+    "app_data.json",
+]
 
 # Context for SSL (ignore verify for broader compatibility with some govt sites)
 ssl_ctx = ssl.create_default_context()
@@ -72,14 +87,19 @@ def extract_links(data, path=""):
     return links
 
 def validate_links():
-    print(f"🔍 Loading {RESOURCE_FILE}...")
-    data = load_json(RESOURCE_FILE)
-    if not data:
-        return
+    all_links = []
 
-    print("📋 Extracting links...")
-    all_links = extract_links(data)
-    print(f"   Found {len(all_links)} links to check.\n")
+    for fname in RESOURCE_FILES:
+        path = os.path.join(BASE_DIR, fname)
+        print(f"🔍 Loading {fname}...")
+        data = load_json(path)
+        if data is None:
+            continue
+        links = extract_links(data, fname)
+        print(f"   Found {len(links)} links.")
+        all_links.extend(links)
+
+    print(f"\n📋 Total links across all files: {len(all_links)}\n")
 
     broken_links = []
     skipped_links = []
