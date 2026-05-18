@@ -3545,7 +3545,10 @@ function getOJAMetrics(roleTitle, country) {
                         <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
                             <div class="grid grid-cols-2 md:grid-cols-3 gap-y-5 gap-x-4">
                                 <div>
-                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Avg Wage</div>
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-1 flex items-center gap-1">
+                                        Avg Wage
+                                        <span class="text-[8px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded px-1 py-0.5 normal-case tracking-normal" title="Wage figures are simulated for the prototype. See About > Prototype notice.">Demo</span>
+                                    </div>
                                     <div class="text-xs font-bold text-emerald-600 flex items-center gap-1.5">
                                         <i data-lucide="banknote" class="w-3.5 h-3.5"></i> ${wageHtml}
                                     </div>
