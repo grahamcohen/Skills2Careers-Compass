@@ -1,0 +1,10 @@
+# Normalize line endings for the repo.
+# The upstream maintainer commits from Windows (CRLF). We keep CRLF in the
+# working tree to match, so cross-platform diffs don't show as wholesale rewrites.
+*.js   text eol=crlf
+*.html text eol=crlf
+*.css  text eol=crlf
+*.json text eol=crlf
+*.md   text eol=crlf
+*.py   text eol=crlf
+*.txt  text eol=crlf
