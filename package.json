@@ -1,0 +1,31 @@
+{
+  "name": "skills2careers-compass",
+  "version": "1.4.0",
+  "description": "Skills2Careers Compass — a dashboard linking labour market intelligence to skills in demand across the East African Community.",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carmelasalzano-source/Skills2Careers-Compass.git"
+  },
+  "scripts": {
+    "lint:js": "eslint --config eslint.config.cjs \"*.js\"",
+    "lint:html": "htmlhint index.html",
+    "lint:css": "stylelint \"*.css\" --allow-empty-input",
+    "format": "prettier --write \"*.{js,json,html,md}\"",
+    "lint": "npm run lint:js && npm run lint:html && npm run lint:css",
+    "validate:data": "python3 validate_data.py",
+    "validate:links": "python3 validate_links.py",
+    "serve": "python3 -m http.server 8080"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-jsonc": "^2.13.0",
+    "globals": "^15.0.0",
+    "htmlhint": "^1.1.4",
+    "prettier": "^3.2.5",
+    "stylelint": "^16.2.1",
+    "stylelint-config-standard": "^36.0.0"
+  }
+}
