@@ -13,6 +13,7 @@ let favoriteVentures = new Set(); // Store favorite ventures
 let hubNavigationStack = []; // Navigation history for Unified Hub
 let showCrossSectorOnly = false; // Toggle for Cross-Sector Skills
 let isStudentpreneur = false; // Toggle for Studentpreneur Mode
+let lastInterviewFeedback = null; // Cache for AI Interview Coach result (so Back to Results doesn't re-run the simulation)
 
 // --- CONFIGURATION ---
 
@@ -4193,6 +4194,9 @@ function getOJAMetrics(roleTitle, country) {
 
         // --- NEW: Interview Prep Logic ---
         window.showInterviewPrep = function() {
+            // Reset cached result whenever a new question is started
+            lastInterviewFeedback = null;
+
             const container = document.getElementById('career-hub-content');
             const sector = activeSectorId;
             
@@ -4203,20 +4207,20 @@ function getOJAMetrics(roleTitle, country) {
                     <button onclick="resetCareerHub()" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm shrink-0 w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
                     
                     <div class="flex-1 flex flex-col items-center justify-center text-center space-y-6">
-                        <div class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-2 animate-pulse">
+                        <div id="interview-mic-indicator" class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-2">
                             <i data-lucide="mic" class="w-8 h-8"></i>
                         </div>
                         
                         <div class="space-y-2">
                             <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase tracking-wide">AI Interview Coach</span>
                             <h3 class="text-xl font-bold text-slate-900 leading-snug">"${question}"</h3>
-                            <p class="text-xs text-slate-500">Speak clearly. The AI is listening for keywords and tone.</p>
+                            <p id="interview-hint" class="text-xs text-slate-500">Click Start when you're ready. Speak your answer aloud, then click Stop.</p>
                         </div>
 
-                        <!-- Mock Recording Interface -->
+                        <!-- Two-step Recording Interface: Start -> Stop -> Process -->
                         <div class="w-full max-w-xs space-y-3" id="interview-controls">
-                            <button onclick="simulateInterviewResponse()" class="w-full py-3 bg-rose-600 text-white font-bold rounded-xl shadow-lg hover:bg-rose-700 transition-all flex items-center justify-center gap-2">
-                                <span class="w-2 h-2 bg-white rounded-full animate-ping"></span> Start Recording Answer
+                            <button onclick="startInterviewRecording()" class="w-full py-3 bg-rose-600 text-white font-bold rounded-xl shadow-lg hover:bg-rose-700 transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="mic" class="w-4 h-4"></i> Start Recording
                             </button>
                         </div>
                     </div>
@@ -4225,53 +4229,114 @@ function getOJAMetrics(roleTitle, country) {
             if(window.lucide) lucide.createIcons();
         }
 
-        window.simulateInterviewResponse = function() {
+        // STEP 1: User clicks "Start Recording" -> swap UI to "Stop Recording" state.
+        // Note: this is a UI-only mock; we don't actually capture audio. The two-step
+        // pattern makes the flow match user expectations (press to start, press to stop).
+        window.startInterviewRecording = function() {
             const controls = document.getElementById('interview-controls');
+            const indicator = document.getElementById('interview-mic-indicator');
+            const hint = document.getElementById('interview-hint');
+            if (!controls) return;
+
+            if (indicator) {
+                indicator.classList.add('animate-pulse', 'ring-4', 'ring-rose-200');
+            }
+            if (hint) {
+                hint.innerHTML = '<span class="text-rose-600 font-bold">● Recording</span> &mdash; speak your answer, then click Stop.';
+            }
+
+            controls.innerHTML = `
+                <button onclick="stopInterviewRecording()" class="w-full py-3 bg-slate-900 text-white font-bold rounded-xl shadow-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+                    <span class="w-2 h-2 bg-rose-400 rounded-full animate-ping"></span> Stop Recording
+                </button>
+                <button onclick="showInterviewPrep()" class="w-full py-2 text-xs font-bold text-slate-500 hover:text-slate-700 transition-colors">
+                    Cancel
+                </button>
+            `;
+            if(window.lucide) lucide.createIcons();
+        }
+
+        // STEP 2: User clicks "Stop Recording" -> show "Processing..." then render the
+        // feedback report. Caches the result so the Rubric's "Back to Results" button
+        // can restore exactly the same screen instead of re-running the simulation.
+        window.stopInterviewRecording = function() {
+            const controls = document.getElementById('interview-controls');
+            if (!controls) return;
+
             controls.innerHTML = `<div class="text-sm font-medium text-slate-600 animate-pulse">Processing your answer...</div>`;
-            
-            // Randomized Feedback for Demo Realism
+
+            // Randomised feedback (demo content). Caching it means navigation back
+            // to this screen shows the same result, not a new random one.
             const feedbacks = [
                 { score: "8/10", strength: "Good structure (STAR method).", improve: "Quantify your impact (e.g., 'improved by 20%')." },
                 { score: "7/10", strength: "Clear articulation and tone.", improve: "Try to relate your answer back to the company's mission." },
                 { score: "9/10", strength: "Excellent technical depth.", improve: "Keep the answer slightly more concise." }
             ];
-            const fb = feedbacks[Math.floor(Math.random() * feedbacks.length)];
-            
-            setTimeout(() => {
-                const container = document.getElementById('career-hub-content');
-                container.innerHTML = `
-                    <div class="animate-fade-in space-y-4">
-                        <button onclick="resetCareerHub()" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
-                        
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-500"></i> Feedback Report</h3>
-                            
-                            <div class="space-y-4">
-                                <div>
-                                    <div class="flex justify-between text-xs font-bold text-slate-600 mb-1"><span>Confidence Score</span><span>${fb.score}</span></div>
-                                    <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full" style="width: ${parseInt(fb.score)*10}%"></div></div>
-                                </div>
-                                
-                                <div class="bg-indigo-50 p-3 rounded-lg">
-                                    <div class="text-xs font-bold text-indigo-800 mb-1">Key Strengths</div>
-                                    <p class="text-xs text-indigo-700">${fb.strength}</p>
-                                </div>
+            lastInterviewFeedback = feedbacks[Math.floor(Math.random() * feedbacks.length)];
 
-                                <div class="bg-orange-50 p-3 rounded-lg">
-                                    <div class="text-xs font-bold text-orange-800 mb-1">To Improve</div>
-                                    <p class="text-xs text-orange-700">${fb.improve}</p>
-                                </div>
+            setTimeout(() => {
+                showInterviewResults();
+            }, 1500);
+        }
+
+        // Renders the feedback report from cached state. Called both by
+        // stopInterviewRecording (after processing) and by the Rubric's
+        // "Back to Results" button (without re-running anything).
+        window.showInterviewResults = function() {
+            if (!lastInterviewFeedback) {
+                // Nothing cached; send the user back to the start of the flow.
+                showInterviewPrep();
+                return;
+            }
+            const fb = lastInterviewFeedback;
+            const container = document.getElementById('career-hub-content');
+
+            container.innerHTML = `
+                <div class="animate-fade-in space-y-4">
+                    <button onclick="resetCareerHub()" class="mb-4 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</button>
+
+                    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-500"></i> Feedback Report</h3>
+                            <span class="text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200 rounded px-1.5 py-0.5 uppercase tracking-wide" title="Demo feedback — not produced by a real ASR/NLP pipeline">Demo</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold text-slate-600 mb-1"><span>Confidence Score</span><span>${fb.score}</span></div>
+                                <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full" style="width: ${parseInt(fb.score)*10}%"></div></div>
                             </div>
-                            
-                            <div class="flex gap-2 mt-4">
-                                <button onclick="showInterviewPrep()" class="flex-1 py-2 border border-slate-200 text-slate-700 font-bold rounded-lg text-xs hover:bg-slate-50">Try Another</button>
-                                <button onclick="renderInterviewRubric()" class="flex-1 py-2 bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold rounded-lg text-xs hover:bg-indigo-100 flex items-center justify-center gap-1"><i data-lucide="clipboard-list" class="w-3 h-3"></i> Open Rubric</button>
+
+                            <div class="bg-indigo-50 p-3 rounded-lg">
+                                <div class="text-xs font-bold text-indigo-800 mb-1">Key Strengths</div>
+                                <p class="text-xs text-indigo-700">${fb.strength}</p>
+                            </div>
+
+                            <div class="bg-orange-50 p-3 rounded-lg">
+                                <div class="text-xs font-bold text-orange-800 mb-1">To Improve</div>
+                                <p class="text-xs text-orange-700">${fb.improve}</p>
                             </div>
                         </div>
+
+                        <div class="flex gap-2 mt-4">
+                            <button onclick="showInterviewPrep()" class="flex-1 py-2 border border-slate-200 text-slate-700 font-bold rounded-lg text-xs hover:bg-slate-50">Try Another</button>
+                            <button onclick="renderInterviewRubric()" class="flex-1 py-2 bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold rounded-lg text-xs hover:bg-indigo-100 flex items-center justify-center gap-1"><i data-lucide="clipboard-list" class="w-3 h-3"></i> Open Rubric</button>
+                        </div>
                     </div>
-                `;
-                if(window.lucide) lucide.createIcons();
-            }, 2000);
+                </div>
+            `;
+            if(window.lucide) lucide.createIcons();
+        }
+
+        // Back-compat alias: any external code (or older onclick handlers) that
+        // still calls simulateInterviewResponse should restore the cached results
+        // if available, or restart the flow.
+        window.simulateInterviewResponse = function() {
+            if (lastInterviewFeedback) {
+                showInterviewResults();
+            } else {
+                showInterviewPrep();
+            }
         }
 
         // --- NEW: Interview Rubric Logic ---
@@ -4280,7 +4345,7 @@ function getOJAMetrics(roleTitle, country) {
             
             container.innerHTML = `
                 <div class="animate-fade-in space-y-4">
-                    <button onclick="simulateInterviewResponse()" class="mb-2 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Results</button>
+                    <button onclick="showInterviewResults()" class="mb-2 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 hover:border-slate-300 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all text-xs font-bold flex items-center gap-2 shadow-sm w-fit"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Results</button>
                     
                     <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
                         <div class="flex justify-between items-start mb-4">
@@ -4369,7 +4434,12 @@ function getOJAMetrics(roleTitle, country) {
 
         window.saveRubricScore = function() {
             alert("Assessment saved to candidate profile!");
-            showInterviewPrep();
+            // Return to the cached results view (not a fresh question)
+            if (lastInterviewFeedback) {
+                showInterviewResults();
+            } else {
+                showInterviewPrep();
+            }
         }
         
         window.openEvidenceModal = function() {
