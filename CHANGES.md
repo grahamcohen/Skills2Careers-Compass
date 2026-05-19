@@ -1,6 +1,6 @@
 # Skills2Careers Compass — Changelog
 
-Skills2Careers Compass is a thoughtful prototype with solid foundations — clean data architecture, a clear information hierarchy, sector-aware content, and a coherent design language. This document summarises the iterations made on top of that foundation:
+Skills2Careers Compass is a thoughtful prototype with solid foundations — clean data architecture, a clear information hierarchy, sector-aware content, and a coherent design language. This document summarizes the iterations made on top of that foundation:
 
 - finishing UI flows that were scaffolded but awaiting connection,
 - wiring up authored content from `data.js` that hadn't yet surfaced in the UI,
@@ -19,10 +19,10 @@ All changes preserve the original design intent. The fork lives at `grahamcohen/
 - **A handful of UI scaffolds are now connected end-to-end.** The Application Kit's Access buttons open real free resources; the AI Interview Coach has a two-step record/stop flow; the About drawer and certificate modal render with full content; Save Role / Save Skill / Save Course all persist to the device.
 - **My Career Plan is fully interactive.** Saved items in the widget reopen the role/skill profile when tapped. Tap-and-undo toast feedback on every save.
 - **Nine new content surfaces from previously-dormant data blocks.** Outreach Templates with copy-to-clipboard; Pivot Audit for career-changers; Saved Interview Assessments; Featured Mentors in the Community Hub; Apprenticeship Frameworks + national standards on the Placement Kit; Application Kit metadata + Founder Tender tab; Hero Persona switcher (Learner / Entrepreneur / Counsellor / Educator / Policymaker).
-- **Works offline after first visit.** Service Worker with stale-while-revalidate caching; the About drawer documents the behaviour and recommends Add-to-Home-Screen for the best mobile experience.
+- **Works offline after first visit.** Service Worker with stale-while-revalidate caching; the About drawer documents the behavior and recommends Add-to-Home-Screen for the best mobile experience.
 - **Mobile-friendly.** Horizontal scroll prevented across drawers and modals; content sits above the mobile browser toolbar; font sizes adjust for narrow viewports.
 - **Accessibility basics in place.** ESC closes the topmost modal; focus moves into modals when they open; ARIA roles on dialogs and nav; the certificate modal prints cleanly.
-- **Repo hygiene.** Linter and Prettier wired up with a `package.json`; 28-assertion smoke test suite passes; line endings normalised; CHANGES.md and a fresh README.md document the state of things.
+- **Repo hygiene.** Linter and Prettier wired up with a `package.json`; 28-assertion smoke test suite passes; line endings normalized; CHANGES.md and a fresh README.md document the state of things.
 
 ---
 
@@ -30,9 +30,9 @@ All changes preserve the original design intent. The fork lives at `grahamcohen/
 
 ### My Career Plan — full save-and-recall workflow
 
-The bookmark widget's value proposition (save any role, skill, or course) is now fully realised:
+The bookmark widget's value proposition (save any role, skill, or course) is now fully realized:
 
-- **Save Role** button in the occupation modal footer (alongside Share via WhatsApp). State-driven label and colour: Save Role ↔ Saved to Plan; bookmark icon fills indigo when saved.
+- **Save Role** button in the occupation modal footer (alongside Share via WhatsApp). State-driven label and color: Save Role ↔ Saved to Plan; bookmark icon fills indigo when saved.
 - **Save Skill** button in the skill modal footer (visible without scrolling). Same state-driven UI. A secondary Save Skill remains in the "Master this Skill" CTA banner for users who scroll all the way down.
 - **Toast feedback** on every save/unsave — "Added to My Plan: Soil Analysis" / "Removed from My Plan: Soil Analysis" — so users see immediate confirmation.
 - **Saved items reopen on tap.** Each row in the plan widget is now a tappable button (with an external-link icon hint). Roles reopen the occupation modal; skills reopen the skill modal; courses jump to Find Courses with the name prefilled in the search box. A separate trash icon on the right removes the item.
@@ -72,7 +72,7 @@ The Interview Coach's Rubric now persists each scored assessment to the device:
 
 The Application Kit's six tabs (General, Internship, Placement, Freelance, Founder Tender, Volunteer) now each surface five curated external resources. The item names come from the `applicationKitsResources` data block in `data.js`; this changelog adds an in-file map attaching a free reputable resource URL to each:
 
-- **General Job Applications:** Europass CV builder, Harvard cover-letter guide, LinkedIn profile checklist, Indeed interview Q catalogue, Harvard PON salary negotiation guide
+- **General Job Applications:** Europass CV builder, Harvard cover-letter guide, LinkedIn profile checklist, Indeed interview Q catalog, Harvard PON salary negotiation guide
 - **Internship Starter:** Indeed entry-level CV guide, Princeton recommendation request template, Indeed internship cover letter, Erasmus+ Learning Agreement, ILO internship report guidelines
 - **Work Placement:** QAA placement guidance, Open University logbook template, ILO supervisor evaluation rubric, OU placement report structure, ILO OSH workplace safety checklist
 - **Freelancer Toolkit:** Bonsai free rate calculator, Bonsai contract template, Smashing Magazine portfolio guide, Indeed cold pitch templates, Wave free invoicing
@@ -100,7 +100,7 @@ The Community Hub drawer now shows a Featured Mentors section when the filter is
 - Name, role, company
 - One-paragraph bio
 
-Filtered by active country and sector with a regional fallback. A small amber **Sample** pill in the section header flags the illustrative nature of the prototype profiles, consistent with the demo-data labelling pattern used elsewhere. Sourced from the `specificMentors` data block.
+Filtered by active country and sector with a regional fallback. A small amber **Sample** pill in the section header flags the illustrative nature of the prototype profiles, consistent with the demo-data labeling pattern used elsewhere. Sourced from the `specificMentors` data block.
 
 ### Hero Persona switcher
 
@@ -125,7 +125,7 @@ A `service-worker.js` (123 lines) caches the app shell and JSON data using a **s
 - On install, precaches `index.html`, `app.js`, `data.js`, `style.css`, `manifest.json`, `404.html` — so the app works on a cold start with no network.
 - On every same-origin GET for JSON/HTML/JS/CSS, serves the cached copy immediately (instant render) and in parallel fetches fresh from the network to update the cache for next time.
 - Cross-origin CDN scripts (Tailwind, Lucide, Chart.js, jsPDF) are left to the browser.
-- A new About-drawer panel titled **Works offline** explains the behaviour and recommends Add-to-Home-Screen (Safari → Share → Add to Home Screen; Chrome → menu → Add to Home screen) for the best mobile experience (eliminates browser toolbars, gives the app the full screen).
+- A new About-drawer panel titled **Works offline** explains the behavior and recommends Add-to-Home-Screen (Safari → Share → Add to Home Screen; Chrome → menu → Add to Home screen) for the best mobile experience (eliminates browser toolbars, gives the app the full screen).
 - A **Reset App Cache** button (in the same panel) clears localStorage + Service Worker caches + unregisters the worker + reloads, for users who want instant freshness instead of waiting one visit cycle.
 - The PWA manifest's `start_url` and `scope` are now relative (`./`) so installing to home screen on GitHub Pages opens the app itself rather than the github.io root.
 
@@ -137,11 +137,11 @@ A handful of UI elements were scaffolded — markup or handlers in place — but
 
 ### Custom stylesheet now loading
 
-The custom `style.css` (star-rating colours, sector cards, drawer transitions, scrollbar styling, animations, Lite-Mode fallbacks) just needed a filename adjustment so the `<link>` tag resolves. Renamed from `style` → `style.css`. With the custom CSS now applied, star ratings get their colour palette, Lite Mode strips animations properly, and scrollbars match the slate theme.
+The custom `style.css` (star-rating colors, sector cards, drawer transitions, scrollbar styling, animations, Lite-Mode fallbacks) just needed a filename adjustment so the `<link>` tag resolves. Renamed from `style` → `style.css`. With the custom CSS now applied, star ratings get their color palette, Lite Mode strips animations properly, and scrollbars match the slate theme.
 
 ### PWA manifest published
 
-The `<link rel="manifest">` tag pointed at a file that hadn't shipped yet. Created `manifest.json` with name, theme colour (indigo `#4f46e5`), scope, icons via api.iconify.design, and a relative path so it works under sub-paths like GitHub Pages.
+The `<link rel="manifest">` tag pointed at a file that hadn't shipped yet. Created `manifest.json` with name, theme color (indigo `#4f46e5`), scope, icons via api.iconify.design, and a relative path so it works under sub-paths like GitHub Pages.
 
 ### About drawer wired into init
 
@@ -165,7 +165,7 @@ The Rubric's Save button now writes to localStorage. See "Saved Interview Assess
 
 ### Save Role / Save Skill buttons added and made responsive
 
-The first cut of the Save buttons rendered them in two places (modal footer and the gradient CTA banner) — both with the same DOM `id`, which meant only one of the two ever updated when toggled. Refactored to extract render helpers (`renderOccupationFooter`, `renderSkillModalFooter`, `renderSkillCTAContainer`) that rebuild the relevant DOM section on every toggle. Button labels, background colours, and bookmark icon fill now flip atomically.
+The first cut of the Save buttons rendered them in two places (modal footer and the gradient CTA banner) — both with the same DOM `id`, which meant only one of the two ever updated when toggled. Refactored to extract render helpers (`renderOccupationFooter`, `renderSkillModalFooter`, `renderSkillCTAContainer`) that rebuild the relevant DOM section on every toggle. Button labels, background colors, and bookmark icon fill now flip atomically.
 
 ### Compass Users cards made interactive
 
@@ -173,7 +173,7 @@ The five user-type cards in the Compass Users side menu (Graduates, Career Speci
 
 ### Navigation chain across modals and drawers
 
-The original prototype used `closeAllModals()` when opening a centred modal, which also closed any side drawer the user might have come from. Adjusted so drawers stay open underneath the modal (z-100 modal over z-60 drawer); a new `closeOtherModalsOnly()` helper closes other centred modals but leaves drawers alone. Result:
+The original prototype used `closeAllModals()` when opening a centered modal, which also closed any side drawer the user might have come from. Adjusted so drawers stay open underneath the modal (z-100 modal over z-60 drawer); a new `closeOtherModalsOnly()` helper closes other centered modals but leaves drawers alone. Result:
 
 - Sector Hub → tap a top occupation → close modal → returns to Sector Hub view rather than the homepage.
 - Combined with the modal navigation stack, contextual Back buttons surface at every step of the chain (Back to Sector Hub → Back to Role → Back to Skill).
@@ -239,7 +239,7 @@ The Back button is rendered as a dedicated bar at the top of the modal panel (ab
 
 ### Performance: deferred JS loading
 
-`data.js` (181 KB) and `app.js` (~650 KB) now load with the `defer` attribute. The HTML parses in parallel with the script downloads; scripts execute in document order after parsing completes. Faster first paint, especially on slower connections. No behaviour change — both files are pure definitions and the DOMContentLoaded handler waits for parsing either way.
+`data.js` (181 KB) and `app.js` (~650 KB) now load with the `defer` attribute. The HTML parses in parallel with the script downloads; scripts execute in document order after parsing completes. Faster first paint, especially on slower connections. No behavior change — both files are pure definitions and the DOMContentLoaded handler waits for parsing either way.
 
 ### Open Graph + Twitter Card meta tags
 
@@ -262,7 +262,7 @@ A few small adjustments:
 
 ---
 
-## Attribution and demo-data labelling
+## Attribution and demo-data labeling
 
 ### Data source attribution
 
@@ -272,7 +272,7 @@ Per the original brief, visible attribution to the data sources used:
 - "About the data & methodology" link in the footer opens the About drawer's full data-sources section.
 - About drawer lists five data sources with outbound links: UNESCO GST, ESCO, ILOSTAT, Kenya KLMIS, Rwanda LMIS.
 
-### Demo data labelled, not replaced
+### Demo data labeled, not replaced
 
 Per the brief, no actual data values were edited. Illustrative content is clearly flagged where prominent:
 
@@ -285,7 +285,7 @@ Per the brief, no actual data values were edited. Illustrative content is clearl
 
 ## Language switcher
 
-The EN/SW/FR selector previously persisted the user's language preference to localStorage; UI translations are a longer workstream not yet underway. To make the current behaviour transparent: selecting SW or FR now shows a toast — *"Coming soon — the interface is currently English only. Your language preference has been saved for when translations are added."* — and the selector snaps back to English. A `TODO (i18n)` comment in the code documents the larger workstream (extract UI strings into a key/value dictionary, add a `translate(key)` helper, route templates through it).
+The EN/SW/FR selector previously persisted the user's language preference to localStorage; UI translations are a longer workstream not yet underway. To make the current behavior transparent: selecting SW or FR now shows a toast — *"Coming soon — the interface is currently English only. Your language preference has been saved for when translations are added."* — and the selector snaps back to English. A `TODO (i18n)` comment in the code documents the larger workstream (extract UI strings into a key/value dictionary, add a `translate(key)` helper, route templates through it).
 
 ---
 
@@ -299,7 +299,7 @@ Added a tooltip ("Toggle Lite Mode — disables animations, transitions, and hea
 
 ### `.gitignore`
 
-Added one covering OS junk, editor artefacts, `node_modules`, and local working notes.
+Added one covering OS junk, editor artifacts, `node_modules`, and local working notes.
 
 ### `package.json` with dev dependencies and scripts
 
@@ -325,13 +325,13 @@ Thirteen top-level declarations in `data.js` weren't yet read by any code in `ap
 
 ### Orphan functions documented
 
-Ten functions defined on `window` that aren't currently called from `app.js` or `index.html`. Listed at the top of `app.js` with one-line hypotheses about each (likely artefacts of earlier flow iterations — e.g. `renderPivotAudit` was an earlier version of what's now `showPivotAuditView`). A future cleanup pass can verify each in a browser and remove safely.
+Ten functions defined on `window` that aren't currently called from `app.js` or `index.html`. Listed at the top of `app.js` with one-line hypotheses about each (likely artifacts of earlier flow iterations — e.g. `renderPivotAudit` was an earlier version of what's now `showPivotAuditView`). A future cleanup pass can verify each in a browser and remove safely.
 
 ### Google Tag Manager scoped to upstream
 
 The GTM container ID in `index.html` is shared with the upstream property; the live preview on my fork shouldn't be feeding traffic into that account. Both the head script and the noscript fallback iframe are commented out, with an inline comment explaining how to re-enable when merging back upstream.
 
-### Line endings normalised
+### Line endings normalized
 
 Files in the repo had mixed CRLF/LF line endings (uploads from the GitHub web UI default to CRLF on Windows; automated tooling uses LF). A one-time normalisation commit (with a clear standalone message) brings everything to LF. A `.gitattributes` with `text=auto` keeps it stable going forward — Windows working copies still see CRLF locally, the repo stores LF.
 
@@ -343,13 +343,13 @@ Files in the repo had mixed CRLF/LF line endings (uploads from the GitHub web UI
 
 ## What was deliberately not changed
 
-- **Data values.** No course, skill, occupation, scholarship, or wage figures were edited. Demo data is labelled where prominent (see Demo data labelling above).
+- **Data values.** No course, skill, occupation, scholarship, or wage figures were edited. Demo data is labeled where prominent (see Demo data labeling above).
 - **`app.js` refactor.** It's still a single file. Splitting it per-concern (DataManager, Modals, Pathway, Training, Hub, Plan, Charts, Drawers) is a worthwhile follow-up — and the orphan-function audit makes a useful starting point — but doing it safely needs a full QA pass that this scope didn't include.
 - **Partner / employer logos** are held back pending usage approval (UNESCO and partner organisations).
 - **Full i18n.** The toast was a transparency fix; proper translation requires extracting UI strings into a dictionary and routing every template through a `translate(key)` helper. A separate workstream.
 - **Full WCAG accessibility audit.** The basics (ESC, focus, ARIA, print CSS) are in place; a screen-reader testing pass and a Lighthouse a11y score haven't been run yet.
 - **Lighthouse performance audit.** No targeted optimisation beyond `defer` on the JS, preconnect hints, and the Service Worker cache.
-- **Real PNG icons for the PWA manifest.** Currently uses iconify SVG, which works for theme colour but isn't ideal for full installability across all platforms.
+- **Real PNG icons for the PWA manifest.** Currently uses iconify SVG, which works for theme color but isn't ideal for full installability across all platforms.
 
 ---
 

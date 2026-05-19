@@ -12,7 +12,7 @@ Built on the UNESCO Global Skills Tracker and the ESCO occupation taxonomy. See 
 
 ## Running locally
 
-It's a static site — no build step. Open `index.html` directly in any modern browser, or serve it for proper relative-path behaviour:
+It's a static site — no build step. Open `index.html` directly in any modern browser, or serve it for proper relative-path behavior:
 
 ```bash
 # Python (works without extra installs)
@@ -44,7 +44,7 @@ index.html          single-page entry, all UI shell + drawers + modals
 app.js              ~9k lines of UI logic (split out per-concern is a
                     standing refactor item — see the original AUDIT.md)
 data.js             ~2k lines of hardcoded reference constants
-manifest.json       PWA manifest (theme colour, icons, scope)
+manifest.json       PWA manifest (theme color, icons, scope)
 style.css           ~50 lines of custom CSS layered over Tailwind CDN
 
 courses.json        training providers and outcome scorecards
@@ -112,6 +112,6 @@ For any code edits, please keep:
 - LF line endings in the repo (the `.gitattributes` handles platform-native checkout, so Windows working copies will still see CRLF — let Git do its job)
 - The Prototype notice in `index.html` and the About drawer in sync if you change demo-data status
 
-## Licence
+## License
 
 MIT (per `package.json`).

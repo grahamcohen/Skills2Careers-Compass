@@ -9755,7 +9755,7 @@ window.toggleCareerHub = function() {
                         <p class="text-[11px] text-amber-800 leading-relaxed">
                             This is a working prototype. Some wage figures, mentor profiles, and outcome
                             metrics are <strong>illustrative</strong> rather than sourced — clearly
-                            labelled wherever they appear. Treat as design exploration, not production data.
+                            labeled wherever they appear. Treat as design exploration, not production data.
                         </p>
                     </div>
 
