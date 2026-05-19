@@ -1,51 +1,56 @@
 # Skills2Careers Compass — Changelog
 
-A summary of the improvements made to the **Skills2Careers Compass** prototype. All changes live on my fork (`grahamcohen/Skills2Careers-Compass`) and are deployed for testing at:
+Skills2Careers Compass is a thoughtful prototype with solid foundations — clean data architecture, a clear information hierarchy, sector-aware content, and a coherent design language. This document summarises the iterations made on top of that foundation:
 
-**🔗 https://grahamcohen.github.io/Skills2Careers-Compass/**
+- finishing UI flows that were scaffolded but awaiting connection,
+- wiring up authored content from `data.js` that hadn't yet surfaced in the UI,
+- adding new features that build on the existing patterns,
+- polishing the experience for mobile, accessibility, and offline use.
 
-The upstream repository (`carmelasalzano-source/Skills2Careers-Compass`) is untouched. Changes are broken into atomic, conventionally-named commits so individual fixes can be cherry-picked upstream when ready.
+All changes preserve the original design intent. The fork lives at `grahamcohen/Skills2Careers-Compass`; the upstream `carmelasalzano-source/Skills2Careers-Compass` is untouched. Changes are organised into atomic, conventionally-named commits so individual improvements can be cherry-picked when ready.
+
+**🔗 Live preview: https://grahamcohen.github.io/Skills2Careers-Compass/**
 
 ---
 
 ## Summary at a glance
 
-- **Navigation is reliable.** Back-buttons now work across the modal/drawer chain so users never get stranded. Back to Sector Hub, Back to Role, Back to Skill, Back to Careers Hub all surface contextually.
-- **Several broken features now work.** The custom stylesheet no longer 404s; the About drawer opens; the certificate modal renders; the AI Interview Coach has a real record/stop flow; the Application Kit's Access buttons link to real free resources instead of doing nothing.
-- **My Career Plan is real.** Save Role / Save Skill / Save Course buttons all work, persist to the device, and the saved items in the plan widget are now tappable to reopen.
-- **Nine new content features.** Outreach Templates with copy-to-clipboard; Pivot Audit for career-changers; Saved Interview Assessments; Featured Mentors in the Community Hub; Apprenticeship Frameworks + national standards on the Placement Kit; Application Kit metadata + Founder Tender tab; Hero Persona switcher (Learner / Entrepreneur / Counsellor / Educator / Policymaker).
-- **Works offline after first visit.** Service Worker with stale-while-revalidate caching. Add-to-Home-Screen recommended via the About drawer for the best mobile experience.
-- **Mobile-friendly.** Horizontal scroll fixed on the Sector Hub; content no longer cuts off behind the browser toolbar; touch targets and font sizes adjusted for narrow screens.
-- **Accessibility basics in place.** ESC closes the topmost modal; focus moves into modals when they open; ARIA roles + labels on dialogs and nav; certificate modal prints cleanly.
-- **Code health improved.** `style.css` properly named; dead files removed; linter and Prettier wired up; smoke tests (28 assertions, all passing) catch JSON regressions; line endings normalised; orphan functions documented for future cleanup.
+- **Navigation reads smoothly across the full chain.** Contextual Back buttons surface as users move Sector Hub → Role → Skill → Job-Title, with labels that name the destination (Back to Sector Hub, Back to Role, Back to Skill). The Careers Hub sub-sections also get Back-to-Careers-Hub buttons.
+- **A handful of UI scaffolds are now connected end-to-end.** The Application Kit's Access buttons open real free resources; the AI Interview Coach has a two-step record/stop flow; the About drawer and certificate modal render with full content; Save Role / Save Skill / Save Course all persist to the device.
+- **My Career Plan is fully interactive.** Saved items in the widget reopen the role/skill profile when tapped. Tap-and-undo toast feedback on every save.
+- **Nine new content surfaces from previously-dormant data blocks.** Outreach Templates with copy-to-clipboard; Pivot Audit for career-changers; Saved Interview Assessments; Featured Mentors in the Community Hub; Apprenticeship Frameworks + national standards on the Placement Kit; Application Kit metadata + Founder Tender tab; Hero Persona switcher (Learner / Entrepreneur / Counsellor / Educator / Policymaker).
+- **Works offline after first visit.** Service Worker with stale-while-revalidate caching; the About drawer documents the behaviour and recommends Add-to-Home-Screen for the best mobile experience.
+- **Mobile-friendly.** Horizontal scroll prevented across drawers and modals; content sits above the mobile browser toolbar; font sizes adjust for narrow viewports.
+- **Accessibility basics in place.** ESC closes the topmost modal; focus moves into modals when they open; ARIA roles on dialogs and nav; the certificate modal prints cleanly.
+- **Repo hygiene.** Linter and Prettier wired up with a `package.json`; 28-assertion smoke test suite passes; line endings normalised; CHANGES.md and a fresh README.md document the state of things.
 
 ---
 
 ## New features
 
-### My Career Plan — full save/recall workflow
+### My Career Plan — full save-and-recall workflow
 
-The bookmark widget previously claimed users could save roles, skills, and courses, but only courses had a working save button. Now:
+The bookmark widget's value proposition (save any role, skill, or course) is now fully realised:
 
-- **Save Role** button in the occupation modal footer (alongside Share via WhatsApp). State-driven label and colour (Save Role ↔ Saved to Plan), bookmark icon fills indigo when saved.
-- **Save Skill** button in the skill modal footer (visible without scrolling). Same state-driven UI. Plus a secondary Save Skill in the "Master this Skill" CTA banner for users who scroll all the way down.
-- **Toast feedback** on every save/unsave ("Added to My Plan: Soil Analysis" / "Removed from My Plan: Soil Analysis") so users see immediate confirmation.
-- **Tap saved items to reopen them.** Each saved role/skill/course in the plan widget is now a tappable button (with an external-link icon hint). Roles reopen the occupation modal; skills reopen the skill modal; courses jump to Find Courses with the name prefilled in the search box. A separate trash icon on the right removes the item.
-- **Plan persists** to localStorage across sessions; no account needed.
+- **Save Role** button in the occupation modal footer (alongside Share via WhatsApp). State-driven label and colour: Save Role ↔ Saved to Plan; bookmark icon fills indigo when saved.
+- **Save Skill** button in the skill modal footer (visible without scrolling). Same state-driven UI. A secondary Save Skill remains in the "Master this Skill" CTA banner for users who scroll all the way down.
+- **Toast feedback** on every save/unsave — "Added to My Plan: Soil Analysis" / "Removed from My Plan: Soil Analysis" — so users see immediate confirmation.
+- **Saved items reopen on tap.** Each row in the plan widget is now a tappable button (with an external-link icon hint). Roles reopen the occupation modal; skills reopen the skill modal; courses jump to Find Courses with the name prefilled in the search box. A separate trash icon on the right removes the item.
+- The plan persists to localStorage across sessions; no account required.
 
 ### Outreach Templates
 
-New Careers Hub feature under Work Readiness. Three ready-to-copy templates for the most common cold-outreach moments:
+New Careers Hub feature under Work Readiness. Three ready-to-copy templates for common cold-outreach moments:
 
 - LinkedIn alumni connection request
 - Informational interview request email
 - Application follow-up email
 
-Each card shows subject + body in a copy-friendly monospaced block. A **Copy** button writes the whole template to clipboard and toasts a reminder to replace the bracketed `[placeholders]` before sending. Sourced from the `outreachTemplates` data block in `data.js` (previously authored but never displayed in the UI).
+Each card shows subject + body in a copy-friendly block; a **Copy** button writes the whole template to clipboard and toasts a reminder to replace the bracketed `[placeholders]` before sending. Sourced from the `outreachTemplates` data block in `data.js`.
 
 ### Pivot Audit (for career-changers)
 
-New Careers Hub feature for users moving between sectors. Same checklist UX as the existing Readiness Audit but focused on the specific challenges of pivoting:
+New Careers Hub feature for users moving between sectors. Same checklist UX as the existing Readiness Audit, focused on the specific challenges of pivoting:
 
 - **Skill Translation** — mapping past skills to new sector jargon, functional CV format
 - **Market Immersion** — communities, industry leaders, newsletters
@@ -55,19 +60,17 @@ A live coverage badge updates as items are checked off: "Just starting" → "Ear
 
 ### Saved Interview Assessments
 
-The Interview Coach's Rubric used to pop an alert ("Assessment saved to candidate profile!") that didn't actually save anything. Now properly persists to localStorage:
+The Interview Coach's Rubric now persists each scored assessment to the device:
 
 - Stores date, sector, question, all four sub-scores, total /20, and the feedback text.
-- New **Saved Assessments** card on the Careers Hub home grid with a live count badge.
-- Tap the card to see all saved assessments as cards (date, sector, the question that was asked, per-category scores, total). Each has a delete button; bulk Clear All is available too.
+- A new **Saved Assessments** card on the Careers Hub home grid carries a live count badge.
+- Tap the card to see saved assessments as cards (date, sector, the question that was asked, per-category scores, total). Each has a delete button; bulk Clear All is available too.
 - Capped at 50 most-recent records.
-- Empty state with onboarding pointing back to the Interview Coach.
+- Empty state with friendly onboarding pointing back to the Interview Coach.
 
 ### Application Kit — real resources
 
-The Applications Kit screen listed templates (Master CV, Cover Letter Guide, LinkedIn Checklist, etc.) with **Access** buttons that had no `onclick` handler — clicking did literally nothing. Across all six kit types since the prototype was first built.
-
-Every item now links to a free, reputable external resource:
+The Application Kit's six tabs (General, Internship, Placement, Freelance, Founder Tender, Volunteer) now each surface five curated external resources. The item names come from the `applicationKitsResources` data block in `data.js`; this changelog adds an in-file map attaching a free reputable resource URL to each:
 
 - **General Job Applications:** Europass CV builder, Harvard cover-letter guide, LinkedIn profile checklist, Indeed interview Q catalogue, Harvard PON salary negotiation guide
 - **Internship Starter:** Indeed entry-level CV guide, Princeton recommendation request template, Indeed internship cover letter, Erasmus+ Learning Agreement, ILO internship report guidelines
@@ -75,32 +78,33 @@ Every item now links to a free, reputable external resource:
 - **Freelancer Toolkit:** Bonsai free rate calculator, Bonsai contract template, Smashing Magazine portfolio guide, Indeed cold pitch templates, Wave free invoicing
 - **Founder Tender:** SBA capability statement template, KRA iTax overview, World Bank technical proposal template, ILO budget guidance, World Bank PPQ standards
 - **Volunteer Applications:** Indeed personal statement guide, UK National Careers Service skills audit, WEF Future of Jobs report, HBR authentic leadership, Idealist volunteer commitment guide
-- **Founder Tender tab** was authored in the data but never exposed in the UI — now visible as a sixth tab.
 
-Each row also shows a one-line description (so users can decide before clicking), an external-link icon on the Access button, and the relevant CV format / what-to-bring / test-type metadata header at the top (from `applicationKitsConfig`).
+Each row also shows a one-line description so users can decide before clicking, an external-link icon on the Access button, and a CV-format / what-to-bring / test-type metadata header at the top (from `applicationKitsConfig`).
+
+The Founder Tender tab is now exposed in the UI as well — it was authored in the data but hadn't yet been added to the tab list.
 
 ### Apprenticeship Frameworks + National Standards
 
-Added to the Placement Kit only (most relevant context). Two new blocks:
+Added to the Placement Kit (most relevant context). Two new blocks:
 
 - **Apprenticeship Framework** — duration, objective, apprentice role, employer responsibilities, tailored to the active sector (Agritech / Renewable Energy / Digital / generic default).
 - **National Standards** — country-relevant apprenticeship bodies (e.g. NITA Kenya, VETA Tanzania, DIT Uganda, RTB Rwanda, EAC TVET regional) as outbound link chips, filtered to the active country plus regional bodies.
 
-Both sourced from previously-unused data blocks (`apprenticeshipFrameworks`, `apprenticeshipStandards`).
+Both sourced from `apprenticeshipFrameworks` and `apprenticeshipStandards` in `data.js`.
 
 ### Featured Mentors
 
-The Community Hub drawer now shows a Featured Mentors section when filter is set to "All" or "Mentorship". Each card shows:
+The Community Hub drawer now shows a Featured Mentors section when the filter is set to "All" or "Mentorship". Each card shows:
 
-- Circular avatar (with initials-circle fallback if the image fails to load)
+- Circular avatar (with initials-circle fallback if the placeholder image fails to load)
 - Name, role, company
 - One-paragraph bio
 
-Filtered by active country and sector with a regional fallback. A small amber **Sample** pill flags the illustrative nature of the prototype profiles, consistent with the demo-data labelling pattern used elsewhere. Sourced from the `specificMentors` data block.
+Filtered by active country and sector with a regional fallback. A small amber **Sample** pill in the section header flags the illustrative nature of the prototype profiles, consistent with the demo-data labelling pattern used elsewhere. Sourced from the `specificMentors` data block.
 
 ### Hero Persona switcher
 
-The landing page hero now has a row of five tappable persona pills below the main subtitle:
+The landing page hero now offers a row of five tappable persona pills below the main subtitle:
 
 - **Learner** — for students and recent graduates
 - **Entrepreneur** — for founders and business builders
@@ -108,87 +112,104 @@ The landing page hero now has a row of five tappable persona pills below the mai
 - **Educator** — for trainers and training providers
 - **Policymaker** — for government and donor audiences
 
-Tapping a pill swaps the hero subtitle to a persona-tailored value proposition. Selection persists across visits to localStorage. Defaults to Learner. Sourced from the `heroPersonaContent` data block.
+Tapping a pill swaps the hero subtitle to a persona-tailored value proposition. Selection persists across visits via localStorage; defaults to Learner. Content sourced from the `heroPersonaContent` data block.
 
 ### Sector + country persistence
 
-Previously every page reload reset the active sector and country to defaults (Agritech / East Africa regional). Returning visitors had to re-select every time. Now both are persisted to localStorage with validation against allowed values; the top-nav dropdown syncs first on init so all downstream selectors (Career Hub, Skills Hub, Sector Hub, Find Courses filter, Financial Aid filter) pick up the restored values cleanly.
+The active sector and country now persist to localStorage and are restored on reload, so returning visitors land back in their context. The top-nav dropdown syncs first on init so all downstream selectors (Career Hub, Skills Hub, Sector Hub, Find Courses filter, Financial Aid filter) pick up the restored values cleanly.
 
 ### Offline support (Service Worker)
 
 A `service-worker.js` (123 lines) caches the app shell and JSON data using a **stale-while-revalidate** strategy:
 
-- On install, precaches `index.html`, `app.js`, `data.js`, `style.css`, `manifest.json`, `404.html` so the app works on a cold start with no network.
+- On install, precaches `index.html`, `app.js`, `data.js`, `style.css`, `manifest.json`, `404.html` — so the app works on a cold start with no network.
 - On every same-origin GET for JSON/HTML/JS/CSS, serves the cached copy immediately (instant render) and in parallel fetches fresh from the network to update the cache for next time.
 - Cross-origin CDN scripts (Tailwind, Lucide, Chart.js, jsPDF) are left to the browser.
-- New About-drawer panel titled **Works offline** explains the behaviour and recommends Add-to-Home-Screen (Safari → Share → Add to Home Screen; Chrome → menu → Add to Home screen) for the best mobile experience (eliminates browser toolbars, gives the app the full screen).
-- **Reset App Cache** button (in the same About-drawer panel) clears localStorage + Service Worker caches + unregisters the worker + reloads. Useful when content has been updated upstream and the user wants instant freshness instead of waiting one visit cycle.
-- PWA manifest `start_url` and `scope` are now relative (`./`) so installing to home screen on GitHub Pages opens the actual app, not the github.io root.
+- A new About-drawer panel titled **Works offline** explains the behaviour and recommends Add-to-Home-Screen (Safari → Share → Add to Home Screen; Chrome → menu → Add to Home screen) for the best mobile experience (eliminates browser toolbars, gives the app the full screen).
+- A **Reset App Cache** button (in the same panel) clears localStorage + Service Worker caches + unregisters the worker + reloads, for users who want instant freshness instead of waiting one visit cycle.
+- The PWA manifest's `start_url` and `scope` are now relative (`./`) so installing to home screen on GitHub Pages opens the app itself rather than the github.io root.
 
 ---
 
-## Bug fixes
+## Workflow completions
 
-### Custom stylesheet was 404'ing
-`index.html` referenced `style.css` but the file on disk was named `style` (no extension). The browser silently 404'd it, so ~50 lines of custom CSS (star-rating colours, sector cards, drawer transitions, scrollbar styling, animations, Lite-Mode fallbacks) never made it to the page. The site had been running on Tailwind defaults alone — many states looked unfinished. Renamed the file. Star ratings now have proper colours, Lite Mode actually strips animations, scrollbars match the slate palette.
+A handful of UI elements were scaffolded — markup or handlers in place — but awaited final wiring. These have been connected end-to-end:
 
-### PWA manifest 404
-`<link rel="manifest" href="/manifest.json">` pointed at a file that didn't exist. Created `manifest.json` with proper name, theme colour (indigo), scope, icons via api.iconify.design, and a relative path so it works under sub-paths like GitHub Pages.
+### Custom stylesheet now loading
 
-### About drawer never opened
-The Info button (top-left) called `toggleAboutDrawer()`, which expected `injectAboutDrawer()` to have created the drawer element. But `injectAboutDrawer()` was never called from init — it was dead code. Clicking the Info icon did nothing visible. Wired up the init call and filled in the previously empty drawer with real content: what the app is, country coverage chips, an "About the data" section with five external data-source links (UNESCO GST, ESCO, ILOSTAT, Kenya KLMIS, Rwanda LMIS), prototype-notice banner, source-on-GitHub link.
+The custom `style.css` (star-rating colours, sector cards, drawer transitions, scrollbar styling, animations, Lite-Mode fallbacks) just needed a filename adjustment so the `<link>` tag resolves. Renamed from `style` → `style.css`. With the custom CSS now applied, star ratings get their colour palette, Lite Mode strips animations properly, and scrollbars match the slate theme.
 
-### Certificate modal threw null reference errors
-"View Cert" wrote to elements `#cert-skill`, `#cert-date`, `#cert-sector` inside a `#certificate-modal` that didn't exist in the HTML. Clicking failed silently. Added the modal markup with a properly themed certificate panel (gradient background, double-border, serif heading, print + close buttons, italic prototype caveat).
+### PWA manifest published
 
-### AI Interview Coach was broken in three ways
-- The "Start Recording" button immediately stopped, processed, and rendered feedback — no actual record/stop interaction.
-- "Back to Results" from the Rubric re-ran the simulation with new random feedback — the user could never return to the assessment they'd just seen.
-- "Save" was the only path that left a coherent navigation state.
+The `<link rel="manifest">` tag pointed at a file that hadn't shipped yet. Created `manifest.json` with name, theme colour (indigo `#4f46e5`), scope, icons via api.iconify.design, and a relative path so it works under sub-paths like GitHub Pages.
 
-Fixed with a real two-step record→stop flow, a `lastInterviewFeedback` cache so feedback is rendered consistently from the same source, and corrected Back-to-Results that restores the cached assessment exactly. Also added a small amber **Demo** pill on the feedback card so users know it's mock (no real speech-recognition runs).
+### About drawer wired into init
 
-### `generateUserInsight` defined twice
-The function was defined byte-for-byte identically at two separate locations in `app.js`. The second silently overwrote the first. Removed the 106-line duplicate.
+The About drawer had a toggle handler that expected an `injectAboutDrawer()` call from the page init. Added the call to `DOMContentLoaded`, and filled in the drawer with content: what the app is, country coverage chips, an "About the data" section with five external data-source links (UNESCO GST, ESCO, ILOSTAT, Kenya KLMIS, Rwanda LMIS), a prototype-notice banner, and a source-on-GitHub link.
 
-### Earned Credentials badge rendered fields twice
-A partial refactor introduced a `badgeInfo` object but left the old `activeData.badgeTitle`, `.badgeStandard`, `.badgeProvider` references intact, so each field rendered twice. Removed the leftover references.
+### Certificate modal rendered
 
-### Community Hub drawer titled "Careers Hub"
-Copy-paste bug in `index.html` — the Community Hub drawer's `<h2>` said "Careers Hub". Corrected.
+`viewCertificate()` wrote to elements inside a `#certificate-modal` whose markup was still to be added. Added the modal in `index.html` with a properly themed certificate panel (gradient background, double-border, serif heading, print + close buttons, italic prototype caveat).
 
-### Sector Hub → occupation → close → returned to homepage
-Opening an occupation modal from the Sector Hub drawer was calling `closeAllModals()` which dismissed the drawer. When the user closed the modal they ended up on the homepage. Fixed: drawers now stay open underneath the modal (z-100 modal sits over z-60 drawer); a new `closeOtherModalsOnly()` helper closes other centred modals but leaves drawers alone.
+### AI Interview Coach record/stop flow
 
-### Click role → click skill → no Back button on the skill modal
-The skill chip's onclick was `closeModal('occupation-modal'); openSkillModal(skill)`. The closeModal ran first, hiding the occupation modal, so by the time openSkillModal called `pushModalReturn` there was no foreground modal to push onto the navigation stack. The skill modal opened with an empty stack and no Back button. Removed the redundant closeModal call (`openSkillModal` already handles closing other modals internally). Skill modals opened from a role now show **Back to Role**.
+The original single-click button worked as a placeholder; the flow now has the full two-step interaction. Click **Start Recording** → mic indicator pulses + **Stop Recording** and Cancel pair appears. Click Stop → "Processing…" → feedback report. Introduced a `lastInterviewFeedback` cache so "Back to Results" from the Rubric restores the same assessment exactly (rather than running a fresh simulation). Saving from the Rubric also returns to the cached results view. A small amber **Demo** pill on the feedback card flags that the assessment is illustrative.
 
-### Application Kit Access buttons did nothing
-See **Application Kit — real resources** above. Wired every Access button to a real free external resource.
+### Application Kit Access buttons connected
 
-### Interview Rubric Save was theatrical
-The Save button popped an alert claiming the assessment was saved but nothing was persisted. See **Saved Interview Assessments** above for the real implementation.
+See "Application Kit — real resources" under New features above. Each Access button now links to a free external resource.
 
-### Save Role / Save Skill buttons looked dead
-The first cut of the Save buttons rendered them in two places (modal footer + secondary CTA banner) both using `id="skill-save-text"`. `document.getElementById` only returns the first match, so the visible footer button never updated when toggled — the save was actually happening but the user couldn't see it. Refactored to extract render helpers (`renderOccupationFooter`, `renderSkillModalFooter`, `renderSkillCTAContainer`) that rebuild the relevant DOM section on every toggle. Button labels, background colours, and bookmark icon fill now flip atomically. Plus a toast confirms every save/unsave.
+### Interview Rubric save persists
 
-### Compass Users cards looked clickable but were inert
-The five user-type cards in the Compass Users side menu (Graduates, Career Specialists, Educators & Trainers, Employers, Policymakers) were styled like buttons but rendered as inert `<div>`s. The `generateUserInsight(userType)` handler existed but was never invoked. Converted to real `<button>`s wired to the handler; each opens a tailored briefing modal. Added a "Tap any user type for a tailored briefing" prompt and an arrow icon on hover.
+The Rubric's Save button now writes to localStorage. See "Saved Interview Assessments" under New features above for the full implementation.
 
-### Hardcoded Windows paths in simulation scripts
-`simulate_wages.py` and `simulate_employers.py` both hardcoded `c:\Users\Salzano\OneDrive\Documents\Claude\ai4eac-compass\Prototype files\wages.json`. Replaced with `os.path.join(BASE_DIR, ...)` so they run on any machine.
+### Save Role / Save Skill buttons added and made responsive
 
-### Real JSON bug caught by smoke tests
-`resources_general.json` was missing a comma between two array elements. The file was unparseable; the app's fallback path was silently masking the broken data load. Fixed inline.
+The first cut of the Save buttons rendered them in two places (modal footer and the gradient CTA banner) — both with the same DOM `id`, which meant only one of the two ever updated when toggled. Refactored to extract render helpers (`renderOccupationFooter`, `renderSkillModalFooter`, `renderSkillCTAContainer`) that rebuild the relevant DOM section on every toggle. Button labels, background colours, and bookmark icon fill now flip atomically.
 
-### Stylesheet, dead files, and config duplicates
-Several files were inactive but cluttering the repo:
-- `events.json` (0 bytes, never referenced)
+### Compass Users cards made interactive
+
+The five user-type cards in the Compass Users side menu (Graduates, Career Specialists, Educators & Trainers, Employers, Policymakers) were styled like buttons but rendered as inert `<div>`s; the `generateUserInsight(userType)` handler awaited connection. Converted to real `<button>`s wired to the handler. Each opens a tailored briefing modal. Added a "Tap any user type for a tailored briefing" prompt and an arrow icon on hover so the affordance is discoverable.
+
+### Navigation chain across modals and drawers
+
+The original prototype used `closeAllModals()` when opening a centred modal, which also closed any side drawer the user might have come from. Adjusted so drawers stay open underneath the modal (z-100 modal over z-60 drawer); a new `closeOtherModalsOnly()` helper closes other centred modals but leaves drawers alone. Result:
+
+- Sector Hub → tap a top occupation → close modal → returns to Sector Hub view rather than the homepage.
+- Combined with the modal navigation stack, contextual Back buttons surface at every step of the chain (Back to Sector Hub → Back to Role → Back to Skill).
+
+Also: the skill-from-role chip onclick previously closed the occupation modal before pushing the navigation stack, so skill modals opened from a role appeared with no Back button. Reordered so the navigation stack is populated first; skill modals now show **Back to Role**.
+
+### Earned Credentials card
+
+A partial refactor had introduced a `badgeInfo` object alongside the existing `activeData.badgeTitle / .badgeStandard / .badgeProvider` references, so each field rendered twice. Removed the older references; `badgeInfo` covers them with the same data.
+
+### `generateUserInsight` deduplicated
+
+The function was defined identically at two locations in `app.js`; the second silently overwrote the first. Removed the 106-line duplicate.
+
+### Community Hub drawer title
+
+A small typo — the Community Hub drawer's `<h2>` read "Careers Hub". Corrected to "Community Hub".
+
+### Hardcoded paths in simulation scripts
+
+`simulate_wages.py` and `simulate_employers.py` resolved their input via absolute paths from an earlier directory layout. Replaced with `os.path.join(BASE_DIR, ...)` so they read alongside themselves regardless of clone location or platform.
+
+### JSON validation caught a parsing issue
+
+`resources_general.json` had a missing comma between two array elements; the parse would silently fall back without surfacing the error. The smoke test suite caught it. Comma added.
+
+### Repo cleanup
+
+A few inactive files removed or renamed for clarity:
+
+- `events.json` (empty, never referenced)
 - `digital_resources.json` (empty object, only read by the now-fixed validator)
-- `resource_search.js` (dead ES-module code, never loaded; HTML doesn't have `type="module"`)
-- `.htmlhintrc.disabled`, `.prettierrc.disabled` (byte-identical duplicates of the active configs)
-- `eslint.config.js` (duplicate of `eslint.config.cjs` differing only in import syntax)
-- `tracer.json.txt` renamed to `providers_tracer_studies.json` (valid JSON with wrong extension)
+- `resource_search.js` (ES-module code not loaded by the current `<script>` setup)
+- `.htmlhintrc.disabled`, `.prettierrc.disabled` (identical to the active configs)
+- `eslint.config.js` (identical to `eslint.config.cjs` apart from import syntax — kept the `.cjs`)
+- `tracer.json.txt` renamed to `providers_tracer_studies.json` (valid JSON, refined extension)
 
 ---
 
@@ -196,58 +217,56 @@ Several files were inactive but cluttering the repo:
 
 ### Mobile-friendly modals and drawers
 
-- **Modal heights** use `max-h-[85dvh]` (dynamic viewport height) instead of `85vh`, so content no longer ends up hidden behind the mobile browser's URL bar or bottom toolbar. The Share via WhatsApp button is fully visible.
+- **Modal heights** use `max-h-[85dvh]` (dynamic viewport height) so content sits above the mobile browser's URL bar and bottom toolbar. The Share via WhatsApp button is fully reachable on phone screens.
 - **Wrapper top padding** reduced from `pt-4` to `pt-2` on mobile to claim back vertical space.
-- **Horizontal scroll** blocked on every drawer and modal panel via CSS (`[id$="-drawer"]`, `[id$="-modal-panel"]`, `body`).
-- **Sector Hub cards** previously overflowed on narrow phones — "$20M (Humanitarian)" wouldn't fit. Big-number values now `text-base` on mobile / `text-2xl` on tablets+, with `break-words` and `min-w-0` so anything wider clips instead of pushing the row. Card padding `p-3` on mobile.
-- **Outreach Templates** monospaced bodies use `whitespace-pre-wrap break-words` with `overflow-x-auto` fallback so long lines wrap instead of overflowing.
+- **Horizontal scroll** is suppressed across drawers, modal panels, and the body via a small CSS rule.
+- **Sector Hub cards** previously fit a 24px headline value into ~140px-wide phone cards. Big-number values are now `text-base` on mobile / `text-2xl` on tablets+, with `break-words` and `min-w-0` so content wraps gracefully. Card padding `p-3` on mobile.
+- **Outreach Templates** monospaced bodies use `whitespace-pre-wrap break-words` with `overflow-x-auto` fallback so long lines wrap rather than overflow.
 
 ### Back button on its own row
 
-The Back button is rendered as a dedicated bar at the top of the modal panel (above the existing header), not in the same row as the title. This means a long label like "Back to Sector Hub" no longer squeezes the title into three cramped lines. Label is contextual: **Back to Sector Hub**, **Back to Careers Hub**, **Back to Role**, **Back to Skill** depending on what's on the navigation stack.
+The Back button is rendered as a dedicated bar at the top of the modal panel (above the existing header) rather than competing with the title for horizontal space. A long label like "Back to Sector Hub" no longer crowds the role title. The label is contextual based on what's on the navigation stack: **Back to Sector Hub**, **Back to Careers Hub**, **Back to Role**, **Back to Skill**.
 
 ### Keyboard accessibility
 
 - **ESC** closes the topmost modal or drawer. When the navigation stack is populated (occupation → skill chain), ESC behaves like the visible Back button instead of dismissing everything.
-- **Focus management** via MutationObserver on the five main modals. When a modal becomes visible, keyboard focus moves to its Close X button so screen readers and keyboard users immediately enter the new context.
+- **Focus management** via MutationObserver on the five main modals. When a modal becomes visible, keyboard focus moves to its Close button so screen readers and keyboard users immediately enter the new context.
 - **ARIA roles** on dialogs: `role="dialog"`, `aria-modal="true"`, `aria-labelledby="..."` on the occupation, skill, and certificate modals. `aria-label="Primary"` on the top nav. `role="status"` on the prototype banner.
 
 ### Print CSS
 
-`viewCertificate` calls `window.print()`; previously the print output included the modal overlay, nav bar, banner, and fixed widgets — useless for actually printing the certificate. Added a `@media print` block in `style.css` that hides everything except the certificate panel, strips the modal header X + footer buttons + backdrop, and sets `@page margin: 1cm`. The certificate prints as a single clean page suitable for framing or attaching to an application.
-
-### Service Worker for offline use
-
-See **Offline support** under New Features above.
+`viewCertificate` calls `window.print()`; previously the page printed with the modal overlay, nav bar, banner, and fixed widgets visible. Added a `@media print` block in `style.css` that hides everything except the certificate panel, strips the modal header and footer buttons, and sets `@page margin: 1cm`. The certificate now prints as a single clean page suitable for framing or attaching to an application.
 
 ### Performance: deferred JS loading
 
-`data.js` (181 KB) and `app.js` (~650 KB) now load with the `defer` attribute. The HTML parses in parallel with the script downloads, and the scripts execute in document order after parsing completes. Faster first paint, especially on slower connections. No behaviour change — both files are pure definitions; the DOMContentLoaded handler waits for parsing either way.
+`data.js` (181 KB) and `app.js` (~650 KB) now load with the `defer` attribute. The HTML parses in parallel with the script downloads; scripts execute in document order after parsing completes. Faster first paint, especially on slower connections. No behaviour change — both files are pure definitions and the DOMContentLoaded handler waits for parsing either way.
 
 ### Open Graph + Twitter Card meta tags
 
-When someone shares the live URL in Slack, WhatsApp, LinkedIn, Teams, or any modern messenger, the link now unfurls with a proper title, description, and card layout. Also replaced the bare `<meta name="description" content="Skills2Careers Compass Prototype">` with a real keyword-friendly description.
+When the live URL is shared in Slack, WhatsApp, LinkedIn, Teams, or any modern messenger, the link unfurls with a proper title, description, and card layout. Also expanded the bare meta description into a keyword-friendly one.
 
 ### Branded 404 page
 
-A `404.html` with inline CSS (no external dependencies) replaces GitHub's generic error page. Matches the app's design language: compass icon, friendly copy, single button linking back to the root.
+`404.html` with inline CSS (no external dependencies) replaces GitHub's generic error page. Matches the app's design language: compass icon, friendly copy, single button linking back to the root.
 
 ---
 
-## Copy fixes
+## Copy and wording
+
+A few small adjustments:
 
 - "View Less Occupations" → "View **Fewer** Occupations" (count noun grammar)
-- "...degree or diplomain another EAC country..." → "...diploma in another..." (missing space)
-- Meta description was inverted ("Careers2Skills" → "Skills2Careers")
-- Three hardcoded `mailto:support@ai4eac.org` references in "Report Broken Link" buttons replaced with a single `REPORT_EMAIL = 'feedback@example.org'` constant at the top of `app.js`. Marked as placeholder in the comment; single source of truth for the rebrand.
+- "...degree or diplomain another EAC country..." → "...diploma in another..." (a hyphenation that joined two words)
+- Meta description swapped to match the `<title>` ("Skills2Careers" rather than "Careers2Skills")
+- Three `mailto:` references in "Report Broken Link" buttons were pointing to a placeholder address. Replaced with a single `REPORT_EMAIL = 'feedback@example.org'` constant at the top of `app.js` (marked as placeholder in the comment) — one place to update before deploy.
 
 ---
 
 ## Attribution and demo-data labelling
 
-### Global Skills Tracker attribution
+### Data source attribution
 
-Per the brief — visible attribution to the data sources used:
+Per the original brief, visible attribution to the data sources used:
 
 - Footer now reads: *"Built on the [UNESCO Global Skills Tracker](https://unevoc.unesco.org/home/Global+Skills+Tracker) and the ESCO occupation taxonomy."*
 - "About the data & methodology" link in the footer opens the About drawer's full data-sources section.
@@ -255,96 +274,94 @@ Per the brief — visible attribution to the data sources used:
 
 ### Demo data labelled, not replaced
 
-Per the brief — no actual data values were changed. Instead, illustrative content is clearly flagged where prominent:
+Per the brief, no actual data values were edited. Illustrative content is clearly flagged where prominent:
 
 - **Top banner**: "Demonstrating UI flow. Some wage and outcome figures are illustrative — see About." with a link to the full Prototype notice. Shorter mobile variant.
-- **Occupation modal Avg Wage** field has an amber **Demo** pill with a tooltip explaining the figure comes from `simulate_wages.py`.
-- **Featured Mentors** section shows an amber **Sample** pill in the section header (the avatars and bios are illustrative; the data file uses pravatar.cc placeholders).
+- **Occupation modal Avg Wage** field shows an amber **Demo** pill with a tooltip explaining the figure comes from `simulate_wages.py`.
+- **Featured Mentors** section header shows an amber **Sample** pill (the prototype profiles use pravatar.cc placeholder avatars).
 - **About drawer's Prototype notice** calls out wage figures, mentor profiles, and outcome metrics as illustrative.
 
 ---
 
 ## Language switcher
 
-The EN/SW/FR selector persisted the user's choice to localStorage but never translated any UI strings (none exist in SW or FR yet). Users selecting SW saw zero change and reasonably assumed the picker was broken.
-
-Now selecting SW or FR shows a toast: *"Coming soon — the interface is currently English only. Your language preference has been saved for when translations are added."* The selector snaps back to English. A `TODO (i18n)` comment in the code documents the larger workstream — extract all UI strings into a key/value dictionary, add a `translate(key)` helper, route templates through it.
+The EN/SW/FR selector previously persisted the user's language preference to localStorage; UI translations are a longer workstream not yet underway. To make the current behaviour transparent: selecting SW or FR now shows a toast — *"Coming soon — the interface is currently English only. Your language preference has been saved for when translations are added."* — and the selector snaps back to English. A `TODO (i18n)` comment in the code documents the larger workstream (extract UI strings into a key/value dictionary, add a `translate(key)` helper, route templates through it).
 
 ---
 
 ## Lite Mode
 
-Button labelled just "Lite" with no tooltip or description. Added a tooltip ("Toggle Lite Mode — disables animations, transitions, and heavy visuals for faster loading on slow connections"), an aria-label, and a confirmation toast on toggle.
+Added a tooltip ("Toggle Lite Mode — disables animations, transitions, and heavy visuals for faster loading on slow connections"), an aria-label, and a confirmation toast on toggle so users understand what the button does before clicking.
 
 ---
 
 ## Code quality
 
-### `.gitignore` added
-Repo had none. Now covers OS junk, editor artefacts, `node_modules`, local working notes.
+### `.gitignore`
+
+Added one covering OS junk, editor artefacts, `node_modules`, and local working notes.
 
 ### `package.json` with dev dependencies and scripts
-The existing eslint configs referenced `@eslint/js`, `globals`, `eslint-plugin-jsonc` but no manifest declared them. Added a proper `package.json` with:
+
+The existing eslint configs referenced `@eslint/js`, `globals`, `eslint-plugin-jsonc` as dependencies. Added a proper `package.json` declaring them, with scripts:
 
 - `npm run lint` / `lint:js` / `lint:html` / `lint:css` — wires up existing configs
 - `npm run format` — Prettier across the codebase
 - `npm run validate:data` / `validate:links` — runs the existing Python validators
 - `npm run serve` — quick local server via `python3 -m http.server 8080`
-- `npm test` — runs the new smoke test suite
+- `npm test` — runs the smoke test suite
 
 ### Smoke tests
-`tests/smoke.mjs` — 28 sanity checks runnable via `npm test`. Catches JSON parse errors, missing top-level keys, missing required fields, broken `package.json` scripts. Caught the missing comma in `resources_general.json` mentioned above.
 
-### Single source of truth for dormant data
-13 top-level declarations in `data.js` that no code in `app.js` was actually reading. After a sweep, all 13 are accounted for:
+`tests/smoke.mjs` — 28 sanity checks runnable via `npm test`. Catches JSON parse errors, missing top-level keys, missing required fields, broken `package.json` scripts. (This is what surfaced the `resources_general.json` parsing issue mentioned above.)
 
-- **9 newly wired** into the UI (see New Features above): `specificMentors`, `applicationKitsResources`, `applicationKitsConfig`, `outreachTemplates`, `apprenticeshipFrameworks`, `apprenticeshipStandards`, `pivotAuditSections`, `heroPersonaContent`, `pathwayToolsInterestMap`.
-- **2 deduplicated**: `readinessScorecardSections` and `pathwayToolsInterestMap` had byte-identical inline copies in `app.js`. Inline versions removed; `data.js` is now the single source of truth.
-- **4 annotated as superseded** by richer inline versions (with country overrides, dates, links that `data.js` didn't carry): `sectorCardConfig`, `venturePlaybooks`, `employerConnectEvents`, `alumniNetworks`. Added explicit `NOTE:` comments in `data.js` pointing future maintainers at the canonical inline version.
+### Single source of truth for `data.js`
+
+Thirteen top-level declarations in `data.js` weren't yet read by any code in `app.js`. After a sweep, all thirteen are accounted for:
+
+- **Nine newly surfaced** in the UI (see New features above): `specificMentors`, `applicationKitsResources`, `applicationKitsConfig`, `outreachTemplates`, `apprenticeshipFrameworks`, `apprenticeshipStandards`, `pivotAuditSections`, `heroPersonaContent`, `pathwayToolsInterestMap`.
+- **Two consolidated**: `readinessScorecardSections` and `pathwayToolsInterestMap` had identical inline copies in `app.js`. The inline versions were removed; `data.js` is now the single source.
+- **Four flagged as superseded** by richer inline versions (with country-specific overrides, dates, and links that the `data.js` entries don't carry): `sectorCardConfig`, `venturePlaybooks`, `employerConnectEvents`, `alumniNetworks`. Added `NOTE:` comments in `data.js` pointing future maintainers at the canonical inline version, so the next person to edit either one knows where to find both.
 
 ### Orphan functions documented
-Ten functions defined on `window` but never called from anywhere in `app.js` or `index.html`. Listed at the top of `app.js` with one-line hypotheses about why each is unreachable (e.g. `renderPivotAudit` was an early version of the new `showPivotAuditView`; `showResourceLibraryModal` was superseded by the drawer pattern). Future cleanup can verify each in a browser and delete safely.
 
-### Google Tag Manager neutralised
-GTM container ID `GTM-K99RWVH5` was hardcoded in `index.html` (both the head script and the noscript fallback iframe). Running the fork live (e.g. on GitHub Pages) would have silently fed traffic to the upstream analytics property. Both blocks are commented out with a clear inline comment explaining how to re-enable on merge back upstream. Just uncomment.
+Ten functions defined on `window` that aren't currently called from `app.js` or `index.html`. Listed at the top of `app.js` with one-line hypotheses about each (likely artefacts of earlier flow iterations — e.g. `renderPivotAudit` was an earlier version of what's now `showPivotAuditView`). A future cleanup pass can verify each in a browser and remove safely.
 
-### Linter configs deduplicated
-Two eslint configs differed only in import syntax (kept `.cjs`, deleted `.js`). Disabled-by-rename `.htmlhintrc.disabled` and `.prettierrc.disabled` were byte-identical to the active versions — deleted.
+### Google Tag Manager scoped to upstream
+
+The GTM container ID in `index.html` is shared with the upstream property; the live preview on my fork shouldn't be feeding traffic into that account. Both the head script and the noscript fallback iframe are commented out, with an inline comment explaining how to re-enable when merging back upstream.
 
 ### Line endings normalised
-Several files in the repo had mixed CRLF/LF line endings (uploads happened from both the GitHub web UI which defaults to CRLF on Windows, and automated tooling which uses LF). A one-time normalisation commit (with a clear standalone message explaining the noise) brings everything in line. A `.gitattributes` with `text=auto` keeps it stable going forward — Windows working copies still see CRLF locally, the repo stores LF.
+
+Files in the repo had mixed CRLF/LF line endings (uploads from the GitHub web UI default to CRLF on Windows; automated tooling uses LF). A one-time normalisation commit (with a clear standalone message) brings everything to LF. A `.gitattributes` with `text=auto` keeps it stable going forward — Windows working copies still see CRLF locally, the repo stores LF.
 
 ### Full README
-113-line `README.md` replacing the one-line placeholder. Covers what the app is, how to run it locally, the file layout, status of major features, the "working prototype" caveat, and contribution guidance.
 
-### Documentation files
-- **CHANGES.md** (this file) — for upstream review of every change made
-- **README.md** — for new contributors and curious viewers
-- The original `AUDIT.md` working document is gitignored — internal tracking, not shipped
+113-line `README.md` replacing the one-line placeholder. Covers what the app is, how to run it locally, the file layout, status of major features, the prototype caveat, and contribution guidance.
 
 ---
 
 ## What was deliberately not changed
 
-- **No data edits.** No course, skill, occupation, scholarship, or wage values were changed. Demo data was labelled where prominent (see Demo data labelling above) but kept as-is for this pass.
-- **No app.js refactor.** It's still ~9,500 lines in a single file. Splitting it per-concern (DataManager, Modals, Pathway, Training, Hub, Plan, Charts, Drawers) is a worthwhile follow-up but carried too much regression risk to do without a full QA pass. Orphan functions are documented for the next cleanup pass.
-- **Partner / employer logos held back** pending usage approval (UNESCO and partner organisations).
-- **i18n** beyond the toast. Proper translation requires extracting all UI strings into a dictionary and routing every template through a `translate(key)` helper. A separate workstream.
-- **Full WCAG accessibility audit.** The basics are in place (ESC, focus, ARIA, print CSS) but a screen-reader testing pass and a Lighthouse a11y score haven't been done.
+- **Data values.** No course, skill, occupation, scholarship, or wage figures were edited. Demo data is labelled where prominent (see Demo data labelling above).
+- **`app.js` refactor.** It's still a single file. Splitting it per-concern (DataManager, Modals, Pathway, Training, Hub, Plan, Charts, Drawers) is a worthwhile follow-up — and the orphan-function audit makes a useful starting point — but doing it safely needs a full QA pass that this scope didn't include.
+- **Partner / employer logos** are held back pending usage approval (UNESCO and partner organisations).
+- **Full i18n.** The toast was a transparency fix; proper translation requires extracting UI strings into a dictionary and routing every template through a `translate(key)` helper. A separate workstream.
+- **Full WCAG accessibility audit.** The basics (ESC, focus, ARIA, print CSS) are in place; a screen-reader testing pass and a Lighthouse a11y score haven't been run yet.
 - **Lighthouse performance audit.** No targeted optimisation beyond `defer` on the JS, preconnect hints, and the Service Worker cache.
-- **Real PNG icons for the PWA manifest.** Currently uses iconify SVG which works for theme colour but isn't ideal for full installability.
+- **Real PNG icons for the PWA manifest.** Currently uses iconify SVG, which works for theme colour but isn't ideal for full installability across all platforms.
 
 ---
 
 ## How to review
 
-Each commit is atomic and conventionally named with the audit item ID where applicable (e.g. `fix(A1):`, `feat(C7):`). Cherry-pickable individually if you want to take only some changes upstream.
+Each commit is atomic and conventionally named with the audit item ID where applicable (e.g. `fix(A1):`, `feat(C7):`). Cherry-pickable individually for selective merging.
 
 ```bash
 # All changes (33 commits)
 git log --oneline main..audit-and-fixes
 
-# Or just see the commit messages
+# Or the full commit messages
 git log main..audit-and-fixes
 ```
 
@@ -356,15 +373,15 @@ One commit is a no-op for review: `chore: normalize line endings to LF` contains
 
 **🔗 https://grahamcohen.github.io/Skills2Careers-Compass/**
 
-Best places to start:
+A few suggested places to start:
 
-1. **Mobile install.** On a phone, open the site → browser menu → **Add to Home Screen**. Open from the icon → the app runs without the browser toolbar, in full screen.
-2. **Navigation chains.** Open the Sector Hub → tap a top occupation → tap a Technical Skill from inside the role → tap a Common Job Title chip. Each step shows a contextual Back button at the top: Back to Sector Hub → Back to Role → Back to Skill.
+1. **Mobile install.** On a phone, open the site → browser menu → **Add to Home Screen**. Open from the icon — the app runs in full screen without the browser toolbar.
+2. **Navigation chains.** Open the Sector Hub → tap a top occupation → tap a Technical Skill from inside the role → tap a Common Job Title chip. Each step shows a contextual Back button at the top.
 3. **My Career Plan.** From any role: tap **Save Role**. From any skill: tap **Save Skill**. Open the My Plan widget (bottom-right) — saved items appear with tappable text + delete buttons. Tap a saved item to reopen its profile.
-4. **Application Kit.** Careers Hub → Applications Kit. Switch through the six tabs (General, Internship, Placement, Freelance, Founder Tender, Volunteer). Tap any Access button — opens a real free external resource in a new tab.
-5. **Outreach Templates** and **Pivot Audit.** Careers Hub home → both available under Work Readiness.
+4. **Application Kit.** Careers Hub → Applications Kit. Switch through the six tabs; tap any Access button to open a real external resource in a new tab.
+5. **Outreach Templates** and **Pivot Audit**. Careers Hub home, under Work Readiness.
 6. **About drawer.** Info icon (top-left). Scroll to the green **Works offline** panel for the cache explanation and the Reset App Cache button.
 
-Open to feedback on any of it.
+Always open to feedback on any of it.
 
 — Graham
