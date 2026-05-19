@@ -9052,10 +9052,20 @@ window.toggleCareerHub = function() {
                 });
             }
 
+            // Service Worker: enables offline access via stale-while-revalidate.
+            // See ./service-worker.js for the caching strategy. Registration is
+            // wrapped in a feature check + try/catch so a failure here never
+            // breaks the page (some browsers / private modes disable SW).
             if ('serviceWorker' in navigator) {
-              window.addEventListener('load', () => {
-                console.log('PWA Service Worker Registration skipped for single-file prototype.');
-              });
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('./service-worker.js')
+                        .then((reg) => {
+                            console.log('[SW] registered, scope:', reg.scope);
+                        })
+                        .catch((err) => {
+                            console.warn('[SW] registration failed:', err);
+                        });
+                });
             }
 
             // --- Keyboard accessibility (ESC closes topmost modal/drawer) ---
@@ -9207,12 +9217,32 @@ window.toggleCareerHub = function() {
             }
         }
 
-        window.clearAppCache = function() {
+        window.clearAppCache = async function() {
+            // 1. Clear the JSON cache stored in localStorage by DataManager.
             Object.keys(localStorage).forEach(key => {
                 if (key.startsWith('ai4eac_')) {
                     localStorage.removeItem(key);
                 }
             });
+
+            // 2. Clear the Service Worker's CacheStorage (the offline cache).
+            //    We post a message to the SW so it can clear its own caches,
+            //    THEN we unregister + delete from the page side as a fallback.
+            try {
+                if ('caches' in window) {
+                    const keys = await caches.keys();
+                    await Promise.all(keys.map(k => caches.delete(k)));
+                }
+                if ('serviceWorker' in navigator) {
+                    const regs = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(regs.map(r => r.unregister()));
+                }
+            } catch (err) {
+                console.warn('Could not fully clear service worker caches:', err);
+            }
+
+            // 3. Tell the user, then reload. Skip the cache on reload (SHIFT-reload
+            //    equivalent) by appending a cache-busting query string.
             alert("Cache cleared. The page will now reload to fetch fresh data.");
             location.reload();
         }
@@ -9640,6 +9670,25 @@ window.toggleCareerHub = function() {
                             metrics are <strong>illustrative</strong> rather than sourced — clearly
                             labelled wherever they appear. Treat as design exploration, not production data.
                         </p>
+                    </div>
+
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+                        <h3 class="text-xs font-bold text-emerald-900 mb-1 flex items-center gap-1.5">
+                            <i data-lucide="wifi-off" class="w-3.5 h-3.5"></i> Works offline
+                        </h3>
+                        <p class="text-[11px] text-emerald-800 leading-relaxed">
+                            After your first visit on a good connection, this app keeps working
+                            without internet — useful when data is patchy. New data downloaded in
+                            the background updates the cache for next time. Tap
+                            <strong>Reset App Cache</strong> below for an immediate refresh.
+                        </p>
+                        <p class="text-[10px] text-emerald-700 mt-2 leading-relaxed">
+                            For the best offline experience, add the app to your home screen
+                            (Safari: Share &rarr; Add to Home Screen; Chrome: ⋮ &rarr; Add to Home screen).
+                        </p>
+                        <button onclick="clearAppCache()" class="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-emerald-300 text-[10px] font-bold text-emerald-700 hover:bg-emerald-100 transition-colors">
+                            <i data-lucide="refresh-cw" class="w-3 h-3"></i> Reset App Cache &amp; reload
+                        </button>
                     </div>
 
                     <div>

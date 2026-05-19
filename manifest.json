@@ -3,13 +3,17 @@
   "short_name": "S2C Compass",
   "description": "A dashboard linking labour market intelligence to skills in demand across the East African Community.",
   "lang": "en",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
   "theme_color": "#4f46e5",
   "background_color": "#ffffff",
-  "categories": ["education", "productivity", "business"],
+  "categories": [
+    "education",
+    "productivity",
+    "business"
+  ],
   "icons": [
     {
       "src": "https://api.iconify.design/lucide/compass.svg?color=%234f46e5",
