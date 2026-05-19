@@ -3268,6 +3268,65 @@ function getOJAMetrics(roleTitle, country) {
             renderPathwayStep3(); // Re-render to apply filters
         }
 
+        // ---- Save-button render helpers ----
+        // Used by openOccupationModal/openSkillModal on initial render AND by
+        // togglePlanItem to refresh the open modal's buttons after toggling.
+
+        window.renderOccupationFooter = function(title) {
+            const footer = document.getElementById('occ-modal-footer');
+            if (!footer) return;
+            const isSaved = myPlan && myPlan.roles && myPlan.roles.has(title);
+            const safeTitle = String(title).replace(/'/g, "&#39;").replace(/"/g, '&quot;');
+            const saveOnclick = `togglePlanItem(&quot;roles&quot;, &quot;${safeTitle}&quot;, &quot;${safeTitle}&quot;)`;
+            const shareText = encodeURIComponent(`Check out the "${title}" role on Skills2Careers Compass: ${window.location.href}`);
+            const shareUrl = `https://wa.me/?text=${shareText}`;
+            footer.innerHTML = `
+                <button onclick="${saveOnclick}" class="flex items-center gap-2 px-4 py-2 ${isSaved ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200'} rounded-lg text-xs font-bold transition-colors shadow-sm">
+                    <i data-lucide="bookmark" class="w-4 h-4 ${isSaved ? 'fill-white' : ''}"></i> <span>${isSaved ? 'Saved to Plan' : 'Save Role'}</span>
+                </button>
+                <a href="${shareUrl}" target="_blank" rel="noopener" class="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-colors shadow-sm">
+                    <i data-lucide="share-2" class="w-4 h-4"></i> Share via WhatsApp
+                </a>
+            `;
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.renderSkillModalFooter = function(skillName) {
+            const skillFooter = document.getElementById('skill-modal-footer');
+            if (!skillFooter) return;
+            const isSaved = myPlan && myPlan.skills && myPlan.skills.has(skillName);
+            const safeName = String(skillName).replace(/'/g, "&#39;").replace(/"/g, '&quot;');
+            const saveOnclick = `togglePlanItem(&quot;skills&quot;, &quot;${safeName}&quot;, &quot;${safeName}&quot;)`;
+            const findOnclick = `openCoursesForSkill(&quot;${safeName}&quot;)`;
+            skillFooter.innerHTML = `
+                <button onclick="${saveOnclick}" class="flex items-center gap-2 px-4 py-2 ${isSaved ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200'} rounded-lg text-xs font-bold transition-colors shadow-sm">
+                    <i data-lucide="bookmark" class="w-4 h-4 ${isSaved ? 'fill-white' : ''}"></i> <span>${isSaved ? 'Saved to Plan' : 'Save Skill'}</span>
+                </button>
+                <button onclick="${findOnclick}" class="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-colors shadow-sm">
+                    <i data-lucide="graduation-cap" class="w-4 h-4"></i> Find Courses
+                </button>
+            `;
+            if (window.lucide) lucide.createIcons();
+        };
+
+        window.renderSkillCTAContainer = function(skillName) {
+            const ctaContainer = document.getElementById('skill-cta-container');
+            if (!ctaContainer) return;
+            const isSaved = myPlan && myPlan.skills && myPlan.skills.has(skillName);
+            const safeName = String(skillName).replace(/'/g, "&#39;").replace(/"/g, '&quot;');
+            const saveOnclick = `togglePlanItem(&quot;skills&quot;, &quot;${safeName}&quot;, &quot;${safeName}&quot;)`;
+            const findOnclick = `openCoursesForSkill(&quot;${safeName}&quot;)`;
+            ctaContainer.innerHTML = `
+                <button onclick="${findOnclick}" class="bg-white text-indigo-900 px-4 py-2 rounded-lg text-xs font-bold hover:bg-indigo-50 transition-colors flex items-center gap-2 shadow-sm">
+                    Find Courses <i data-lucide="search" class="w-3 h-3"></i>
+                </button>
+                <button onclick="${saveOnclick}" class="${isSaved ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'bg-white/10 text-white border border-white/30 hover:bg-white/20'} px-4 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-2">
+                    <i data-lucide="bookmark" class="w-3 h-3 ${isSaved ? 'fill-white' : ''}"></i> <span>${isSaved ? 'Saved' : 'Save Skill'}</span>
+                </button>
+            `;
+            if (window.lucide) lucide.createIcons();
+        };
+
         function openOccupationModal(title) {
             // B1/B2: capture where we came from so a Back button can restore it.
             // _internalRestore is set true by goBackModal() to suppress double-push.
@@ -3658,20 +3717,8 @@ function getOJAMetrics(roleTitle, country) {
             );
             const shareUrl = `https://wa.me/?text=${shareText}`;
             
-            const footer = document.getElementById('occ-modal-footer');
-            if(footer) {
-                // Compute current save state so the button label and icon reflect it on open
-                const isSaved = myPlan && myPlan.roles && myPlan.roles.has(title);
-                const escTitle = title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                footer.innerHTML = `
-                    <button id="occ-save-btn" onclick="togglePlanItem('roles', '${escTitle}', '${escTitle}')" class="flex items-center gap-2 px-4 py-2 ${isSaved ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200'} rounded-lg text-xs font-bold transition-colors shadow-sm">
-                        <i data-lucide="bookmark" class="w-4 h-4 ${isSaved ? 'fill-white' : ''}"></i> <span id="occ-save-text">${isSaved ? 'Saved to Plan' : 'Save Role'}</span>
-                    </button>
-                    <a href="${shareUrl}" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-colors shadow-sm">
-                        <i data-lucide="share-2" class="w-4 h-4"></i> Share via WhatsApp
-                    </a>
-                `;
-            }
+            // Footer rendered via helper so togglePlanItem can re-render after toggle
+            renderOccupationFooter(title);
 
             modal.classList.remove('hidden');
             if(window.lucide) lucide.createIcons();
@@ -5556,36 +5603,12 @@ window.toggleCareerHub = function() {
             // Remove assessment result hidden block as it was part of challenge
             document.getElementById('assessment-result').classList.add('hidden');
 
-            // --- NEW: Inject Dynamic CTAs ---
-            const ctaContainer = document.getElementById('skill-cta-container');
-            if(ctaContainer) {
-                const isSavedSkill = myPlan && myPlan.skills && myPlan.skills.has(skillName);
-                const escSkill = skillName.replace(/'/g, "\\'");
-                ctaContainer.innerHTML = `
-                    <button onclick="openCoursesForSkill('${escSkill}')" class="bg-white text-indigo-900 px-4 py-2 rounded-lg text-xs font-bold hover:bg-indigo-50 transition-colors flex items-center gap-2 shadow-sm">
-                        Find Courses <i data-lucide="search" class="w-3 h-3"></i>
-                    </button>
-                    <button onclick="togglePlanItem('skills', '${escSkill}', '${escSkill}')" class="${isSavedSkill ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'bg-white/10 text-white border border-white/30 hover:bg-white/20'} px-4 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-2">
-                        <i data-lucide="bookmark" class="w-3 h-3 ${isSavedSkill ? 'fill-white' : ''}"></i> <span id="skill-save-text">${isSavedSkill ? 'Saved' : 'Save Skill'}</span>
-                    </button>
-                `;
-            }
+            // --- Inject Dynamic CTAs via helper (re-renders on toggle) ---
+            renderSkillCTAContainer(skillName);
 
-            // Populate the skill modal footer with Save Skill (always visible —
-            // doesn't require scrolling to the 'Master this Skill' banner at the bottom).
-            const skillFooter = document.getElementById('skill-modal-footer');
-            if (skillFooter) {
-                const isSavedSkillFooter = myPlan && myPlan.skills && myPlan.skills.has(skillName);
-                const escSkillFooter = skillName.replace(/'/g, "\\'");
-                skillFooter.innerHTML = `
-                    <button onclick="togglePlanItem('skills', '${escSkillFooter}', '${escSkillFooter}')" class="flex items-center gap-2 px-4 py-2 ${isSavedSkillFooter ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200'} rounded-lg text-xs font-bold transition-colors shadow-sm">
-                        <i data-lucide="bookmark" class="w-4 h-4 ${isSavedSkillFooter ? 'fill-white' : ''}"></i> <span id="skill-save-text">${isSavedSkillFooter ? 'Saved to Plan' : 'Save Skill'}</span>
-                    </button>
-                    <button onclick="openCoursesForSkill('${escSkillFooter}')" class="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-colors shadow-sm">
-                        <i data-lucide="graduation-cap" class="w-4 h-4"></i> Find Courses
-                    </button>
-                `;
-            }
+            // Skill modal footer rendered via helper (visible without scrolling,
+            // re-renders on toggle so the save state is always accurate)
+            renderSkillModalFooter(skillName);
 
             modal.classList.remove('hidden');
             if(window.lucide) lucide.createIcons();
@@ -9183,38 +9206,40 @@ window.toggleCareerHub = function() {
 
         window.togglePlanItem = function(type, id, name) {
             const set = myPlan[type];
-            if (set.has(id)) {
+            const wasInSet = set.has(id);
+            if (wasInSet) {
                 set.delete(id);
             } else {
                 set.add(id);
-                // Store name map if needed, for now assuming ID is sufficient or name passed
                 if(!myPlan.names) myPlan.names = {};
-                myPlan.names[id] = name;
+                myPlan.names[id] = name || id;
             }
-            
-            saveMyPlan(); // Save to storage on change
-            updatePlanBadge();
-            renderMyPlan();
-            
-            // Update UI buttons if visible
+
+            saveMyPlan();          // persist to localStorage
+            updatePlanBadge();     // bump/decrement the count on the My Plan widget
+            renderMyPlan();        // re-render the plan-panel list if open
+
+            // Re-render the save button(s) on whichever modal is currently open.
+            // Previously two elements shared id="skill-save-text" so only one ever
+            // updated. Helpers now rebuild the whole footer/CTA with fresh state.
             if (type === 'roles') {
-                const btnText = document.getElementById('occ-save-text');
-                if (btnText) btnText.innerText = set.has(id) ? "Saved to Plan" : "Save Role";
-                // Re-render icons in modal if needed
-                if(window.lucide) lucide.createIcons();
-            }
-            if (type === 'skills') {
-                const btnText = document.getElementById('skill-save-text');
-                if (btnText) btnText.innerText = set.has(id) ? "Saved" : "Save Skill";
-                if(window.lucide) lucide.createIcons();
-            }
-            if (type === 'courses') {
-                // Re-render list to update icons
+                renderOccupationFooter(id);
+            } else if (type === 'skills') {
+                renderSkillModalFooter(id);
+                renderSkillCTAContainer(id);
+            } else if (type === 'courses') {
                 const btn = document.querySelector(`button[onclick*="${id}"] i`);
-                if(btn) {
-                    if(set.has(id)) btn.classList.add('fill-indigo-600', 'text-indigo-600');
+                if (btn) {
+                    if (set.has(id)) btn.classList.add('fill-indigo-600', 'text-indigo-600');
                     else btn.classList.remove('fill-indigo-600', 'text-indigo-600');
                 }
+            }
+
+            // Toast feedback so the user knows the click registered.
+            if (typeof showToast === 'function') {
+                const label = name || id;
+                const verb = wasInSet ? 'Removed from' : 'Added to';
+                showToast(`${verb} My Plan: ${label}`, wasInSet ? 'info' : 'success', 2500);
             }
         }
 
