@@ -106,3 +106,20 @@ body.low-bandwidth .btn-sector-card { border: 1px solid #ccc; background: white;
         margin: 1cm;
     }
 }
+
+/* ============================================
+   Prevent any horizontal scroll on drawers and
+   modal panels — Graham flagged Sector Hub
+   overflow on mobile. Belt-and-braces with the
+   per-element overflow-x-hidden classes.
+   ============================================ */
+[id$="-drawer"],
+[id$="-modal-panel"] {
+    overflow-x: hidden;
+}
+/* Allow page-level horizontal scroll only inside
+   explicit scroll containers (course tables etc.)
+   that opt in with .overflow-x-auto */
+body {
+    overflow-x: hidden;
+}

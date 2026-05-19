@@ -5869,7 +5869,7 @@ window.toggleCareerHub = function() {
                     <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                         
                         <!-- Card 1: Sector Proxy -->
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full">
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full overflow-hidden min-w-0">
                             <div class="flex items-center justify-between mb-2">
                                 <div class="flex items-center gap-2">
                                     <div class="p-1.5 bg-${themeColor}-50 text-${themeColor}-600 rounded-lg"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
@@ -5877,28 +5877,28 @@ window.toggleCareerHub = function() {
                                 </div>
                                 <span class="text-[9px] text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">Src: ${data.outlook.source}</span>
                             </div>
-                            <div class="text-2xl font-bold text-slate-900">${data.growth.jobTrend}</div>
+                            <div class="text-xl md:text-2xl font-bold text-slate-900 break-words">${data.growth.jobTrend}</div>
                             <div class="text-xs text-slate-500 mt-1">Overall Sector Growth</div>
                         </div>
 
                         <!-- Card 2: Investments -->
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full">
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full overflow-hidden min-w-0">
                             <div class="flex items-center gap-2 mb-2">
                                 <div class="p-1.5 bg-${themeColor}-50 text-${themeColor}-600 rounded-lg"><i data-lucide="trending-up" class="w-4 h-4"></i></div>
                                 <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Investment Flow</h4>
                             </div>
-                            <div class="text-2xl font-bold text-slate-900">${data.growth.investment}</div>
+                            <div class="text-xl md:text-2xl font-bold text-slate-900 break-words">${data.growth.investment}</div>
                             <div class="text-xs text-slate-500 mt-1">Money coming into the sector</div>
                         </div>
 
                         <!-- Card 3: Skills Demand (Meter) -->
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full">
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full overflow-hidden min-w-0">
                             <div class="flex items-center gap-2 mb-2">
                                 <div class="p-1.5 ${demandBgClass} rounded-lg"><i data-lucide="bar-chart-2" class="w-4 h-4"></i></div>
                                 <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Hiring Demand</h4>
                             </div>
                             <div class="flex items-end gap-2 mb-2">
-                                <div class="text-2xl font-bold ${demandColorClass}">${data.growth.skillsDemand}</div>
+                                <div class="text-xl md:text-2xl font-bold ${demandColorClass} break-words">${data.growth.skillsDemand}</div>
                             </div>
                             <div class="w-full bg-slate-100 rounded-full h-2 mb-1">
                                 <div class="h-2 rounded-full ${demandColorClass.replace('text', 'bg')}" style="width: ${data.growth.skillsDemand === 'Critical' ? '95%' : data.growth.skillsDemand === 'High' ? '80%' : '60%'}"></div>
@@ -5907,12 +5907,12 @@ window.toggleCareerHub = function() {
                         </div>
 
                         <!-- Card 4: Key Hotspots -->
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full">
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full overflow-hidden min-w-0">
                             <div class="flex items-center gap-2 mb-2">
                                 <div class="p-1.5 bg-${themeColor}-50 text-${themeColor}-600 rounded-lg"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
                                 <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Top Locations</h4>
                             </div>
-                            <div class="text-lg font-bold text-slate-900 leading-tight">${data.outlook.hotspots}</div>
+                            <div class="text-base md:text-lg font-bold text-slate-900 leading-tight break-words">${data.outlook.hotspots}</div>
                             <div class="text-xs text-slate-500 mt-1">Where the jobs are</div>
                         </div>
 
@@ -9749,7 +9749,7 @@ window.toggleCareerHub = function() {
 
             const drawer = document.createElement('div');
             drawer.id = 'sector-hub-drawer';
-            drawer.className = 'fixed inset-y-0 right-0 w-full md:w-[800px] bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-[60] overflow-y-auto flex flex-col';
+            drawer.className = 'fixed inset-y-0 right-0 w-full md:w-[800px] bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-[60] overflow-y-auto overflow-x-hidden flex flex-col';
             
             drawer.innerHTML = `
                 <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 z-10">
