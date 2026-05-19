@@ -168,18 +168,13 @@ window.goBackModal = function() {
 window.injectModalBackButton = function(modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
-    // Remove any previous back button so we don't stack them
-    const prev = modal.querySelector('.modal-back-btn');
+    // Remove any previous back bar so we don't stack them
+    const prev = modal.querySelector('.modal-back-bar');
     if (prev) prev.remove();
     if (modalNavStack.length === 0) return;
-    // Find the X close button — both occupation and skill modals expose it
-    // via [aria-label="Close modal"]. Its parent is the header flex container
-    // with title group + close X. We insert Back as the FIRST child of that
-    // container so the layout becomes [← Back ... Title ... X] (justify-between
-    // pushes Back to the left and X to the right).
-    const closeBtn = modal.querySelector('button[aria-label="Close modal"]');
-    if (!closeBtn) return;
-    const header = closeBtn.parentNode;
+
+    const panel = document.getElementById(modalId + '-panel');
+    if (!panel) return;
 
     // Build a descriptive label so users know where Back goes
     const top = modalNavStack[modalNavStack.length - 1];
@@ -198,25 +193,26 @@ window.injectModalBackButton = function(modalId) {
         }
     }
 
-    const back = document.createElement('button');
-    back.type = 'button';
-    back.className = 'modal-back-btn order-first self-start px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 hover:text-slate-800 transition-colors text-xs font-bold flex items-center gap-1.5 shadow-sm shrink-0 max-w-[50%]';
-    back.setAttribute('aria-label', label);
-    back.innerHTML = `<i data-lucide="arrow-left" class="w-3.5 h-3.5 shrink-0"></i> <span class="truncate">${label}</span>`;
-    back.onclick = function(e) {
+    // Build a dedicated nav bar at the TOP of the panel (above the existing
+    // header). This way Back doesn't compete with the title for horizontal
+    // space — particularly important on mobile where long labels like
+    // "Back to Sector Hub" used to squeeze the role title into 3 lines.
+    const bar = document.createElement('div');
+    bar.className = 'modal-back-bar bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center shrink-0';
+    bar.innerHTML = `
+        <button type="button" class="modal-back-btn px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 hover:text-slate-800 transition-colors text-xs font-bold flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="arrow-left" class="w-3.5 h-3.5 shrink-0"></i>
+            <span>${label}</span>
+        </button>
+    `;
+    bar.querySelector('.modal-back-btn').onclick = function(e) {
         e.preventDefault();
         e.stopPropagation();
         goBackModal();
     };
-    // Insert as FIRST child so justify-between puts it at the far left.
-    header.insertBefore(back, header.firstChild);
 
-    // The title group has `pr-8` to clear the X — but with Back on the left,
-    // it also needs `pl-2` so it doesn't butt against the Back button.
-    const titleGroup = header.querySelector('div');
-    if (titleGroup && titleGroup !== back && !titleGroup.classList.contains('pl-2')) {
-        titleGroup.classList.add('pl-2');
-    }
+    // Insert as the FIRST child of the modal panel (above the existing header).
+    panel.insertBefore(bar, panel.firstChild);
 
     if (window.lucide) lucide.createIcons();
 };
@@ -5575,6 +5571,22 @@ window.toggleCareerHub = function() {
                 `;
             }
 
+            // Populate the skill modal footer with Save Skill (always visible —
+            // doesn't require scrolling to the 'Master this Skill' banner at the bottom).
+            const skillFooter = document.getElementById('skill-modal-footer');
+            if (skillFooter) {
+                const isSavedSkillFooter = myPlan && myPlan.skills && myPlan.skills.has(skillName);
+                const escSkillFooter = skillName.replace(/'/g, "\\'");
+                skillFooter.innerHTML = `
+                    <button onclick="togglePlanItem('skills', '${escSkillFooter}', '${escSkillFooter}')" class="flex items-center gap-2 px-4 py-2 ${isSavedSkillFooter ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200'} rounded-lg text-xs font-bold transition-colors shadow-sm">
+                        <i data-lucide="bookmark" class="w-4 h-4 ${isSavedSkillFooter ? 'fill-white' : ''}"></i> <span id="skill-save-text">${isSavedSkillFooter ? 'Saved to Plan' : 'Save Skill'}</span>
+                    </button>
+                    <button onclick="openCoursesForSkill('${escSkillFooter}')" class="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-colors shadow-sm">
+                        <i data-lucide="graduation-cap" class="w-4 h-4"></i> Find Courses
+                    </button>
+                `;
+            }
+
             modal.classList.remove('hidden');
             if(window.lucide) lucide.createIcons();
             setTimeout(() => { panel.classList.remove('scale-95', 'opacity-0'); panel.classList.add('scale-100', 'opacity-100'); }, 10);
@@ -5869,36 +5881,36 @@ window.toggleCareerHub = function() {
                     <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                         
                         <!-- Card 1: Sector Proxy -->
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full overflow-hidden min-w-0">
+                        <div class="bg-white p-3 md:p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full overflow-hidden min-w-0">
                             <div class="flex items-center justify-between mb-2">
                                 <div class="flex items-center gap-2">
                                     <div class="p-1.5 bg-${themeColor}-50 text-${themeColor}-600 rounded-lg"><i data-lucide="briefcase" class="w-4 h-4"></i></div>
                                     <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Growth Trends</h4>
                                 </div>
-                                <span class="text-[9px] text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">Src: ${data.outlook.source}</span>
+                                <span class="text-[8px] md:text-[9px] text-slate-400 bg-slate-50 px-1 md:px-1.5 py-0.5 rounded border border-slate-100 max-w-[40%] truncate" title="Source: ${data.outlook.source}">Src: ${data.outlook.source}</span>
                             </div>
-                            <div class="text-xl md:text-2xl font-bold text-slate-900 break-words">${data.growth.jobTrend}</div>
+                            <div class="text-base md:text-2xl font-bold text-slate-900 break-words leading-tight">${data.growth.jobTrend}</div>
                             <div class="text-xs text-slate-500 mt-1">Overall Sector Growth</div>
                         </div>
 
                         <!-- Card 2: Investments -->
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full overflow-hidden min-w-0">
+                        <div class="bg-white p-3 md:p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full overflow-hidden min-w-0">
                             <div class="flex items-center gap-2 mb-2">
                                 <div class="p-1.5 bg-${themeColor}-50 text-${themeColor}-600 rounded-lg"><i data-lucide="trending-up" class="w-4 h-4"></i></div>
                                 <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Investment Flow</h4>
                             </div>
-                            <div class="text-xl md:text-2xl font-bold text-slate-900 break-words">${data.growth.investment}</div>
+                            <div class="text-base md:text-2xl font-bold text-slate-900 break-words leading-tight">${data.growth.investment}</div>
                             <div class="text-xs text-slate-500 mt-1">Money coming into the sector</div>
                         </div>
 
                         <!-- Card 3: Skills Demand (Meter) -->
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full overflow-hidden min-w-0">
+                        <div class="bg-white p-3 md:p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full overflow-hidden min-w-0">
                             <div class="flex items-center gap-2 mb-2">
                                 <div class="p-1.5 ${demandBgClass} rounded-lg"><i data-lucide="bar-chart-2" class="w-4 h-4"></i></div>
                                 <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Hiring Demand</h4>
                             </div>
                             <div class="flex items-end gap-2 mb-2">
-                                <div class="text-xl md:text-2xl font-bold ${demandColorClass} break-words">${data.growth.skillsDemand}</div>
+                                <div class="text-base md:text-2xl font-bold ${demandColorClass} break-words leading-tight">${data.growth.skillsDemand}</div>
                             </div>
                             <div class="w-full bg-slate-100 rounded-full h-2 mb-1">
                                 <div class="h-2 rounded-full ${demandColorClass.replace('text', 'bg')}" style="width: ${data.growth.skillsDemand === 'Critical' ? '95%' : data.growth.skillsDemand === 'High' ? '80%' : '60%'}"></div>
@@ -5907,12 +5919,12 @@ window.toggleCareerHub = function() {
                         </div>
 
                         <!-- Card 4: Key Hotspots -->
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full overflow-hidden min-w-0">
+                        <div class="bg-white p-3 md:p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full overflow-hidden min-w-0">
                             <div class="flex items-center gap-2 mb-2">
                                 <div class="p-1.5 bg-${themeColor}-50 text-${themeColor}-600 rounded-lg"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
                                 <h4 class="font-bold text-slate-600 text-xs uppercase tracking-wide">Top Locations</h4>
                             </div>
-                            <div class="text-base md:text-lg font-bold text-slate-900 leading-tight break-words">${data.outlook.hotspots}</div>
+                            <div class="text-sm md:text-lg font-bold text-slate-900 leading-tight break-words">${data.outlook.hotspots}</div>
                             <div class="text-xs text-slate-500 mt-1">Where the jobs are</div>
                         </div>
 
@@ -9247,6 +9259,40 @@ window.toggleCareerHub = function() {
             location.reload();
         }
 
+        // openFromPlan: when the user taps a saved item in the My Plan panel, this
+        // opens the corresponding modal or view so they can revisit it. Closes the
+        // My Plan panel first so the modal isn't covered by it.
+        window.openFromPlan = function(type, id) {
+            // Close the My Plan popover so the modal isn't obscured
+            const planPanel = document.getElementById('my-plan-panel');
+            if (planPanel) planPanel.classList.add('hidden');
+
+            if (type === 'roles') {
+                if (typeof openOccupationModal === 'function') {
+                    openOccupationModal(id);
+                }
+            } else if (type === 'skills') {
+                if (typeof openSkillModal === 'function') {
+                    openSkillModal(id);
+                }
+            } else if (type === 'courses') {
+                // Courses: open the Find Courses view in the Training Hub and
+                // do a best-effort search filter using the course id/name.
+                if (typeof openUnifiedHub === 'function') {
+                    openUnifiedHub('pp-courses', null, null);
+                    setTimeout(() => {
+                        const searchInput = document.getElementById('course-search-input');
+                        const name = (myPlan && myPlan.names && myPlan.names[id]) ? myPlan.names[id] : id;
+                        if (searchInput) {
+                            searchInput.value = name;
+                            // Trigger filter recompute
+                            searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
+                    }, 300);
+                }
+            }
+        };
+
         window.renderMyPlan = function() {
             const container = document.getElementById('my-plan-content');
             if (!container) return;
@@ -9255,10 +9301,26 @@ window.toggleCareerHub = function() {
                 if (set.size === 0) return '';
                 const items = Array.from(set).map(id => {
                     const name = (myPlan.names && myPlan.names[id]) ? myPlan.names[id] : id;
+                    const escName = String(name).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const escId = String(id).replace(/'/g, "\\'");
+
+                    // Wire each item type to its appropriate opener
+                    let openHandler = '';
+                    if (type === 'roles') {
+                        openHandler = `openFromPlan('roles', '${escId}')`;
+                    } else if (type === 'skills') {
+                        openHandler = `openFromPlan('skills', '${escId}')`;
+                    } else if (type === 'courses') {
+                        openHandler = `openFromPlan('courses', '${escId}')`;
+                    }
+
                     return `
-                        <div class="flex justify-between items-center bg-white p-2 rounded border border-slate-200 text-xs shadow-sm">
-                            <span class="truncate font-medium text-slate-700">${name}</span>
-                            <button onclick="togglePlanItem('${type}', '${id}')" class="text-slate-400 hover:text-rose-500"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                        <div class="flex justify-between items-stretch bg-white rounded border border-slate-200 text-xs shadow-sm hover:border-indigo-300 hover:shadow transition-all overflow-hidden">
+                            <button onclick="${openHandler}" class="flex-1 min-w-0 text-left p-2 flex items-center gap-1.5 hover:bg-indigo-50/40 transition-colors" title="Open ${escName}">
+                                <span class="truncate font-medium text-slate-700">${name}</span>
+                                <i data-lucide="external-link" class="w-2.5 h-2.5 text-slate-300 shrink-0"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); togglePlanItem('${type}', '${escId}')" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 px-2 transition-colors shrink-0 border-l border-slate-100" aria-label="Remove from plan"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
                         </div>
                     `;
                 }).join('');
