@@ -173,20 +173,51 @@ window.injectModalBackButton = function(modalId) {
     if (prev) prev.remove();
     if (modalNavStack.length === 0) return;
     // Find the X close button — both occupation and skill modals expose it
-    // via [aria-label="Close modal"]
+    // via [aria-label="Close modal"]. Its parent is the header flex container
+    // with title group + close X. We insert Back as the FIRST child of that
+    // container so the layout becomes [← Back ... Title ... X] (justify-between
+    // pushes Back to the left and X to the right).
     const closeBtn = modal.querySelector('button[aria-label="Close modal"]');
     if (!closeBtn) return;
+    const header = closeBtn.parentNode;
+
+    // Build a descriptive label so users know where Back goes
+    const top = modalNavStack[modalNavStack.length - 1];
+    let label = 'Back';
+    if (top) {
+        if (top.kind === 'occupation') label = 'Back to Role';
+        else if (top.kind === 'skill')  label = 'Back to Skill';
+        else if (top.kind === 'drawer') {
+            const drawerLabels = {
+                'sector-hub-drawer':    'Back to Sector Hub',
+                'career-hub-drawer':    'Back to Careers Hub',
+                'community-hub-drawer': 'Back to Community Hub',
+                'training-hub-drawer':  'Back to Training Hub'
+            };
+            label = drawerLabels[top.payload] || 'Back';
+        }
+    }
+
     const back = document.createElement('button');
     back.type = 'button';
-    back.className = 'modal-back-btn mr-2 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 hover:text-slate-800 transition-colors text-xs font-bold flex items-center gap-1.5 shadow-sm shrink-0';
-    back.setAttribute('aria-label', 'Go back to previous view');
-    back.innerHTML = '<i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back';
+    back.className = 'modal-back-btn order-first self-start px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 hover:text-slate-800 transition-colors text-xs font-bold flex items-center gap-1.5 shadow-sm shrink-0 max-w-[50%]';
+    back.setAttribute('aria-label', label);
+    back.innerHTML = `<i data-lucide="arrow-left" class="w-3.5 h-3.5 shrink-0"></i> <span class="truncate">${label}</span>`;
     back.onclick = function(e) {
         e.preventDefault();
         e.stopPropagation();
         goBackModal();
     };
-    closeBtn.parentNode.insertBefore(back, closeBtn);
+    // Insert as FIRST child so justify-between puts it at the far left.
+    header.insertBefore(back, header.firstChild);
+
+    // The title group has `pr-8` to clear the X — but with Back on the left,
+    // it also needs `pl-2` so it doesn't butt against the Back button.
+    const titleGroup = header.querySelector('div');
+    if (titleGroup && titleGroup !== back && !titleGroup.classList.contains('pl-2')) {
+        titleGroup.classList.add('pl-2');
+    }
+
     if (window.lucide) lucide.createIcons();
 };
 
@@ -3247,7 +3278,9 @@ function getOJAMetrics(roleTitle, country) {
             if (!window._internalRestore) {
                 pushModalReturn();
             }
-            closeAllModals('occupation-modal');
+            // Only close other CENTERED modals — leave drawers (sector hub etc.) open
+            // behind the modal so closing the modal returns to the drawer view.
+            closeOtherModalsOnly('occupation-modal');
             const modal = document.getElementById('occupation-modal');
             const panel = document.getElementById('occupation-modal-panel');
             
@@ -3342,7 +3375,7 @@ function getOJAMetrics(roleTitle, country) {
             // The whole row is clickable; we close the occupation modal first
             // to avoid a confusing nested-modal stack.
             const techHtml = details.specificSkills.technical.map((s, i) => `
-                <button onclick="closeModal('occupation-modal'); openSkillModal('${s.replace(/'/g, "\\'")}')" class="flex items-center gap-2 p-2 bg-slate-50 hover:bg-white border border-slate-100 hover:border-indigo-300 rounded text-xs text-slate-700 transition-colors w-full text-left group cursor-pointer" title="View ${s} skill profile">
+                <button onclick="openSkillModal('${s.replace(/'/g, "\\'")}')" class="flex items-center gap-2 p-2 bg-slate-50 hover:bg-white border border-slate-100 hover:border-indigo-300 rounded text-xs text-slate-700 transition-colors w-full text-left group cursor-pointer" title="View ${s} skill profile">
                     <div class="w-5 h-5 flex items-center justify-center bg-white rounded-full shadow-sm text-[10px] font-bold text-slate-400 border border-slate-100">${i+1}</div>
                     <span class="font-bold text-slate-800 flex-1">${s}</span>
                     <i data-lucide="arrow-up-right" class="w-3 h-3 text-slate-300 group-hover:text-indigo-500"></i>
@@ -3631,7 +3664,13 @@ function getOJAMetrics(roleTitle, country) {
             
             const footer = document.getElementById('occ-modal-footer');
             if(footer) {
+                // Compute current save state so the button label and icon reflect it on open
+                const isSaved = myPlan && myPlan.roles && myPlan.roles.has(title);
+                const escTitle = title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 footer.innerHTML = `
+                    <button id="occ-save-btn" onclick="togglePlanItem('roles', '${escTitle}', '${escTitle}')" class="flex items-center gap-2 px-4 py-2 ${isSaved ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200'} rounded-lg text-xs font-bold transition-colors shadow-sm">
+                        <i data-lucide="bookmark" class="w-4 h-4 ${isSaved ? 'fill-white' : ''}"></i> <span id="occ-save-text">${isSaved ? 'Saved to Plan' : 'Save Role'}</span>
+                    </button>
                     <a href="${shareUrl}" target="_blank" class="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-colors shadow-sm">
                         <i data-lucide="share-2" class="w-4 h-4"></i> Share via WhatsApp
                     </a>
@@ -3682,6 +3721,26 @@ function getOJAMetrics(roleTitle, country) {
                 // Only remove overflow-hidden if no other modals are open
                 if(document.querySelectorAll('.fixed.inset-0.z-\\[100\\]:not(.hidden)').length === 0) document.body.classList.remove('overflow-hidden');
             }, 200);
+        }
+
+        // Like closeAllModals but only closes centered modals — leaves side drawers
+        // open underneath. Used when opening a modal FROM a drawer, so the drawer
+        // remains visible behind the modal and re-appears when the modal closes.
+        function closeOtherModalsOnly(exceptId = null) {
+            const modals = ['occupation-modal', 'skill-modal', 'venture-modal', 'resource-modal', 'certificate-modal', 'unified-hub-modal'];
+            modals.forEach(id => {
+                if (id !== exceptId) {
+                    const el = document.getElementById(id);
+                    if (el && !el.classList.contains('hidden')) {
+                        el.classList.add('hidden');
+                        const panel = document.getElementById(id + '-panel');
+                        if (panel) {
+                            panel.classList.add('scale-95', 'opacity-0');
+                            panel.classList.remove('scale-100', 'opacity-100');
+                        }
+                    }
+                }
+            });
         }
 
         function closeAllModals(exceptId = null) {
@@ -5335,7 +5394,9 @@ window.toggleCareerHub = function() {
             if (!window._internalRestore) {
                 pushModalReturn();
             }
-            closeAllModals('skill-modal');
+            // Only close other modals — leave drawers open underneath so closing
+            // returns to the drawer (or, when nav-stack pops, to the previous modal).
+            closeOtherModalsOnly('skill-modal');
             const modal = document.getElementById('skill-modal');
             const panel = document.getElementById('skill-modal-panel');
             const sectorName = activeSectorId === 'agri' ? 'Agritech' : activeSectorId === 'energy' ? 'Renewable Energies' : 'Digital Economies / AI';
@@ -5502,9 +5563,14 @@ window.toggleCareerHub = function() {
             // --- NEW: Inject Dynamic CTAs ---
             const ctaContainer = document.getElementById('skill-cta-container');
             if(ctaContainer) {
+                const isSavedSkill = myPlan && myPlan.skills && myPlan.skills.has(skillName);
+                const escSkill = skillName.replace(/'/g, "\\'");
                 ctaContainer.innerHTML = `
-                    <button onclick="openCoursesForSkill('${skillName.replace(/'/g, "\\'")}')" class="bg-white text-indigo-900 px-4 py-2 rounded-lg text-xs font-bold hover:bg-indigo-50 transition-colors flex items-center gap-2 shadow-sm">
-                    Find Courses <i data-lucide="search" class="w-3 h-3"></i>
+                    <button onclick="openCoursesForSkill('${escSkill}')" class="bg-white text-indigo-900 px-4 py-2 rounded-lg text-xs font-bold hover:bg-indigo-50 transition-colors flex items-center gap-2 shadow-sm">
+                        Find Courses <i data-lucide="search" class="w-3 h-3"></i>
+                    </button>
+                    <button onclick="togglePlanItem('skills', '${escSkill}', '${escSkill}')" class="${isSavedSkill ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'bg-white/10 text-white border border-white/30 hover:bg-white/20'} px-4 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-2">
+                        <i data-lucide="bookmark" class="w-3 h-3 ${isSavedSkill ? 'fill-white' : ''}"></i> <span id="skill-save-text">${isSavedSkill ? 'Saved' : 'Save Skill'}</span>
                     </button>
                 `;
             }
